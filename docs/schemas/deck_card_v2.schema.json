@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeckCardV2",
+  "type": "object",
+  "required": ["wordId"],
+  "properties": {
+    "wordId": {"type": "string"},
+    "versionTag": {"type": "string"},
+    "chipModifier": {"type": "integer"},
+    "additiveMultiplier": {"type": "number"},
+    "multiplicativeMultiplier": {"type": "number", "minimum": 1},
+    "flags": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -23,6 +23,18 @@
 6. `docs/04-data-contracts.md`
 7. `docs/05-development-workflow.md`
 8. `docs/07-roadmap-mvp.md`
+9. `docs/09-nfr-and-quality-gates.md`
+10. `docs/10-runtime-state-and-event-contracts.md`
+11. `docs/11-risk-register-and-decision-log.md`
+12. `docs/13-system-context.md`
+13. `docs/14-core-usecase-sequences.md`
+14. `docs/15-balance-source-of-truth.md`
+15. `docs/16-config-governance.md`
+16. `docs/17-test-matrix.md`
+
+17. `docs/PROJECT_EXECUTION_PLAN.md`
+18. `docs/IMPLEMENTATION_STATUS.md`
+19. `docs/SESSION_NOTES.md`
 
 ## 目前階段
 
@@ -33,3 +45,7 @@
 
 - 產品名稱：**Mnemosyne Arcana**
 - Repo 名稱：`mnemosyne-arcana`
+
+
+20. `CLAUDE.md`
+21. `docs/19-system-development-boundaries.md`

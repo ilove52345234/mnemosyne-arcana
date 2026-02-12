@@ -1,0 +1,88 @@
+# 18 - API 與 Domain 型別契約
+
+## 1. 目的
+
+把 `03-technical-architecture.md` 的介面落到可編譯型別層，避免團隊各自定義 DTO。
+
+## 2. 核心 DTO
+
+### 2.1 PlayedCard
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| wordId | string | 是 | 對應詞庫 ID |
+| element | Element | 是 | 元素 |
+| partOfSpeech | PartOfSpeech | 是 | 詞性 |
+| baseChips | int | 是 | 卡牌籌碼基值 |
+| learningLevel | LearningLevel | 是 | Lv0~Lv4 |
+| versionTags | string[] | 否 | 版本/詞綴標記 |
+
+### 2.2 ScoreBreakdown
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| handType | HandType | 判定牌型 |
+| baseHandChips | int | 牌型基礎籌碼 |
+| cardChipsTotal | int | 單卡籌碼總和 |
+| baseHandMult | int | 牌型基礎倍率 |
+| additiveMultTotal | float | 加算倍率總和 |
+| multiplicativeFactors | float[] | 乘算因子 |
+| finalScore | int | 最終得分 |
+
+### 2.3 LearningResult
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| isCorrect | bool | 是否答對 |
+| chipMultiplier | float | 該卡籌碼係數 |
+| handMultDelta | int | 牌型倍率增減 |
+| nextLevel | LearningLevel | 更新後等級 |
+| decayUpdated | bool | 是否更新退化計時 |
+
+### 2.4 ContractSettlement
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| contractId | string | 契約 ID |
+| completed | bool | 是否完成 |
+| lpBonusRaw | int | 原始獎勵 |
+| lpBonusCapped | int | 套上限後獎勵 |
+| capApplied | bool | 是否觸發 45% 上限 |
+
+### 2.5 MetaSettlement
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| xpGained | int | 本局 XP |
+| lpGainedBase | int | 基礎 LP |
+| lpGainedContract | int | 契約 LP |
+| lpGainedTotal | int | 合計 LP |
+| unlockedNodes | string[] | 新解鎖節點 |
+| unlockedLexiconTiers | string[] | 新詞庫層級 |
+
+## 3. Enum 契約
+
+```csharp
+public enum Element { Life, Force, Mind, Matter, Abstract }
+public enum PartOfSpeech { N, V, A, D }
+public enum LearningLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
+public enum BlindType { Small, Big, Boss }
+public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTriple, FullHouse, ElemFlush, PoSFlush, GrammarFlush }
+```
+
+## 4. Nullability 與錯誤契約
+
+- 所有 service 回傳 `Result<T, ErrorCode>` 風格（或等價模式）。
+- 不允許以 `null` 表示業務錯誤。
+- `ErrorCode` 最低集合：
+  - `InvalidInput`
+  - `ConfigMissing`
+  - `StateConflict`
+  - `PersistenceFailed`
+  - `MigrationFailed`
+
+## 5. 相容規則
+
+1. DTO 新欄位優先 optional。
+2. 破壞性欄位變更需更新 `saveVersion` 並補 migration。
+3. Interface 改動需更新 `03`、`04`、`17` 三份文件。

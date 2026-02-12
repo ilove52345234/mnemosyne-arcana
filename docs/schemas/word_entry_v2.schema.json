@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WordEntryV2",
+  "type": "object",
+  "required": ["id", "english", "chinese", "partOfSpeech", "element", "difficulty", "baseChips", "lexiconTier"],
+  "properties": {
+    "id": {"type": "string"},
+    "english": {"type": "string"},
+    "chinese": {"type": "string"},
+    "phonetic": {"type": "string"},
+    "partOfSpeech": {"type": "string", "enum": ["N", "V", "A", "D"]},
+    "element": {"type": "string", "enum": ["Life", "Force", "Mind", "Matter", "Abstract"]},
+    "difficulty": {"type": "integer", "minimum": 1, "maximum": 10},
+    "confusables": {"type": "array", "items": {"type": "string"}},
+    "baseChips": {"type": "integer", "minimum": 0},
+    "lexiconTier": {"type": "string", "enum": ["T1", "T2", "T3", "T4", "T5"]}
+  }
+}

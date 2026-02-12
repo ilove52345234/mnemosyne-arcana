@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MetaProgressV2",
+  "type": "object",
+  "required": [
+    "saveVersion", "playerLevel", "xp", "lp", "highestStake",
+    "unlockedLexiconTiers", "curriculumNodes", "deckProfiles", "achievements", "contractHistory"
+  ],
+  "properties": {
+    "saveVersion": {"type": "integer", "minimum": 2},
+    "playerLevel": {"type": "integer", "minimum": 1},
+    "xp": {"type": "integer", "minimum": 0},
+    "lp": {"type": "integer", "minimum": 0},
+    "highestStake": {"type": "integer", "minimum": 0},
+    "unlockedLexiconTiers": {"type": "array", "items": {"type": "string"}},
+    "curriculumNodes": {"type": "array", "items": {"type": "string"}},
+    "deckProfiles": {"type": "array"},
+    "achievements": {"type": "array", "items": {"type": "string"}},
+    "contractHistory": {"type": "object"}
+  }
+}

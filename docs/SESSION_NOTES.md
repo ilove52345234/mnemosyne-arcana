@@ -57,3 +57,25 @@
   - 尚未在本機實跑 Unity batch test（需本機 Unity binary 路徑）
 - 下一步：
   - 進入 M1-01：牌型判定引擎（先完成 `HandType` 判定 deterministic 測試）
+
+## 交接記錄（2026-02-12）- M1-01 牌型判定引擎完成
+
+- 目標：完成十種牌型判定邏輯，建立 deterministic 測試基線
+- 完成內容：
+  - `ScoringManagerV2` 新增由高到低牌型判定：`GrammarFlush -> PoSFlush -> ElemFlush -> FullHouse -> GrammarChain -> ElemTriple -> PoSTriple -> PoSPair -> ElemPair -> Word`
+  - 實作語序鏈規則：`A -> N -> V -> D`，允許跳階與同詞性連續，逆序判定為失敗
+  - 補上基礎計分組裝（SoT 基礎籌碼/倍率 + modifiers）與 deterministic 分數輸出
+  - 新增 EditMode 測試案例（語序鏈、滿堂、語序同族、deterministic）
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/ScoringManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ScoringHandTypeTests.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ManagerStubTests.cs`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+  - Unity EditMode 測試在此環境受 Licensing IPC 阻塞（`LicenseClient` channel timeout）
+- 風險/阻塞：
+  - CI 或本機需可用 Unity 授權服務，否則無法完成 batchmode 測試
+- 下一步：
+  - M1-02：補齊牌型升級成長值（教材卡）與答錯懲罰整合（Learning/Scoring 邊界）

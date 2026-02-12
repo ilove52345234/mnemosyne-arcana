@@ -15,12 +15,12 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
-        public void ScoringManager_Stub_ReturnsNotImplemented()
+        public void ScoringManager_EmptyCards_ReturnsInvalidInput()
         {
             var manager = new ScoringManagerV2();
             var result = manager.EvaluateHand(new PlayedCard[0], new RunModifiers());
             Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(ErrorCode.NotImplemented, result.Error);
+            Assert.AreEqual(ErrorCode.InvalidInput, result.Error);
         }
 
         [Test]

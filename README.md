@@ -31,21 +31,18 @@
 14. `docs/15-balance-source-of-truth.md`
 15. `docs/16-config-governance.md`
 16. `docs/17-test-matrix.md`
-
 17. `docs/PROJECT_EXECUTION_PLAN.md`
 18. `docs/IMPLEMENTATION_STATUS.md`
 19. `docs/SESSION_NOTES.md`
+20. `CLAUDE.md`
+21. `docs/19-system-development-boundaries.md`
 
 ## 目前階段
 
 - 設計規格：可開發等級（持續補充）
-- 實作狀態：準備進入 M0（專案骨架）
+- 實作狀態：M0-01 ~ M0-04 完成，準備進入 M1（核心迴圈）
 
 ## 命名資訊
 
 - 產品名稱：**Mnemosyne Arcana**
 - Repo 名稱：`mnemosyne-arcana`
-
-
-20. `CLAUDE.md`
-21. `docs/19-system-development-boundaries.md`

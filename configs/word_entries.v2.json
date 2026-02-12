@@ -1,0 +1,24 @@
+{
+  "words": [
+    {
+      "id": "word_001",
+      "english": "memory",
+      "chinese": "記憶",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 8,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_002",
+      "english": "recall",
+      "chinese": "回想",
+      "partOfSpeech": "V",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 9,
+      "lexiconTier": "T1"
+    }
+  ]
+}

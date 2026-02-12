@@ -1,0 +1,141 @@
+using System;
+using System.Collections.Generic;
+
+namespace MnemosyneArcana.Core.Contracts
+{
+    public enum Element { Life, Force, Mind, Matter, Abstract }
+    public enum PartOfSpeech { N, V, A, D }
+    public enum LearningLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
+    public enum BlindType { Small, Big, Boss }
+    public enum HandType
+    {
+        Word,
+        PoSPair,
+        ElemPair,
+        PoSTriple,
+        GrammarChain,
+        ElemTriple,
+        FullHouse,
+        ElemFlush,
+        PoSFlush,
+        GrammarFlush
+    }
+
+    public enum AnswerResult { Correct, Wrong, RetryAccepted, GambleSuccess, GambleFailed }
+    public enum ErrorCode { None, InvalidInput, ConfigMissing, StateConflict, PersistenceFailed, MigrationFailed, NotImplemented }
+
+    public sealed class PlayedCard
+    {
+        public string WordId { get; set; } = string.Empty;
+        public Element Element { get; set; }
+        public PartOfSpeech PartOfSpeech { get; set; }
+        public int BaseChips { get; set; }
+        public LearningLevel LearningLevel { get; set; }
+        public IReadOnlyList<string> VersionTags { get; set; } = Array.Empty<string>();
+    }
+
+    public sealed class RunModifiers
+    {
+        public float AdditiveMultTotal { get; set; }
+        public IReadOnlyList<float> MultiplicativeFactors { get; set; } = Array.Empty<float>();
+    }
+
+    public sealed class RunContext
+    {
+        public int Ante { get; set; }
+        public BlindType BlindType { get; set; }
+        public int PlaysLeft { get; set; }
+        public int DiscardsLeft { get; set; }
+    }
+
+    public sealed class ScoreBreakdown
+    {
+        public HandType HandType { get; set; } = HandType.Word;
+        public int BaseHandChips { get; set; }
+        public int CardChipsTotal { get; set; }
+        public int BaseHandMult { get; set; }
+        public float AdditiveMultTotal { get; set; }
+        public IReadOnlyList<float> MultiplicativeFactors { get; set; } = Array.Empty<float>();
+        public int FinalScore { get; set; }
+    }
+
+    public sealed class LearningResult
+    {
+        public bool IsCorrect { get; set; }
+        public float ChipMultiplier { get; set; } = 1f;
+        public int HandMultDelta { get; set; }
+        public LearningLevel NextLevel { get; set; } = LearningLevel.Lv0;
+        public bool DecayUpdated { get; set; }
+    }
+
+    public sealed class Contract
+    {
+        public string ContractId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public sealed class RunTelemetry
+    {
+        public int TotalHandsPlayed { get; set; }
+        public int TotalWrongAnswers { get; set; }
+    }
+
+    public sealed class ContractSettlement
+    {
+        public string ContractId { get; set; } = string.Empty;
+        public bool Completed { get; set; }
+        public int LpBonusRaw { get; set; }
+        public int LpBonusCapped { get; set; }
+        public bool CapApplied { get; set; }
+    }
+
+    public sealed class RunResult
+    {
+        public bool IsClear { get; set; }
+        public int HighestAnte { get; set; }
+        public int ScoreTotal { get; set; }
+    }
+
+    public sealed class MetaProgress
+    {
+        public int SaveVersion { get; set; } = 2;
+        public int PlayerLevel { get; set; }
+        public int Xp { get; set; }
+        public int Lp { get; set; }
+        public int HighestStake { get; set; }
+        public IReadOnlyList<string> UnlockedLexiconTiers { get; set; } = Array.Empty<string>();
+    }
+
+    public sealed class MetaSettlement
+    {
+        public int XpGained { get; set; }
+        public int LpGainedBase { get; set; }
+        public int LpGainedContract { get; set; }
+        public int LpGainedTotal { get; set; }
+        public IReadOnlyList<string> UnlockedNodes { get; set; } = Array.Empty<string>();
+        public IReadOnlyList<string> UnlockedLexiconTiers { get; set; } = Array.Empty<string>();
+    }
+
+    public sealed class UnlockResult
+    {
+        public bool Success { get; set; }
+        public string NodeId { get; set; } = string.Empty;
+    }
+
+    public sealed class ServiceResult<T>
+    {
+        private ServiceResult(bool isSuccess, T value, ErrorCode error)
+        {
+            IsSuccess = isSuccess;
+            Value = value;
+            Error = error;
+        }
+
+        public bool IsSuccess { get; }
+        public T Value { get; }
+        public ErrorCode Error { get; }
+
+        public static ServiceResult<T> Ok(T value) => new ServiceResult<T>(true, value, ErrorCode.None);
+        public static ServiceResult<T> Fail(ErrorCode error) => new ServiceResult<T>(false, default, error);
+    }
+}

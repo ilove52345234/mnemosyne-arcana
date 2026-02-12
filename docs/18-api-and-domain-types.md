@@ -35,42 +35,18 @@
 | multiplicativeFactors | float[] | 乘算因子 |
 | finalScore | int | 最終得分 |
 
-### 2.6 RunModifiers
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| handUpgradeLevel | int | 教材對應的牌型升級等級（最低 0） |
-| additiveMultTotal | float | 全域加算倍率 |
-| handMultDelta | int | 外部調整（語感/事件） |
-| multiplicativeFactors | float[] | 乘算因子陣列 |
-
-### 2.7 ShopOffer
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| offerId | string | 商品識別碼 |
-| category | ShopOfferCategory | 商品類型（Sense/Material/Affix/Course） |
-| price | int | 商品價格 |
-| weight | int | 抽樣權重（除錯/平衡用途） |
-
-### 2.8 PurchaseResult
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| success | bool | 是否購買成功 |
-| cost | int | 扣除成本 |
-| remainingMoney | int | 購買後餘額 |
-| offerId | string | 商品識別碼 |
-| error | ErrorCode | 失敗錯誤碼（成功時為 `None`） |
-
 ### 2.3 LearningResult
 
 | 欄位 | 型別 | 說明 |
 |---|---|---|
 | isCorrect | bool | 是否答對 |
+| questionMode | string | 題型（`4_choice_reading`/`2_choice_reading`/`2_choice_listening`/`spelling`/`auto`） |
+| timeLimitSeconds | float | 該題型限時（秒） |
 | chipMultiplier | float | 該卡籌碼係數 |
 | handMultDelta | int | 牌型倍率增減 |
 | nextLevel | LearningLevel | 更新後等級 |
+| effectiveLevel | LearningLevel | 本題實際套用等級（Boss 可覆寫 Lv4->Lv3） |
+| isAutoResolved | bool | 是否免答（Lv4 一般盲注） |
 | decayUpdated | bool | 是否更新退化計時 |
 
 ### 2.4 ContractSettlement
@@ -94,6 +70,45 @@
 | unlockedNodes | string[] | 新解鎖節點 |
 | unlockedLexiconTiers | string[] | 新詞庫層級 |
 
+### 2.6 RunModifiers
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| handUpgradeLevel | int | 教材對應的牌型升級等級（最低 0） |
+| additiveMultTotal | float | 全域加算倍率 |
+| handMultDelta | int | 外部調整（語感/事件） |
+| multiplicativeFactors | float[] | 乘算因子陣列 |
+
+### 2.7 RunContext
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| ante | int | 當前 Ante |
+| blindType | BlindType | 盲注類型 |
+| playsLeft | int | 剩餘出牌次數 |
+| discardsLeft | int | 剩餘棄牌次數 |
+| currentLevel | LearningLevel | 目前單字等級 |
+| consecutiveWrongCount | int | 連錯計數（保底機制輸入） |
+
+### 2.8 ShopOffer
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| offerId | string | 商品識別碼 |
+| category | ShopOfferCategory | 商品類型（Sense/Material/Affix/Course） |
+| price | int | 商品價格 |
+| weight | int | 抽樣權重（除錯/平衡用途） |
+
+### 2.9 PurchaseResult
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| success | bool | 是否購買成功 |
+| cost | int | 扣除成本 |
+| remainingMoney | int | 購買後餘額 |
+| offerId | string | 商品識別碼 |
+| error | ErrorCode | 失敗錯誤碼（成功時為 `None`） |
+
 ## 3. Enum 契約
 
 ```csharp
@@ -102,6 +117,7 @@ public enum PartOfSpeech { N, V, A, D }
 public enum LearningLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
 public enum BlindType { Small, Big, Boss }
 public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTriple, FullHouse, ElemFlush, PoSFlush, GrammarFlush }
+public enum ShopOfferCategory { Sense, Material, Affix, Course }
 public enum RunPhase { Boot, RunStart, BlindStart, HandSelect, HandResolve, BlindResult, Shop, AnteAdvance, BossResolve, RunComplete, RunFail }
 ```
 

@@ -51,6 +51,8 @@ namespace MnemosyneArcana.Core.Contracts
         public BlindType BlindType { get; set; }
         public int PlaysLeft { get; set; }
         public int DiscardsLeft { get; set; }
+        public LearningLevel CurrentLevel { get; set; } = LearningLevel.Lv0;
+        public int ConsecutiveWrongCount { get; set; }
     }
 
     public sealed class ScoreBreakdown
@@ -71,9 +73,13 @@ namespace MnemosyneArcana.Core.Contracts
     public sealed class LearningResult
     {
         public bool IsCorrect { get; set; }
+        public string QuestionMode { get; set; } = string.Empty;
+        public float TimeLimitSeconds { get; set; }
         public float ChipMultiplier { get; set; } = 1f;
         public int HandMultDelta { get; set; }
         public LearningLevel NextLevel { get; set; } = LearningLevel.Lv0;
+        public LearningLevel EffectiveLevel { get; set; } = LearningLevel.Lv0;
+        public bool IsAutoResolved { get; set; }
         public bool DecayUpdated { get; set; }
     }
 

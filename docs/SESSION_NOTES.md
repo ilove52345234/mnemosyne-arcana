@@ -163,3 +163,31 @@
   - Unity batchmode 測試在本環境仍受授權限制，尚未跑完整 EditMode 測試集
 - 下一步：
   - 進入 M2-01：Lv0~Lv4 行為模型（LearningManagerV2）
+
+## 交接記錄（2026-02-12）- M2-01 Lv0~Lv4 行為模型完成
+
+- 目標：將學習等級對應的題型/限時/籌碼係數與 Boss 特例落地
+- 完成內容：
+  - `LearningManagerV2.ApplyAnswer` 完成行為模型：
+    - Lv0~Lv4 題型、限時、籌碼係數
+    - `Boss + Lv4` 規則：以 Lv3 行為結算
+    - `Wrong/GambleFailed` 輸出懲罰：`chipMultiplier=0.5`、`handMultDelta=-1`
+    - `Correct/RetryAccepted/GambleSuccess` 視為答對並推進等級（上限 Lv4）
+  - 擴充學習契約欄位：`questionMode`、`timeLimitSeconds`、`effectiveLevel`、`isAutoResolved`
+  - 新增 `LearningManagerTests`（Lv0 答對、答錯懲罰、Boss Lv4 特例、賭一把成功）
+  - 更新 `docs/17`、`docs/18` 的測試案例與 DTO 契約
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/LearningManagerV2.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/LearningManagerTests.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ManagerStubTests.cs`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在，完整 EditMode 測試需在可授權環境執行
+- 下一步：
+  - M2-02：答錯三選一（接受/重答/賭一把）決策與成本規則

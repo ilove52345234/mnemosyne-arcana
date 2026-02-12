@@ -24,12 +24,12 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
-        public void LearningManager_Stub_ReturnsNotImplemented()
+        public void LearningManager_EmptyWord_ReturnsInvalidInput()
         {
             var manager = new LearningManagerV2();
-            var result = manager.ApplyAnswer("word_001", AnswerResult.Correct, new RunContext());
+            var result = manager.ApplyAnswer("", AnswerResult.Correct, new RunContext());
             Assert.IsFalse(result.IsSuccess);
-            Assert.AreEqual(ErrorCode.NotImplemented, result.Error);
+            Assert.AreEqual(ErrorCode.InvalidInput, result.Error);
         }
     }
 }

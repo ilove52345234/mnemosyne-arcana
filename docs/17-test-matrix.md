@@ -59,6 +59,9 @@
 | TC-LEARN-002 | 答錯懲罰輸出 | `chipMultiplier=0.5` 且 `handMultDelta=-1` |
 | TC-LEARN-003 | Boss Lv4 視為 Lv3 | `effectiveLevel=Lv3`，題型為拼字 |
 | TC-LEARN-004 | 賭一把成功判定 | `GambleSuccess` 視為答對並可升級 |
+| TC-LEARN-005 | 答錯選擇-接受損失 | 保留金錢，結果為 `Wrong`，倍率 0.5 |
+| TC-LEARN-006 | 答錯選擇-重答 | 扣 $2、只能一次、結果為 `RetryAccepted` |
+| TC-LEARN-007 | 答錯選擇-賭一把 | 50% 全回復 / 50% 歸零，seed 可重現 |
 | TC-CONTRACT-001 | 契約 LP 上限 | `lpBonusCapped <= totalLP * 0.45` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |

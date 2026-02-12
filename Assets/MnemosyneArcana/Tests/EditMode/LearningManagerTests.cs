@@ -81,5 +81,52 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsFalse(result.IsSuccess);
             Assert.AreEqual(ErrorCode.InvalidInput, result.Error);
         }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_AcceptLoss_KeepsMoneyAndPenalty()
+        {
+            var manager = new LearningManagerV2();
+            var result = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.AcceptLoss, 9, retryUsed: false, seed: 1);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(9, result.Value.RemainingMoney);
+            Assert.AreEqual(AnswerResult.Wrong, result.Value.FinalAnswerResult);
+            Assert.AreEqual(0.5f, result.Value.OverrideChipMultiplier);
+        }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_RetryWithCost_SpendsTwo()
+        {
+            var manager = new LearningManagerV2();
+            var result = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.RetryWithCost, 10, retryUsed: false, seed: 1);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(8, result.Value.RemainingMoney);
+            Assert.IsTrue(result.Value.RetryConsumed);
+            Assert.AreEqual(AnswerResult.RetryAccepted, result.Value.FinalAnswerResult);
+        }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_RetryUsed_ReturnsStateConflict()
+        {
+            var manager = new LearningManagerV2();
+            var result = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.RetryWithCost, 10, retryUsed: true, seed: 1);
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_Gamble_IsDeterministicBySeed()
+        {
+            var manager = new LearningManagerV2();
+            var first = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.Gamble, 5, retryUsed: false, seed: 1234);
+            var second = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.Gamble, 5, retryUsed: false, seed: 1234);
+
+            Assert.IsTrue(first.IsSuccess);
+            Assert.IsTrue(second.IsSuccess);
+            Assert.AreEqual(first.Value.FinalAnswerResult, second.Value.FinalAnswerResult);
+            Assert.AreEqual(first.Value.OverrideChipMultiplier, second.Value.OverrideChipMultiplier);
+        }
     }
 }

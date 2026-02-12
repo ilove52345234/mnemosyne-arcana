@@ -24,6 +24,7 @@ namespace MnemosyneArcana.Core.Contracts
     public enum AnswerResult { Correct, Wrong, RetryAccepted, GambleSuccess, GambleFailed }
     public enum ErrorCode { None, InvalidInput, ConfigMissing, StateConflict, PersistenceFailed, MigrationFailed, NotImplemented }
     public enum ShopOfferCategory { Sense, Material, Affix, Course }
+    public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
 
     public sealed class PlayedCard
     {
@@ -81,6 +82,17 @@ namespace MnemosyneArcana.Core.Contracts
         public LearningLevel EffectiveLevel { get; set; } = LearningLevel.Lv0;
         public bool IsAutoResolved { get; set; }
         public bool DecayUpdated { get; set; }
+    }
+
+    public sealed class WrongAnswerChoiceResult
+    {
+        public WrongAnswerChoice Choice { get; set; }
+        public bool Accepted { get; set; }
+        public bool RetryConsumed { get; set; }
+        public int MoneySpent { get; set; }
+        public int RemainingMoney { get; set; }
+        public AnswerResult FinalAnswerResult { get; set; } = AnswerResult.Wrong;
+        public float OverrideChipMultiplier { get; set; } = 0.5f;
     }
 
     public sealed class Contract

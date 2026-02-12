@@ -191,3 +191,31 @@
   - Unity batchmode 授權限制仍在，完整 EditMode 測試需在可授權環境執行
 - 下一步：
   - M2-02：答錯三選一（接受/重答/賭一把）決策與成本規則
+
+## 交接記錄（2026-02-12）- M2-02 答錯三選一完成
+
+- 目標：把答錯後選擇機制落地為可重用服務 API
+- 完成內容：
+  - `ILearningService` 新增 `ResolveWrongAnswerChoice(...)`
+  - `LearningManagerV2` 實作三選一：
+    - 接受損失：免費，結果 `Wrong`，倍率 0.5
+    - 重答：$2，單題一次，結果 `RetryAccepted`
+    - 賭一把：以 seed 決定 50% 成功（1.0）/50% 失敗（0.0）
+  - 新增 DTO / enum：`WrongAnswerChoice`、`WrongAnswerChoiceResult`
+  - 補測試：接受損失、重答扣款與一次限制、賭一把 seed 決定論
+  - 更新 `docs/17`、`docs/18` 與進度文件
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/ServiceInterfaces.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/LearningManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/LearningManagerTests.cs`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在，完整 EditMode 測試尚未執行
+- 下一步：
+  - M2-03：退化規則（1/3/7 天）

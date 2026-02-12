@@ -10,6 +10,7 @@ namespace MnemosyneArcana.Core.Contracts
     public interface ILearningService
     {
         ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext);
+        ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed);
     }
 
     public interface IContractService

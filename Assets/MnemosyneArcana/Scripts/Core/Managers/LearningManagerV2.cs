@@ -4,6 +4,8 @@ namespace MnemosyneArcana.Core.Managers
 {
     public sealed class LearningManagerV2 : ILearningService
     {
+        private const int RetryCost = 2;
+
         public ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext)
         {
             if (string.IsNullOrWhiteSpace(wordId) || runContext == null)
@@ -35,6 +37,63 @@ namespace MnemosyneArcana.Core.Managers
             };
 
             return ServiceResult<LearningResult>.Ok(result);
+        }
+
+        public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed)
+        {
+            if (currentMoney < 0)
+            {
+                return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.InvalidInput);
+            }
+
+            switch (choice)
+            {
+                case WrongAnswerChoice.AcceptLoss:
+                    return ServiceResult<WrongAnswerChoiceResult>.Ok(new WrongAnswerChoiceResult
+                    {
+                        Choice = choice,
+                        Accepted = true,
+                        RetryConsumed = retryUsed,
+                        MoneySpent = 0,
+                        RemainingMoney = currentMoney,
+                        FinalAnswerResult = AnswerResult.Wrong,
+                        OverrideChipMultiplier = 0.5f
+                    });
+
+                case WrongAnswerChoice.RetryWithCost:
+                    if (retryUsed || currentMoney < RetryCost)
+                    {
+                        return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.StateConflict);
+                    }
+
+                    return ServiceResult<WrongAnswerChoiceResult>.Ok(new WrongAnswerChoiceResult
+                    {
+                        Choice = choice,
+                        Accepted = true,
+                        RetryConsumed = true,
+                        MoneySpent = RetryCost,
+                        RemainingMoney = currentMoney - RetryCost,
+                        FinalAnswerResult = AnswerResult.RetryAccepted,
+                        OverrideChipMultiplier = 1.0f
+                    });
+
+                case WrongAnswerChoice.Gamble:
+                    var random = new System.Random(seed);
+                    var success = random.NextDouble() < 0.5;
+                    return ServiceResult<WrongAnswerChoiceResult>.Ok(new WrongAnswerChoiceResult
+                    {
+                        Choice = choice,
+                        Accepted = true,
+                        RetryConsumed = retryUsed,
+                        MoneySpent = 0,
+                        RemainingMoney = currentMoney,
+                        FinalAnswerResult = success ? AnswerResult.GambleSuccess : AnswerResult.GambleFailed,
+                        OverrideChipMultiplier = success ? 1.0f : 0.0f
+                    });
+
+                default:
+                    return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.InvalidInput);
+            }
         }
 
         private static LearningLevel GetEffectiveLevel(LearningLevel level, BlindType blindType)

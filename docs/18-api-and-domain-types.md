@@ -109,6 +109,18 @@
 | offerId | string | 商品識別碼 |
 | error | ErrorCode | 失敗錯誤碼（成功時為 `None`） |
 
+### 2.10 WrongAnswerChoiceResult
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| choice | WrongAnswerChoice | 玩家選擇（接受/重答/賭一把） |
+| accepted | bool | 系統是否接受該選項 |
+| retryConsumed | bool | 是否消耗本題重答機會 |
+| moneySpent | int | 本次花費 |
+| remainingMoney | int | 剩餘金錢 |
+| finalAnswerResult | AnswerResult | 套用後答案結果 |
+| overrideChipMultiplier | float | 覆寫卡牌籌碼係數（0.0/0.5/1.0） |
+
 ## 3. Enum 契約
 
 ```csharp
@@ -118,6 +130,7 @@ public enum LearningLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
 public enum BlindType { Small, Big, Boss }
 public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTriple, FullHouse, ElemFlush, PoSFlush, GrammarFlush }
 public enum ShopOfferCategory { Sense, Material, Affix, Course }
+public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
 public enum RunPhase { Boot, RunStart, BlindStart, HandSelect, HandResolve, BlindResult, Shop, AnteAdvance, BossResolve, RunComplete, RunFail }
 ```
 

@@ -83,9 +83,23 @@ public enum PartOfSpeech { N, V, A, D }
 public enum LearningLevel { Lv0, Lv1, Lv2, Lv3, Lv4 }
 public enum BlindType { Small, Big, Boss }
 public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTriple, FullHouse, ElemFlush, PoSFlush, GrammarFlush }
+public enum RunPhase { Boot, RunStart, BlindStart, HandSelect, HandResolve, BlindResult, Shop, AnteAdvance, BossResolve, RunComplete, RunFail }
 ```
 
-## 4. Nullability 與錯誤契約
+## 4. Run 流程 DTO（M1-03）
+
+### 4.1 BlindResolution
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| passed | bool | 是否通關該盲注 |
+| blindType | BlindType | 結算盲注類型 |
+| ante | int | 當前 Ante |
+| currentScore | int | 本盲注累積分 |
+| targetScore | int | 目標分 |
+| nextPhase | RunPhase | 結算後階段（`Shop`/`RunFail`/`RunComplete`） |
+
+## 5. Nullability 與錯誤契約
 
 - 所有 service 回傳 `Result<T, ErrorCode>` 風格（或等價模式）。
 - 不允許以 `null` 表示業務錯誤。
@@ -96,7 +110,7 @@ public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTri
   - `PersistenceFailed`
   - `MigrationFailed`
 
-## 5. 相容規則
+## 6. 相容規則
 
 1. DTO 新欄位優先 optional。
 2. 破壞性欄位變更需更新 `saveVersion` 並補 migration。

@@ -47,6 +47,10 @@
 | TC-SCORE-002 | 答錯不斷牌型 | `handType` 不變，`finalScore` 下降 |
 | TC-SCORE-003 | 教材升級成長值生效 | `upgradedHandChips/Mult` 依 SoT 成長 |
 | TC-SCORE-004 | 答錯懲罰下限 | `effectiveHandMult >= 1` |
+| TC-RUN-001 | 小盲注通關進商店 | `nextPhase = Shop` |
+| TC-RUN-002 | 出牌次數耗盡仍未達標 | `nextPhase = RunFail` |
+| TC-RUN-003 | Boss Ante8 達標 | `nextPhase = RunComplete` |
+| TC-RUN-004 | 商店後推進盲注 | `Small -> Big -> Boss -> next Ante Small` |
 | TC-CONTRACT-001 | 契約 LP 上限 | `lpBonusCapped <= totalLP * 0.45` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |

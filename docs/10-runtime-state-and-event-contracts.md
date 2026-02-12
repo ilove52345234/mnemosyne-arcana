@@ -11,6 +11,7 @@
 ```json
 {
   "runId": "uuid",
+  "phase": "Boot|RunStart|BlindStart|HandSelect|HandResolve|BlindResult|Shop|AnteAdvance|BossResolve|RunComplete|RunFail",
   "ante": 1,
   "blindType": "Small|Big|Boss",
   "targetScore": 250,
@@ -20,6 +21,19 @@
   "money": 8,
   "activeModifiers": ["MOD_HAND_LIMIT_4"],
   "seed": 123456
+}
+```
+
+### 2.4 BlindResolution
+
+```json
+{
+  "passed": true,
+  "blindType": "Small|Big|Boss",
+  "ante": 1,
+  "currentScore": 260,
+  "targetScore": 250,
+  "nextPhase": "Shop|RunFail|RunComplete"
 }
 ```
 

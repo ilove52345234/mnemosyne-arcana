@@ -106,3 +106,35 @@
   - Unity batchmode 測試仍受授權服務限制，需在可授權環境跑完整 EditMode
 - 下一步：
   - M1-03：Run/Blind 狀態機與通關/失敗流程
+
+## 交接記錄（2026-02-12）- M1-03 盲注流程完成
+
+- 目標：完成 Run 盲注流程的最小可運作狀態機（通關/失敗/推進）
+- 完成內容：
+  - `RunManagerV2` 新增流程方法：
+    - `SubmitHandScore(int handScore)`
+    - `ResolveBlindResult()`
+    - `AdvanceAfterShop()`
+  - 實作盲注目標分曲線（Ante 1~8；Small/Big/Boss）
+  - 實作狀態轉移：
+    - 達標 -> `Shop`
+    - 未達標且出牌耗盡 -> `RunFail`
+    - `Boss@Ante8` 達標 -> `RunComplete`
+    - 商店後推進：`Small -> Big -> Boss -> 下一 Ante Small`
+  - 新增 Runtime 契約：`RunPhase`、`BlindResolution`
+  - 新增流程測試：`RunFlowTests`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/RunManagerV2.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Runtime/RuntimeContracts.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/RunFlowTests.cs`
+  - `docs/10-runtime-state-and-event-contracts.md`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 測試在本環境仍受授權服務限制
+- 下一步：
+  - M1-04：商店進出與購買流程（先補 `ShopManagerV2` offer/purchase 契約）

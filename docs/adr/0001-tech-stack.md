@@ -1,23 +1,24 @@
-# ADR-0001: Tech Stack Baseline
+# ADR-0001：技術基線選型
 
-## Status
+## 狀態
 Accepted
 
-## Context
-Need strong onboarding velocity and maintainable data-driven architecture for a card roguelike.
+## 背景
+專案需求是：高可交接性、可持續迭代、資料驅動調平，且需支援卡牌規則快速試錯。
 
-## Decision
-Use Unity + C# as baseline.
+## 決策
+採用 Unity + C# 作為 v2 基線。
 
-## Consequences
+## 影響
 
-Positive:
-- Strong ecosystem and hiring pool
-- Mature profiling/tooling
-- Fast iteration for content-heavy tuning
+正面：
+- 台灣市場可招聘與接手工程師池較大
+- 工具鏈成熟（Profiler/Editor/Build Pipeline）
+- 適合內容型專案的快速迭代
 
-Negative:
-- Requires architecture discipline to keep logic testable
+負面：
+- 需要額外架構紀律，避免邏輯全部綁在 MonoBehaviour
+- 相較極簡框架，專案管理成本較高
 
-## Follow-up
-Re-evaluate engine version after MVP stability.
+## 後續
+MVP 穩定後再評估引擎版本升級策略。

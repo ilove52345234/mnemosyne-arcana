@@ -1,27 +1,35 @@
 # Mnemosyne Arcana
 
-A vocabulary-learning card roguelike where learning happens inside play.
+一款把英語詞彙學習自然嵌入玩法的卡牌 Roguelike。
 
-## Mission
+## 專案目標
 
-Deliver a card game with:
-- Simple scoring mental model
-- Deep build strategy
-- Long-term language mastery progression
+建立一套可長期迭代的卡牌遊戲系統，核心原則：
 
-## Read This First
+- 驗算規則簡單（玩家一眼可懂）
+- Build 深度足夠（每局都有策略差異）
+- 學習自然發生（不做考試式中斷）
 
+## 開發前必讀
+
+開始任何開發前，**必須完整閱讀 `docs/` 底下所有文件**（含 `docs/adr/` 與 `docs/archive/` 歷史資料）。
+
+建議閱讀順序：
 1. `docs/06-onboarding-checklist.md`
 2. `docs/00-project-vision.md`
 3. `docs/01-game-design-core.md`
 4. `docs/02-meta-progression.md`
 5. `docs/03-technical-architecture.md`
+6. `docs/04-data-contracts.md`
+7. `docs/05-development-workflow.md`
+8. `docs/07-roadmap-mvp.md`
 
-## Current Phase
+## 目前階段
 
-Pre-production docs complete, implementation bootstrap next.
+- 設計規格：可開發等級（持續補充）
+- 實作狀態：準備進入 M0（專案骨架）
 
-## Product/Repo Name
+## 命名資訊
 
-- Product: **Mnemosyne Arcana**
-- Repository: `mnemosyne-arcana`
+- 產品名稱：**Mnemosyne Arcana**
+- Repo 名稱：`mnemosyne-arcana`

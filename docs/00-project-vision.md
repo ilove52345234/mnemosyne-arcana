@@ -1,31 +1,32 @@
-# 00 - Project Vision
+# 00 - 專案願景
 
-## Product Goal
+## 產品目標
 
-Create a highly replayable card roguelike that naturally reinforces English vocabulary.
+打造一款「玩起來像高重玩卡牌遊戲、實際上能穩定累積英語詞彙能力」的作品。
 
-## Design Pillars
+## 核心設計支柱
 
-1. Simple validation loop
-- Score = Chips x Multiplier x Multipliers
+1. 驗算心智模型極簡
+- 核心分數公式固定，玩家能在短時間建立直覺。
 
-2. Deep build expression
-- Multiple build layers with clear risk/reward identity
+2. Build 深度足夠
+- 多層 Build 結構，讓每局都有策略選擇與風險權衡。
 
-3. Learning-first progression
-- Familiarity affects both in-run outcomes and out-of-run growth
+3. 學習優先但不說教
+- 學習行為發生在出牌流程內，不跳出考卷式介面打斷節奏。
 
-4. Fast restart rhythm
-- Failure should feel recoverable and informative
+4. 可快速重開
+- 失敗是資訊回饋，不是懲罰；玩家應願意立刻再開一局。
 
-## Non-Goals
+## 非目標（v2）
 
-- HP/block/intent enemy simulation as primary loop
-- RPG stat-point systems (STR/AGI/INT style)
-- Overly scripted hand combo trees
+- 不做傳統敵我血量/格擋/意圖回合戰鬥為核心。
+- 不做 RPG 配點（STR/INT/AGI）驅動強度。
+- 不做過度腳本化、不可維護的手工連鎖系統。
 
-## Success Criteria
+## 成功標準
 
-- New player can understand scoring in first run
-- Build choices are meaningful by mid-run
-- Players report learning without exam-like friction
+1. 新玩家首局可理解分數構成。
+2. 中期玩家可辨識至少 3 種可行 Build 方向。
+3. 玩家主觀感受為「在打牌，不是在被考試」。
+4. 新工程師一天內可完成一個小功能提交。

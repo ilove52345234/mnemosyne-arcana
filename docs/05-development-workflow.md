@@ -1,30 +1,30 @@
-# 05 - Development Workflow
+# 05 - 開發流程
 
-## Branches
+## 分支策略
 
-- `main`: stable
-- `feature/<topic>`: feature development
+- `main`：穩定分支
+- `feature/<topic>`：功能分支
 
-## Build Order
+## 實作順序
 
-1. Core loop scaffold
-2. Hand-type evaluation
-3. Score and blind settlement
-4. Shop generation
-5. XP/LP settlement
-6. Curriculum + contracts
-7. UI polish
+1. 核心迴圈骨架
+2. 牌型判定與分數引擎
+3. 盲注結算與關卡推進
+4. 商店抽樣與經濟
+5. XP/LP 結算
+6. 課程樹與契約
+7. UI/UX 拋光
 
-## Definition of Done
+## 功能完成定義（DoD）
 
-1. Logic tests pass
-2. Config documented
-3. No hidden side effects
-4. Changelog entry added
+1. 邏輯測試通過
+2. 設定檔欄位有文件
+3. 無隱性副作用
+4. 更新變更紀錄
 
-## Priority Tests
+## 必要測試
 
-- deterministic scoring
-- contract LP cap (45%)
-- lexicon tier unlock threshold
-- save migration integrity
+- 分數 deterministic
+- 契約 LP 45% 上限
+- 詞庫層解鎖門檻
+- 存檔 migration 完整性

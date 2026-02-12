@@ -1,33 +1,37 @@
-# 07 - MVP Roadmap
+# 07 - MVP 路線圖
 
-## M0 Bootstrap
-- Project structure
-- Manager stubs
-- Config templates
+## M0：專案骨架
 
-## M1 Playable Loop
-- Select cards
-- Evaluate hand
-- Score vs blind target
-- Enter/exit shop
+- Unity 專案初始化
+- V2 管理器骨架
+- 基礎設定檔模板
 
-## M2 Learning Loop
-- Answer pipeline
-- Lv0-4 progression
-- Decay rules
+## M1：可玩核心迴圈
 
-## M3 Meta Loop
-- XP/LP settlement
-- Curriculum tree MVP nodes
-- Contract system (3 choices)
+- 選牌 -> 牌型判定 -> 得分
+- 盲注目標驗算
+- 進入/離開商店
 
-## M4 Balance Pass
-- content pool tuning
-- progression curve tuning
-- onboarding friction tuning
+## M2：學習迴圈
 
-## Internal Alpha Gate
+- 答題流程接入
+- Lv0-4 升降級
+- 遺忘與退化規則
 
-1. Full run (Ante 1-8) without blocker
-2. Save/load stable
-3. New engineer can ship one small feature in 1 day
+## M3：局外迴圈
+
+- XP/LP 結算
+- 課程樹 MVP 節點
+- 契約 3 選 1
+
+## M4：內容與平衡
+
+- 詞庫內容補齊
+- Build 池調整
+- 難度曲線調整
+
+## 內部 Alpha 出關條件
+
+1. 可完整跑完 Ante 1-8
+2. 重開遊戲後存檔正確
+3. 新工程師 1 天內可完成 1 個小功能提交

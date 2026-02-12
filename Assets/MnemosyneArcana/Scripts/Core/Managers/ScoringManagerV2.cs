@@ -7,19 +7,19 @@ namespace MnemosyneArcana.Core.Managers
 {
     public sealed class ScoringManagerV2 : IScoringService
     {
-        private static readonly IReadOnlyDictionary<HandType, (int Chips, int Mult)> BaseStats =
-            new Dictionary<HandType, (int Chips, int Mult)>
+        private static readonly IReadOnlyDictionary<HandType, (int Chips, int Mult, int ChipsGrowth, int MultGrowth)> BaseStats =
+            new Dictionary<HandType, (int Chips, int Mult, int ChipsGrowth, int MultGrowth)>
             {
-                { HandType.Word, (5, 1) },
-                { HandType.PoSPair, (10, 2) },
-                { HandType.ElemPair, (15, 2) },
-                { HandType.PoSTriple, (30, 3) },
-                { HandType.GrammarChain, (30, 4) },
-                { HandType.ElemTriple, (35, 3) },
-                { HandType.FullHouse, (40, 4) },
-                { HandType.ElemFlush, (50, 5) },
-                { HandType.PoSFlush, (60, 6) },
-                { HandType.GrammarFlush, (100, 8) }
+                { HandType.Word, (5, 1, 10, 1) },
+                { HandType.PoSPair, (10, 2, 15, 1) },
+                { HandType.ElemPair, (15, 2, 15, 1) },
+                { HandType.PoSTriple, (30, 3, 20, 2) },
+                { HandType.GrammarChain, (30, 4, 30, 3) },
+                { HandType.ElemTriple, (35, 3, 20, 2) },
+                { HandType.FullHouse, (40, 4, 25, 2) },
+                { HandType.ElemFlush, (50, 5, 30, 3) },
+                { HandType.PoSFlush, (60, 6, 35, 3) },
+                { HandType.GrammarFlush, (100, 8, 40, 4) }
             };
 
         public ServiceResult<ScoreBreakdown> EvaluateHand(IReadOnlyList<PlayedCard> cards, RunModifiers modifiers)
@@ -30,14 +30,20 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             var handType = DetermineHandType(cards);
-            var (baseChips, baseMult) = BaseStats[handType];
-            var cardChipsTotal = cards.Sum(c => Math.Max(0, c.BaseChips));
+            var (baseChips, baseMult, chipsGrowth, multGrowth) = BaseStats[handType];
+            var upgradeLevel = Math.Max(0, modifiers?.HandUpgradeLevel ?? 0);
+            var upgradedChips = baseChips + chipsGrowth * upgradeLevel;
+            var upgradedMult = baseMult + multGrowth * upgradeLevel;
+            var wrongAnswers = cards.Count(c => c.IsAnswerWrong);
+            var cardChipsTotal = cards.Sum(ComputeCardChips);
 
             var additiveMult = modifiers?.AdditiveMultTotal ?? 0f;
+            var externalHandMultDelta = modifiers?.HandMultDelta ?? 0;
             var factors = (modifiers?.MultiplicativeFactors ?? Array.Empty<float>()).ToArray();
-            var computedMult = Math.Max(1f, baseMult + additiveMult);
+            var effectiveHandMult = Math.Max(1, upgradedMult + externalHandMultDelta - wrongAnswers);
+            var computedMult = Math.Max(1f, effectiveHandMult + additiveMult);
 
-            var rawScore = (baseChips + cardChipsTotal) * computedMult;
+            var rawScore = (upgradedChips + cardChipsTotal) * computedMult;
             foreach (var factor in factors)
             {
                 rawScore *= Math.Max(1f, factor);
@@ -47,9 +53,13 @@ namespace MnemosyneArcana.Core.Managers
             {
                 HandType = handType,
                 BaseHandChips = baseChips,
+                UpgradedHandChips = upgradedChips,
                 CardChipsTotal = cardChipsTotal,
                 BaseHandMult = baseMult,
+                UpgradedHandMult = upgradedMult,
                 AdditiveMultTotal = additiveMult,
+                WrongAnswers = wrongAnswers,
+                EffectiveHandMult = effectiveHandMult,
                 MultiplicativeFactors = factors,
                 FinalScore = (int)Math.Floor(rawScore)
             };
@@ -111,6 +121,17 @@ namespace MnemosyneArcana.Core.Managers
                 PartOfSpeech.D => 3,
                 _ => 99
             };
+        }
+
+        private static int ComputeCardChips(PlayedCard card)
+        {
+            var chipMultiplier = Math.Max(0f, card.ChipMultiplier);
+            if (card.IsAnswerWrong)
+            {
+                chipMultiplier = Math.Min(chipMultiplier, 0.5f);
+            }
+
+            return (int)Math.Floor(Math.Max(0, card.BaseChips) * chipMultiplier);
         }
     }
 }

@@ -79,3 +79,30 @@
   - CI 或本機需可用 Unity 授權服務，否則無法完成 batchmode 測試
 - 下一步：
   - M1-02：補齊牌型升級成長值（教材卡）與答錯懲罰整合（Learning/Scoring 邊界）
+
+## 交接記錄（2026-02-12）- M1-02 分數公式與拆解完成
+
+- 目標：完成可拆解、可驗證的得分公式，對齊 SoT 成長值與答錯懲罰規則
+- 完成內容：
+  - `ScoringManagerV2` 套入牌型升級成長值（`ChipsGrowth` / `MultGrowth`）
+  - 答錯懲罰整合：答錯卡籌碼最多 50%，且每張答錯卡使牌型倍率 -1（最低 1）
+  - 擴充 `ScoreBreakdown`：新增升級後籌碼/倍率、答錯張數、有效倍率欄位
+  - 新增 `ScoringFormulaTests`，覆蓋：
+    - 成長值套用
+    - 答錯懲罰
+    - 完整公式運算
+  - 更新 `docs/17`、`docs/18`，同步最新型別與測試案例
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/ScoringManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ScoringFormulaTests.cs`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 測試仍受授權服務限制，需在可授權環境跑完整 EditMode
+- 下一步：
+  - M1-03：Run/Blind 狀態機與通關/失敗流程

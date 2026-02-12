@@ -31,12 +31,16 @@ namespace MnemosyneArcana.Core.Contracts
         public PartOfSpeech PartOfSpeech { get; set; }
         public int BaseChips { get; set; }
         public LearningLevel LearningLevel { get; set; }
+        public float ChipMultiplier { get; set; } = 1f;
+        public bool IsAnswerWrong { get; set; }
         public IReadOnlyList<string> VersionTags { get; set; } = Array.Empty<string>();
     }
 
     public sealed class RunModifiers
     {
+        public int HandUpgradeLevel { get; set; }
         public float AdditiveMultTotal { get; set; }
+        public int HandMultDelta { get; set; }
         public IReadOnlyList<float> MultiplicativeFactors { get; set; } = Array.Empty<float>();
     }
 
@@ -52,9 +56,13 @@ namespace MnemosyneArcana.Core.Contracts
     {
         public HandType HandType { get; set; } = HandType.Word;
         public int BaseHandChips { get; set; }
+        public int UpgradedHandChips { get; set; }
         public int CardChipsTotal { get; set; }
         public int BaseHandMult { get; set; }
+        public int UpgradedHandMult { get; set; }
         public float AdditiveMultTotal { get; set; }
+        public int WrongAnswers { get; set; }
+        public int EffectiveHandMult { get; set; }
         public IReadOnlyList<float> MultiplicativeFactors { get; set; } = Array.Empty<float>();
         public int FinalScore { get; set; }
     }

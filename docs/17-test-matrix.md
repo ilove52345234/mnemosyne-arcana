@@ -45,6 +45,8 @@
 |---|---|---|
 | TC-SCORE-001 | 同輸入同 seed 分數一致 | `finalScore` 完全相同 |
 | TC-SCORE-002 | 答錯不斷牌型 | `handType` 不變，`finalScore` 下降 |
+| TC-SCORE-003 | 教材升級成長值生效 | `upgradedHandChips/Mult` 依 SoT 成長 |
+| TC-SCORE-004 | 答錯懲罰下限 | `effectiveHandMult >= 1` |
 | TC-CONTRACT-001 | 契約 LP 上限 | `lpBonusCapped <= totalLP * 0.45` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |

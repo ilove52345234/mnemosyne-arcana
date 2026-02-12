@@ -15,6 +15,8 @@
 | partOfSpeech | PartOfSpeech | 是 | 詞性 |
 | baseChips | int | 是 | 卡牌籌碼基值 |
 | learningLevel | LearningLevel | 是 | Lv0~Lv4 |
+| chipMultiplier | float | 否 | 單卡籌碼係數（預設 1.0） |
+| isAnswerWrong | bool | 否 | 是否本手答錯（預設 false） |
 | versionTags | string[] | 否 | 版本/詞綴標記 |
 
 ### 2.2 ScoreBreakdown
@@ -23,11 +25,24 @@
 |---|---|---|
 | handType | HandType | 判定牌型 |
 | baseHandChips | int | 牌型基礎籌碼 |
+| upgradedHandChips | int | 套用教材升級後籌碼 |
 | cardChipsTotal | int | 單卡籌碼總和 |
 | baseHandMult | int | 牌型基礎倍率 |
+| upgradedHandMult | int | 套用教材升級後倍率 |
 | additiveMultTotal | float | 加算倍率總和 |
+| wrongAnswers | int | 本手答錯張數 |
+| effectiveHandMult | int | 套懲罰與外部調整後倍率（最低 1） |
 | multiplicativeFactors | float[] | 乘算因子 |
 | finalScore | int | 最終得分 |
+
+### 2.6 RunModifiers
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| handUpgradeLevel | int | 教材對應的牌型升級等級（最低 0） |
+| additiveMultTotal | float | 全域加算倍率 |
+| handMultDelta | int | 外部調整（語感/事件） |
+| multiplicativeFactors | float[] | 乘算因子陣列 |
 
 ### 2.3 LearningResult
 

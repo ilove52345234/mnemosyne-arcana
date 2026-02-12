@@ -10,7 +10,7 @@
 | 里程碑 | 狀態 | 完成度 |
 |---|---|---:|
 | M0 專案骨架 | Done | 100% |
-| M1 核心迴圈 | In Progress | 75% |
+| M1 核心迴圈 | Done | 100% |
 | M2 學習迴圈 | Todo | 0% |
 | M3 局外迴圈 | Todo | 0% |
 | M4 內容平衡 | Todo | 0% |
@@ -29,7 +29,7 @@
 | M1-01 | 牌型判定引擎 | M1 | Codex | Done | 高到低優先級判定 + EditMode 測試完成 |
 | M1-02 | 分數公式與拆解 | M1 | Codex | Done | SoT 成長值、答錯懲罰、ScoreBreakdown 細節已落地 |
 | M1-03 | 盲注流程 | M1 | Codex | Done | Run 狀態機、盲注結算、商店後推進流程已實作與測試 |
-| M1-04 | 商店流程 | M1 | TBD | Todo | |
+| M1-04 | 商店流程 | M1 | Codex | Done | Offer 生成、價格帶、購買扣款與失敗處理已實作與測試 |
 | M2-01 | Lv0-4 行為模型 | M2 | TBD | Todo | |
 | M2-02 | 答錯三選一 | M2 | TBD | Todo | |
 | M2-03 | 退化規則 | M2 | TBD | Todo | |

@@ -51,6 +51,10 @@
 | TC-RUN-002 | 出牌次數耗盡仍未達標 | `nextPhase = RunFail` |
 | TC-RUN-003 | Boss Ante8 達標 | `nextPhase = RunComplete` |
 | TC-RUN-004 | 商店後推進盲注 | `Small -> Big -> Boss -> next Ante Small` |
+| TC-SHOP-001 | 商店 seed 決定論 | 同 seed 同 ante 產出相同 offer 與價格 |
+| TC-SHOP-002 | Ante1 不出課程卡 | `category != Course` |
+| TC-SHOP-003 | 購買成功扣款 | `remainingMoney = currentMoney - cost` |
+| TC-SHOP-004 | 餘額不足 | `success = false` 且保留原餘額 |
 | TC-CONTRACT-001 | 契約 LP 上限 | `lpBonusCapped <= totalLP * 0.45` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |

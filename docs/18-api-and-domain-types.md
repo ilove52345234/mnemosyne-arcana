@@ -44,6 +44,25 @@
 | handMultDelta | int | 外部調整（語感/事件） |
 | multiplicativeFactors | float[] | 乘算因子陣列 |
 
+### 2.7 ShopOffer
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| offerId | string | 商品識別碼 |
+| category | ShopOfferCategory | 商品類型（Sense/Material/Affix/Course） |
+| price | int | 商品價格 |
+| weight | int | 抽樣權重（除錯/平衡用途） |
+
+### 2.8 PurchaseResult
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| success | bool | 是否購買成功 |
+| cost | int | 扣除成本 |
+| remainingMoney | int | 購買後餘額 |
+| offerId | string | 商品識別碼 |
+| error | ErrorCode | 失敗錯誤碼（成功時為 `None`） |
+
 ### 2.3 LearningResult
 
 | 欄位 | 型別 | 說明 |

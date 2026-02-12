@@ -138,3 +138,28 @@
   - Unity batchmode 測試在本環境仍受授權服務限制
 - 下一步：
   - M1-04：商店進出與購買流程（先補 `ShopManagerV2` offer/purchase 契約）
+
+## 交接記錄（2026-02-12）- M1-04 商店流程完成
+
+- 目標：完成商店生成與購買最小流程，支撐 Run 迴圈的進出
+- 完成內容：
+  - `ShopManagerV2` 實作：
+    - `GenerateOffers(ante, seed)`：5 格商品、deterministic 產生、Ante1 禁止課程卡
+    - `PurchaseOffer(offer, currentMoney)`：扣款成功/餘額不足失敗
+  - 新增商店 DTO：`ShopOffer`、`PurchaseResult`、`ShopOfferCategory`
+  - 新增 EditMode 測試：`ShopManagerTests`（seed 決定論、Ante1 無課程卡、購買成功/失敗）
+  - 更新 `docs/17` 與 `docs/18` 對應契約/測試案例
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/ShopManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ShopManagerTests.cs`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 測試在本環境仍受授權限制，尚未跑完整 EditMode 測試集
+- 下一步：
+  - 進入 M2-01：Lv0~Lv4 行為模型（LearningManagerV2）

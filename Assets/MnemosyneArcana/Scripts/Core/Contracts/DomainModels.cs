@@ -23,6 +23,7 @@ namespace MnemosyneArcana.Core.Contracts
 
     public enum AnswerResult { Correct, Wrong, RetryAccepted, GambleSuccess, GambleFailed }
     public enum ErrorCode { None, InvalidInput, ConfigMissing, StateConflict, PersistenceFailed, MigrationFailed, NotImplemented }
+    public enum ShopOfferCategory { Sense, Material, Affix, Course }
 
     public sealed class PlayedCard
     {
@@ -80,6 +81,23 @@ namespace MnemosyneArcana.Core.Contracts
     {
         public string ContractId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+    }
+
+    public sealed class ShopOffer
+    {
+        public string OfferId { get; set; } = string.Empty;
+        public ShopOfferCategory Category { get; set; }
+        public int Price { get; set; }
+        public int Weight { get; set; }
+    }
+
+    public sealed class PurchaseResult
+    {
+        public bool Success { get; set; }
+        public int Cost { get; set; }
+        public int RemainingMoney { get; set; }
+        public string OfferId { get; set; } = string.Empty;
+        public ErrorCode Error { get; set; } = ErrorCode.None;
     }
 
     public sealed class RunTelemetry

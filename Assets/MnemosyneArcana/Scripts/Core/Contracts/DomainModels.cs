@@ -186,6 +186,26 @@ namespace MnemosyneArcana.Core.Contracts
         public WordPool NewPool { get; set; }
     }
 
+    public sealed class BossStreakBonus
+    {
+        public int ConsecutiveCorrect { get; set; }
+        public float ChipMultiplier { get; set; } = 1.0f;
+    }
+
+    public sealed class WordLevelUp
+    {
+        public string WordId { get; set; } = string.Empty;
+        public LearningLevel FromLevel { get; set; }
+        public LearningLevel ToLevel { get; set; }
+    }
+
+    public sealed class BossRewardResult
+    {
+        public bool AllCorrect { get; set; }
+        public IReadOnlyList<WordLevelUp> UpgradedWords { get; set; } = Array.Empty<WordLevelUp>();
+        public int SkippedAtMax { get; set; }
+    }
+
     public sealed class ServiceResult<T>
     {
         private ServiceResult(bool isSuccess, T value, ErrorCode error)

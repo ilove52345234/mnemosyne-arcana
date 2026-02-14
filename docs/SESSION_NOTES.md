@@ -281,3 +281,58 @@
   - Unity batchmode 授權限制仍在
 - 下一步：
   - M2 全部完成，進入 M3-01：XP/LP 結算
+
+## 交接記錄（2026-02-14）- M3-01~03 XP/LP 結算、契約系統、LP 上限守門完成
+
+- 目標：實作局外迴圈核心三件：XP/LP 結算公式、契約生成與結算、LP 45% 上限
+- 完成內容：
+  - 擴充 `Contract` DTO：新增 `ContractType`、`Tier`、`LpReward` 欄位
+  - 擴充 `RunTelemetry` DTO：新增 `ContractCompleted` 欄位
+  - `IContractService` 新增 `SettleContractWithCap(contract, telemetry, lpBase)` 方法
+  - `MetaManagerV2` 完整實作：
+    - `SettleRun`：XP = Ante * 20 + (Clear ? 50 : 0)，LP = Ante * 2 + (Clear ? 5 : 0)
+    - `GenerateContracts`：11 種契約池，seed 決定論，每次選 3 張
+    - `SettleContract`：完成回傳原始 LP，未完成回傳 0
+    - `SettleContractWithCap`：LP 上限 = floor(lpBase * 45 / 55)
+  - 新增 `MetaManagerTests`：13 個測試案例覆蓋結算、契約生成、上限
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/ServiceInterfaces.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/MetaManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/MetaManagerTests.cs`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 自我審查通過：DTO 擴展向後相容、介面新增方法已由實作類滿足、LP cap 公式 45/55 正確
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在，完整 EditMode 測試需在可授權環境執行
+- 下一步：
+  - M3-04：課程樹 MVP 串接
+
+## 交接記錄（2026-02-14）- 全專案盤點與文件一致性修正
+
+- 目標：接手前一位進度，完成全專案分析並修正文件語言與進度一致性
+- 完成內容：
+  - 盤點本地與遠端差異：本地 `ahead 4`（M3-01~03 程式提交）
+  - 將 3 份英文 `docs/plans` 實作計畫改寫為繁中版本：
+    - `2026-02-14-m2-03-decay-rules.md`
+    - `2026-02-14-m2-04-boss-learning.md`
+    - `2026-02-14-m3-01-03-meta-progression.md`
+  - 新增全專案分析文件：`docs/20-project-analysis-2026-02-14.md`
+  - 同步更新階段文件：`README.md`、`docs/PROJECT_EXECUTION_PLAN.md`
+  - 風險清單補充：Unity 授權阻塞與規格漂移風險（R-007、R-008）
+- 變更檔案：
+  - `README.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/11-risk-register-and-decision-log.md`
+  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/plans/2026-02-14-m2-03-decay-rules.md`
+  - `docs/plans/2026-02-14-m2-04-boss-learning.md`
+  - `docs/plans/2026-02-14-m3-01-03-meta-progression.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 文件可讀性檢查完成，`docs/plans` 英文計畫已移除
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在（尚未可在本環境跑完整 EditMode）
+- 下一步：
+  - 提交並推送目前差異後，直接進入 M3-04（課程樹 MVP）

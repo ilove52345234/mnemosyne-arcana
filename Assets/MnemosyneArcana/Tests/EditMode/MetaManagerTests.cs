@@ -164,5 +164,74 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(13, result.Value.LpGainedBase);
             Assert.AreEqual(13, result.Value.LpGainedTotal);
         }
+
+        [Test]
+        public void TryUnlockNode_EnoughLpAndNoPrereq_Succeeds()
+        {
+            var result = _meta.TryUnlockNode("FLU_01", new MetaProgress
+            {
+                Lp = 30,
+                CurriculumNodes = new string[0]
+            });
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.IsTrue(result.Value.Success);
+            Assert.AreEqual("FLU_01", result.Value.NodeId);
+            Assert.AreEqual(20, result.Value.SpentLp);
+            Assert.AreEqual(10, result.Value.RemainingLp);
+            CollectionAssert.Contains(result.Value.UnlockedNodes, "FLU_01");
+        }
+
+        [Test]
+        public void TryUnlockNode_MissingPrereq_ReturnsStateConflict()
+        {
+            var result = _meta.TryUnlockNode("FLU_02", new MetaProgress
+            {
+                Lp = 50,
+                CurriculumNodes = new string[0]
+            });
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
+
+        [Test]
+        public void TryUnlockNode_MutexConflict_ReturnsStateConflict()
+        {
+            var result = _meta.TryUnlockNode("FLU_03B", new MetaProgress
+            {
+                Lp = 100,
+                CurriculumNodes = new[] { "FLU_01", "FLU_02", "FLU_03A" }
+            });
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
+
+        [Test]
+        public void TryUnlockNode_InsufficientLp_ReturnsStateConflict()
+        {
+            var result = _meta.TryUnlockNode("MAS_01", new MetaProgress
+            {
+                Lp = 10,
+                CurriculumNodes = new string[0]
+            });
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
+
+        [Test]
+        public void TryUnlockNode_AlreadyUnlocked_ReturnsStateConflict()
+        {
+            var result = _meta.TryUnlockNode("LEX_01", new MetaProgress
+            {
+                Lp = 100,
+                CurriculumNodes = new[] { "LEX_01" }
+            });
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
     }
 }

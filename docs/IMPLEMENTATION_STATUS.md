@@ -12,7 +12,7 @@
 | M0 專案骨架 | Done | 100% |
 | M1 核心迴圈 | Done | 100% |
 | M2 學習迴圈 | Done | 100% |
-| M3 局外迴圈 | In Progress | 75% |
+| M3 局外迴圈 | Done | 100% |
 | M4 內容平衡 | Todo | 0% |
 | Alpha Gate | Todo | 0% |
 
@@ -37,7 +37,7 @@
 | M3-01 | XP/LP 結算 | M3 | Claude | Done | XP=Ante*20+ClearBonus50, LP=Ante*2+ClearBonus5 |
 | M3-02 | 契約系統 | M3 | Claude | Done | 11 種契約池、seed 決定論生成 3 張、結算 API |
 | M3-03 | LP 上限守門 | M3 | Claude | Done | SettleContractWithCap: LP 契約獎勵上限 45/(100-45) |
-| M3-04 | 課程樹 MVP 串接 | M3 | TBD | Todo | |
+| M3-04 | 課程樹 MVP 串接 | M3 | Codex | Done | TryUnlockNode 已支援前置/互斥/LP 守門與測試 |
 | M4-01 | 詞庫內容填充 | M4 | TBD | Todo | |
 | M4-02 | 商店權重平衡 | M4 | TBD | Todo | |
 | M4-03 | 盲注曲線平衡 | M4 | TBD | Todo | |

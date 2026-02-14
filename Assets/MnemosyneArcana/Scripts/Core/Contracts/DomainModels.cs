@@ -152,6 +152,7 @@ namespace MnemosyneArcana.Core.Contracts
         public int Lp { get; set; }
         public int HighestStake { get; set; }
         public IReadOnlyList<string> UnlockedLexiconTiers { get; set; } = Array.Empty<string>();
+        public IReadOnlyList<string> CurriculumNodes { get; set; } = Array.Empty<string>();
     }
 
     public sealed class MetaSettlement
@@ -168,6 +169,10 @@ namespace MnemosyneArcana.Core.Contracts
     {
         public bool Success { get; set; }
         public string NodeId { get; set; } = string.Empty;
+        public int SpentLp { get; set; }
+        public int RemainingLp { get; set; }
+        public ErrorCode Error { get; set; } = ErrorCode.None;
+        public IReadOnlyList<string> UnlockedNodes { get; set; } = Array.Empty<string>();
     }
 
     public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }

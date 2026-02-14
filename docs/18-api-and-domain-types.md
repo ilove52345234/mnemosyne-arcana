@@ -121,6 +121,29 @@
 | finalAnswerResult | AnswerResult | 套用後答案結果 |
 | overrideChipMultiplier | float | 覆寫卡牌籌碼係數（0.0/0.5/1.0） |
 
+### 2.11 MetaProgress
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| saveVersion | int | 存檔版本 |
+| playerLevel | int | 玩家等級 |
+| xp | int | 累積 XP |
+| lp | int | 可用 LP |
+| highestStake | int | 最高難度 |
+| unlockedLexiconTiers | string[] | 已解鎖詞庫層級 |
+| curriculumNodes | string[] | 已解鎖課程樹節點 |
+
+### 2.12 UnlockResult
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| success | bool | 是否解鎖成功 |
+| nodeId | string | 本次目標節點 |
+| spentLp | int | 本次消耗 LP |
+| remainingLp | int | 解鎖後剩餘 LP |
+| error | ErrorCode | 失敗原因（成功時 `None`） |
+| unlockedNodes | string[] | 解鎖後節點快照 |
+
 ### 2.11 WordProgress（M2-03）
 
 | 欄位 | 型別 | 必填 | 說明 |

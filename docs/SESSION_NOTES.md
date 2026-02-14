@@ -336,3 +336,36 @@
   - Unity batchmode 授權限制仍在（尚未可在本環境跑完整 EditMode）
 - 下一步：
   - 提交並推送目前差異後，直接進入 M3-04（課程樹 MVP）
+
+## 交接記錄（2026-02-14）- M3-04 課程樹 MVP 串接完成
+
+- 目標：完成課程樹解鎖核心規則，讓局外迴圈在 M3 階段閉環
+- 完成內容：
+  - `MetaProgress` 新增 `CurriculumNodes`
+  - `UnlockResult` 新增 `spentLp`、`remainingLp`、`error`、`unlockedNodes`
+  - `MetaManagerV2.TryUnlockNode` 完成：
+    - 節點存在檢查
+    - 已解鎖檢查
+    - 前置節點檢查（any-of group）
+    - 互斥節點檢查
+    - LP 成本檢查與扣除結果輸出
+  - MVP 節點池先落地 4 分支前 3 層（含 A/B 互斥）
+  - `MetaManagerTests` 新增 5 個課程樹測試（成功/前置不足/互斥/LP不足/已解鎖）
+  - 同步更新 `README`、`docs/17`、`docs/18`、`docs/IMPLEMENTATION_STATUS`、`docs/PROJECT_EXECUTION_PLAN`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/MetaManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/MetaManagerTests.cs`
+  - `README.md`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - 課程樹目前為 MVP（前 3 層），完整 4x12 仍待擴展
+  - Unity batchmode 授權限制仍在，完整測試需在可授權環境執行
+- 下一步：
+  - M4-01：詞庫內容填充（T1/T2 可玩內容）

@@ -65,6 +65,10 @@
 | TC-LEARN-006 | 答錯選擇-重答 | 扣 $2、只能一次、結果為 `RetryAccepted` |
 | TC-LEARN-007 | 答錯選擇-賭一把 | 50% 全回復 / 50% 歸零，seed 可重現 |
 | TC-CONTRACT-001 | 契約 LP 上限 | `lpBonusCapped <= totalLP * 0.45` |
+| TC-CURR-001 | 課程樹解鎖成功 | 前置滿足且 LP 足夠，返回 `Success=true` |
+| TC-CURR-002 | 缺前置節點 | 返回 `StateConflict` |
+| TC-CURR-003 | 互斥衝突 | 返回 `StateConflict` |
+| TC-CURR-004 | LP 不足 | 返回 `StateConflict` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |
 | TC-MIG-001 | v1->v2 遷移成功 | 生成 `saveVersion=2` 且備份存在 |

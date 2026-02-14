@@ -166,6 +166,26 @@ namespace MnemosyneArcana.Core.Contracts
         public string NodeId { get; set; } = string.Empty;
     }
 
+    public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }
+
+    public sealed class WordProgress
+    {
+        public string WordId { get; set; } = string.Empty;
+        public LearningLevel Level { get; set; } = LearningLevel.Lv0;
+        public WordPool Pool { get; set; } = WordPool.Discoverable;
+        public DateTime LastPracticed { get; set; } = DateTime.MinValue;
+    }
+
+    public sealed class DecayResult
+    {
+        public string WordId { get; set; } = string.Empty;
+        public bool Decayed { get; set; }
+        public LearningLevel PreviousLevel { get; set; }
+        public LearningLevel NewLevel { get; set; }
+        public WordPool PreviousPool { get; set; }
+        public WordPool NewPool { get; set; }
+    }
+
     public sealed class ServiceResult<T>
     {
         private ServiceResult(bool isSuccess, T value, ErrorCode error)

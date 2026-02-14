@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MnemosyneArcana.Core.Contracts
@@ -23,5 +24,12 @@ namespace MnemosyneArcana.Core.Contracts
     {
         ServiceResult<MetaSettlement> SettleRun(RunResult runResult, MetaProgress current);
         ServiceResult<UnlockResult> TryUnlockNode(string nodeId, MetaProgress current);
+    }
+
+    public interface IDecayService
+    {
+        DecayResult EvaluateDecay(WordProgress word, DateTime now);
+        IReadOnlyList<DecayResult> EvaluateBatch(IReadOnlyList<WordProgress> words, DateTime now);
+        void ResetDecayTimer(WordProgress word, DateTime now);
     }
 }

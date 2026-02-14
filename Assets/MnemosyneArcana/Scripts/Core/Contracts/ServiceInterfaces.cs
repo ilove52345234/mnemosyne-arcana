@@ -12,6 +12,8 @@ namespace MnemosyneArcana.Core.Contracts
     {
         ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext);
         ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed);
+        BossStreakBonus GetBossStreakBonus(int consecutiveCorrect);
+        ServiceResult<BossRewardResult> ApplyBossAllCorrectReward(IReadOnlyList<WordProgress> playedWords);
     }
 
     public interface IContractService

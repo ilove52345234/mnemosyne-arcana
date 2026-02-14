@@ -99,6 +99,9 @@ namespace MnemosyneArcana.Core.Contracts
     {
         public string ContractId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string ContractType { get; set; } = string.Empty;
+        public int Tier { get; set; } = 1;
+        public int LpReward { get; set; }
     }
 
     public sealed class ShopOffer
@@ -122,6 +125,7 @@ namespace MnemosyneArcana.Core.Contracts
     {
         public int TotalHandsPlayed { get; set; }
         public int TotalWrongAnswers { get; set; }
+        public bool ContractCompleted { get; set; }
     }
 
     public sealed class ContractSettlement

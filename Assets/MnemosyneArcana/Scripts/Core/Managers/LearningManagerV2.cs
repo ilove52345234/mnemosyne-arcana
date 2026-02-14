@@ -96,14 +96,67 @@ namespace MnemosyneArcana.Core.Managers
             }
         }
 
-        private static LearningLevel GetEffectiveLevel(LearningLevel level, BlindType blindType)
+        public BossStreakBonus GetBossStreakBonus(int consecutiveCorrect)
         {
-            if (blindType == BlindType.Boss && level == LearningLevel.Lv4)
+            var isStreakBonus = consecutiveCorrect > 0 && consecutiveCorrect % 3 == 0;
+            return new BossStreakBonus
             {
-                return LearningLevel.Lv3;
+                ConsecutiveCorrect = consecutiveCorrect,
+                ChipMultiplier = isStreakBonus ? 2.0f : 1.0f
+            };
+        }
+
+        public ServiceResult<BossRewardResult> ApplyBossAllCorrectReward(System.Collections.Generic.IReadOnlyList<WordProgress> playedWords)
+        {
+            if (playedWords == null)
+            {
+                return ServiceResult<BossRewardResult>.Fail(ErrorCode.InvalidInput);
             }
 
-            return level;
+            var upgraded = new System.Collections.Generic.List<WordLevelUp>();
+            var skippedAtMax = 0;
+
+            for (var i = 0; i < playedWords.Count; i++)
+            {
+                var word = playedWords[i];
+                if (word.Level == LearningLevel.Lv4)
+                {
+                    skippedAtMax++;
+                    continue;
+                }
+
+                upgraded.Add(new WordLevelUp
+                {
+                    WordId = word.WordId,
+                    FromLevel = word.Level,
+                    ToLevel = LevelUp(word.Level)
+                });
+            }
+
+            return ServiceResult<BossRewardResult>.Ok(new BossRewardResult
+            {
+                AllCorrect = true,
+                UpgradedWords = upgraded,
+                SkippedAtMax = skippedAtMax
+            });
+        }
+
+        private static LearningLevel GetEffectiveLevel(LearningLevel level, BlindType blindType)
+        {
+            if (blindType != BlindType.Boss)
+            {
+                return level;
+            }
+
+            return level switch
+            {
+                LearningLevel.Lv4 => LearningLevel.Lv3,
+                LearningLevel.Lv3 => LearningLevel.Lv3,
+                LearningLevel.Lv2 => LearningLevel.Lv3,
+                LearningLevel.Lv1 => LearningLevel.Lv2,
+                LearningLevel.Lv0 => LearningLevel.Lv1,
+                _ => level
+            };
         }
 
         private static (string QuestionMode, float TimeLimitSeconds, float ChipMultiplier, bool IsAutoResolved) GetBehaviorByLevel(LearningLevel level)

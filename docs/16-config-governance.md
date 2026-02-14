@@ -47,3 +47,16 @@ PR 若含設定變更，必須提供：
 - ID 交叉引用檢查命令
 
 （可於 M0 建立 `scripts/validate_configs.*`）
+
+## 7. M4-01 詞庫基線（已落地）
+
+`configs/word_entries.v2.json` 基線規則：
+
+- 總筆數 >= 100
+- `T1 >= 40`、`T2 >= 40`
+- 詞性 `N/V/A/D` 各 >= 20
+- 元素 `Life/Force/Mind/Matter/Abstract` 各 >= 20
+- `difficulty` 範圍：1~10
+- `baseChips` 範圍：3~12
+
+以上規則由 `scripts/validate_configs.py` 強制檢查。

@@ -2,23 +2,1003 @@
   "words": [
     {
       "id": "word_001",
-      "english": "memory",
-      "chinese": "記憶",
+      "english": "apple",
+      "chinese": "蘋果",
       "partOfSpeech": "N",
-      "element": "Mind",
+      "element": "Life",
       "difficulty": 1,
-      "baseChips": 8,
+      "baseChips": 5,
       "lexiconTier": "T1"
     },
     {
       "id": "word_002",
+      "english": "water",
+      "chinese": "水",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_003",
+      "english": "plant",
+      "chinese": "植物",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_004",
+      "english": "smile",
+      "chinese": "微笑",
+      "partOfSpeech": "V",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_005",
+      "english": "grow",
+      "chinese": "成長",
+      "partOfSpeech": "V",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 4,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_006",
+      "english": "green",
+      "chinese": "綠色的",
+      "partOfSpeech": "A",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_007",
+      "english": "alive",
+      "chinese": "活著的",
+      "partOfSpeech": "A",
+      "element": "Life",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_008",
+      "english": "softly",
+      "chinese": "柔和地",
+      "partOfSpeech": "D",
+      "element": "Life",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_009",
+      "english": "daily",
+      "chinese": "每日地",
+      "partOfSpeech": "D",
+      "element": "Life",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_010",
+      "english": "health",
+      "chinese": "健康",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_011",
+      "english": "power",
+      "chinese": "力量",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_012",
+      "english": "speed",
+      "chinese": "速度",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_013",
+      "english": "drive",
+      "chinese": "驅動",
+      "partOfSpeech": "V",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_014",
+      "english": "push",
+      "chinese": "推",
+      "partOfSpeech": "V",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 4,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_015",
+      "english": "quick",
+      "chinese": "快速的",
+      "partOfSpeech": "A",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_016",
+      "english": "strong",
+      "chinese": "強壯的",
+      "partOfSpeech": "A",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_017",
+      "english": "boldly",
+      "chinese": "大膽地",
+      "partOfSpeech": "D",
+      "element": "Force",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_018",
+      "english": "rapidly",
+      "chinese": "迅速地",
+      "partOfSpeech": "D",
+      "element": "Force",
+      "difficulty": 2,
+      "baseChips": 10,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_019",
+      "english": "energy",
+      "chinese": "能量",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_020",
+      "english": "move",
+      "chinese": "移動",
+      "partOfSpeech": "V",
+      "element": "Force",
+      "difficulty": 1,
+      "baseChips": 4,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_021",
+      "english": "mind",
+      "chinese": "心智",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 4,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_022",
+      "english": "idea",
+      "chinese": "想法",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 4,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_023",
+      "english": "learn",
+      "chinese": "學習",
+      "partOfSpeech": "V",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_024",
+      "english": "think",
+      "chinese": "思考",
+      "partOfSpeech": "V",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_025",
+      "english": "smart",
+      "chinese": "聰明的",
+      "partOfSpeech": "A",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_026",
+      "english": "clear",
+      "chinese": "清楚的",
+      "partOfSpeech": "A",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_027",
+      "english": "clearly",
+      "chinese": "清楚地",
+      "partOfSpeech": "D",
+      "element": "Mind",
+      "difficulty": 2,
+      "baseChips": 10,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_028",
+      "english": "truly",
+      "chinese": "真正地",
+      "partOfSpeech": "D",
+      "element": "Mind",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_029",
+      "english": "focus",
+      "chinese": "專注",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_030",
       "english": "recall",
       "chinese": "回想",
       "partOfSpeech": "V",
       "element": "Mind",
       "difficulty": 1,
-      "baseChips": 9,
+      "baseChips": 7,
       "lexiconTier": "T1"
+    },
+    {
+      "id": "word_031",
+      "english": "stone",
+      "chinese": "石頭",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_032",
+      "english": "metal",
+      "chinese": "金屬",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_033",
+      "english": "build",
+      "chinese": "建造",
+      "partOfSpeech": "V",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_034",
+      "english": "shape",
+      "chinese": "塑造",
+      "partOfSpeech": "V",
+      "element": "Matter",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_035",
+      "english": "solid",
+      "chinese": "堅固的",
+      "partOfSpeech": "A",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_036",
+      "english": "heavy",
+      "chinese": "沉重的",
+      "partOfSpeech": "A",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_037",
+      "english": "firmly",
+      "chinese": "穩固地",
+      "partOfSpeech": "D",
+      "element": "Matter",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_038",
+      "english": "slowly",
+      "chinese": "緩慢地",
+      "partOfSpeech": "D",
+      "element": "Matter",
+      "difficulty": 1,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_039",
+      "english": "object",
+      "chinese": "物體",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_040",
+      "english": "craft",
+      "chinese": "製作",
+      "partOfSpeech": "V",
+      "element": "Matter",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_041",
+      "english": "dream",
+      "chinese": "夢想",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 1,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_042",
+      "english": "value",
+      "chinese": "價值",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_043",
+      "english": "imagine",
+      "chinese": "想像",
+      "partOfSpeech": "V",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 10,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_044",
+      "english": "prefer",
+      "chinese": "偏好",
+      "partOfSpeech": "V",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_045",
+      "english": "moral",
+      "chinese": "道德的",
+      "partOfSpeech": "A",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_046",
+      "english": "ideal",
+      "chinese": "理想的",
+      "partOfSpeech": "A",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 5,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_047",
+      "english": "deeply",
+      "chinese": "深刻地",
+      "partOfSpeech": "D",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_048",
+      "english": "widely",
+      "chinese": "廣泛地",
+      "partOfSpeech": "D",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_049",
+      "english": "future",
+      "chinese": "未來",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 7,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_050",
+      "english": "meaning",
+      "chinese": "意義",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 2,
+      "baseChips": 10,
+      "lexiconTier": "T1"
+    },
+    {
+      "id": "word_051",
+      "english": "biology",
+      "chinese": "生物學",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_052",
+      "english": "protein",
+      "chinese": "蛋白質",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_053",
+      "english": "recover",
+      "chinese": "復原",
+      "partOfSpeech": "V",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_054",
+      "english": "nurture",
+      "chinese": "培育",
+      "partOfSpeech": "V",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_055",
+      "english": "organic",
+      "chinese": "有機的",
+      "partOfSpeech": "A",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_056",
+      "english": "fertile",
+      "chinese": "肥沃的",
+      "partOfSpeech": "A",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_057",
+      "english": "gently",
+      "chinese": "溫和地",
+      "partOfSpeech": "D",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_058",
+      "english": "quietly",
+      "chinese": "安靜地",
+      "partOfSpeech": "D",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_059",
+      "english": "habitat",
+      "chinese": "棲地",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_060",
+      "english": "species",
+      "chinese": "物種",
+      "partOfSpeech": "N",
+      "element": "Life",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_061",
+      "english": "impact",
+      "chinese": "衝擊",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_062",
+      "english": "momentum",
+      "chinese": "動量",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_063",
+      "english": "accelerate",
+      "chinese": "加速",
+      "partOfSpeech": "V",
+      "element": "Force",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_064",
+      "english": "rotate",
+      "chinese": "旋轉",
+      "partOfSpeech": "V",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_065",
+      "english": "dynamic",
+      "chinese": "動態的",
+      "partOfSpeech": "A",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_066",
+      "english": "kinetic",
+      "chinese": "動能的",
+      "partOfSpeech": "A",
+      "element": "Force",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_067",
+      "english": "swiftly",
+      "chinese": "敏捷地",
+      "partOfSpeech": "D",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_068",
+      "english": "directly",
+      "chinese": "直接地",
+      "partOfSpeech": "D",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_069",
+      "english": "engine",
+      "chinese": "引擎",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_070",
+      "english": "thrust",
+      "chinese": "推力",
+      "partOfSpeech": "N",
+      "element": "Force",
+      "difficulty": 4,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_071",
+      "english": "concept",
+      "chinese": "概念",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_072",
+      "english": "strategy",
+      "chinese": "策略",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_073",
+      "english": "analyze",
+      "chinese": "分析",
+      "partOfSpeech": "V",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_074",
+      "english": "reason",
+      "chinese": "推理",
+      "partOfSpeech": "V",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_075",
+      "english": "logical",
+      "chinese": "合乎邏輯的",
+      "partOfSpeech": "A",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_076",
+      "english": "curious",
+      "chinese": "好奇的",
+      "partOfSpeech": "A",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_077",
+      "english": "carefully",
+      "chinese": "仔細地",
+      "partOfSpeech": "D",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_078",
+      "english": "mentally",
+      "chinese": "精神上地",
+      "partOfSpeech": "D",
+      "element": "Mind",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_079",
+      "english": "pattern",
+      "chinese": "模式",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_080",
+      "english": "insight",
+      "chinese": "洞見",
+      "partOfSpeech": "N",
+      "element": "Mind",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_081",
+      "english": "texture",
+      "chinese": "質地",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_082",
+      "english": "density",
+      "chinese": "密度",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_083",
+      "english": "assemble",
+      "chinese": "組裝",
+      "partOfSpeech": "V",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_084",
+      "english": "measure",
+      "chinese": "測量",
+      "partOfSpeech": "V",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_085",
+      "english": "tangible",
+      "chinese": "有形的",
+      "partOfSpeech": "A",
+      "element": "Matter",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_086",
+      "english": "durable",
+      "chinese": "耐用的",
+      "partOfSpeech": "A",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_087",
+      "english": "exactly",
+      "chinese": "精確地",
+      "partOfSpeech": "D",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_088",
+      "english": "properly",
+      "chinese": "適當地",
+      "partOfSpeech": "D",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_089",
+      "english": "surface",
+      "chinese": "表面",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_090",
+      "english": "material",
+      "chinese": "材料",
+      "partOfSpeech": "N",
+      "element": "Matter",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_091",
+      "english": "theory",
+      "chinese": "理論",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_092",
+      "english": "principle",
+      "chinese": "原則",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_093",
+      "english": "define",
+      "chinese": "定義",
+      "partOfSpeech": "V",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_094",
+      "english": "justify",
+      "chinese": "證成",
+      "partOfSpeech": "V",
+      "element": "Abstract",
+      "difficulty": 4,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_095",
+      "english": "ethical",
+      "chinese": "倫理的",
+      "partOfSpeech": "A",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_096",
+      "english": "virtual",
+      "chinese": "虛擬的",
+      "partOfSpeech": "A",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_097",
+      "english": "formally",
+      "chinese": "正式地",
+      "partOfSpeech": "D",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_098",
+      "english": "roughly",
+      "chinese": "大致地",
+      "partOfSpeech": "D",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_099",
+      "english": "context",
+      "chinese": "脈絡",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 10,
+      "lexiconTier": "T2"
+    },
+    {
+      "id": "word_100",
+      "english": "notion",
+      "chinese": "概念想法",
+      "partOfSpeech": "N",
+      "element": "Abstract",
+      "difficulty": 3,
+      "baseChips": 7,
+      "lexiconTier": "T2"
     }
   ]
 }

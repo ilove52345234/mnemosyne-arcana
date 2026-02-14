@@ -369,3 +369,29 @@
   - Unity batchmode 授權限制仍在，完整測試需在可授權環境執行
 - 下一步：
   - M4-01：詞庫內容填充（T1/T2 可玩內容）
+
+## 交接記錄（2026-02-14）- M4-01 詞庫內容填充完成
+
+- 目標：建立 T1/T2 可玩詞庫基線，支撐 M4 平衡迭代
+- 完成內容：
+  - `configs/word_entries.v2.json` 擴充至 100 筆
+  - T1/T2 各 50 筆，元素五系各 20，詞性 N/V/A/D 分布達最低門檻
+  - `baseChips` 依單字長度規則映射（3/4/5/6/7+ 字母）
+  - `scripts/validate_configs.py` 加入詞庫品質守門：
+    - 總數、tier 數量、詞性覆蓋、元素覆蓋
+    - difficulty 與 baseChips 合法範圍
+  - `docs/16-config-governance.md` 補上 M4-01 基線規則
+- 變更檔案：
+  - `configs/word_entries.v2.json`
+  - `scripts/validate_configs.py`
+  - `docs/16-config-governance.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+  - 統計：total=100、T1=50、T2=50、元素各 20、詞性最低 20
+- 風險/阻塞：
+  - 詞義與難度仍需後續教學設計審核（語意一致性）
+- 下一步：
+  - M4-02：商店池權重與價格帶調整（搭配新詞庫做平衡）

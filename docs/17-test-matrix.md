@@ -57,6 +57,8 @@
 | TC-SHOP-002 | Ante1 不出課程卡 | `category != Course` |
 | TC-SHOP-003 | 購買成功扣款 | `remainingMoney = currentMoney - cost` |
 | TC-SHOP-004 | 餘額不足 | `success = false` 且保留原餘額 |
+| TC-SHOP-005 | Boss 商店課程卡 | 固定 2 張 `Course`，價格皆為 10 |
+| TC-SHOP-006 | 價格帶合法性 | 各 category 價格落在 SoT 區間 |
 | TC-LEARN-001 | Lv0 答對行為 | 題型/限時/籌碼係數符合 Lv0 並升 Lv1 |
 | TC-LEARN-002 | 答錯懲罰輸出 | `chipMultiplier=0.5` 且 `handMultDelta=-1` |
 | TC-LEARN-003 | Boss Lv4 視為 Lv3 | `effectiveLevel=Lv3`，題型為拼字 |

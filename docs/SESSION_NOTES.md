@@ -395,3 +395,32 @@
   - 詞義與難度仍需後續教學設計審核（語意一致性）
 - 下一步：
   - M4-02：商店池權重與價格帶調整（搭配新詞庫做平衡）
+
+## 交接記錄（2026-02-14）- M4-02 商店權重與價格帶調整完成
+
+- 目標：讓商店生成規則符合分段平衡策略與 Boss 課程卡規格
+- 完成內容：
+  - `ShopManagerV2.GenerateOffers` 新增 `isBossShop` 參數（預設 `false`）
+  - 實作 Ante 分段權重：
+    - Ante 1-2：Material/Affix 偏高，Course 關閉
+    - Ante 3-5：Material/Sense 偏高，Course 關閉
+    - Ante 6-8：完整池，Course 低機率
+  - 實作 Boss 商店：固定課程卡 2 選 1，價格固定 `$10`
+  - 補測試：
+    - Boss 商店回傳 2 張課程卡
+    - 價格帶合法性（Sense 4-8 / Material 3-6 / Affix 2-4 / Course 10）
+  - 同步更新 `docs/15`、`docs/17`、`docs/IMPLEMENTATION_STATUS`、`docs/PROJECT_EXECUTION_PLAN`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/ShopManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/ShopManagerTests.cs`
+  - `docs/15-balance-source-of-truth.md`
+  - `docs/17-test-matrix.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - 尚未在可授權環境跑完整 Unity EditMode（現環境授權限制）
+- 下一步：
+  - M4-03：盲注曲線平衡與體感調整

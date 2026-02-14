@@ -7,6 +7,7 @@ namespace MnemosyneArcana.Core.Managers
     public sealed class ShopManagerV2
     {
         private const int OfferSlots = 5;
+        private const int BossCourseSlots = 2;
 
         private static readonly IReadOnlyList<(string Id, ShopOfferCategory Category, int MinPrice, int MaxPrice, int BaseWeight)> Pool =
             new List<(string Id, ShopOfferCategory Category, int MinPrice, int MaxPrice, int BaseWeight)>
@@ -24,7 +25,7 @@ namespace MnemosyneArcana.Core.Managers
                 ("COURSE_DEEP_STUDY", ShopOfferCategory.Course, 10, 10, 4)
             };
 
-        public ServiceResult<IReadOnlyList<ShopOffer>> GenerateOffers(int ante, int seed)
+        public ServiceResult<IReadOnlyList<ShopOffer>> GenerateOffers(int ante, int seed, bool isBossShop = false)
         {
             if (ante < 1)
             {
@@ -32,10 +33,15 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             var random = new System.Random(seed + ante * 9973);
+            if (isBossShop)
+            {
+                return ServiceResult<IReadOnlyList<ShopOffer>>.Ok(GenerateBossCourseOffers(random));
+            }
+
             var weightedPool = Pool
                 .Select(item =>
                 {
-                    var anteWeight = item.Category == ShopOfferCategory.Course ? (ante >= 2 ? item.BaseWeight : 0) : item.BaseWeight;
+                    var anteWeight = ResolveAnteWeight(item.Category, item.BaseWeight, ante);
                     return (item, weight: anteWeight);
                 })
                 .Where(x => x.weight > 0)
@@ -79,6 +85,73 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             return ServiceResult<IReadOnlyList<ShopOffer>>.Ok(result);
+        }
+
+        private static int ResolveAnteWeight(ShopOfferCategory category, int baseWeight, int ante)
+        {
+            // Ante 1-2: 只出現機制與基礎養成，不出課程卡
+            if (ante <= 2)
+            {
+                return category switch
+                {
+                    ShopOfferCategory.Material => baseWeight + 4,
+                    ShopOfferCategory.Affix => baseWeight + 4,
+                    ShopOfferCategory.Sense => baseWeight - 2,
+                    ShopOfferCategory.Course => 0,
+                    _ => baseWeight
+                };
+            }
+
+            // Ante 3-5: 漸進提高語感比例，課程卡仍保留給 Boss 商店
+            if (ante <= 5)
+            {
+                return category switch
+                {
+                    ShopOfferCategory.Material => baseWeight + 2,
+                    ShopOfferCategory.Sense => baseWeight + 2,
+                    ShopOfferCategory.Affix => baseWeight,
+                    ShopOfferCategory.Course => 0,
+                    _ => baseWeight
+                };
+            }
+
+            // Ante 6-8: 完整詞條池，課程卡可低機率出現
+            return category switch
+            {
+                ShopOfferCategory.Course => baseWeight,
+                ShopOfferCategory.Sense => baseWeight + 2,
+                ShopOfferCategory.Material => baseWeight + 1,
+                _ => baseWeight
+            };
+        }
+
+        private static IReadOnlyList<ShopOffer> GenerateBossCourseOffers(System.Random random)
+        {
+            var courses = Pool.Where(x => x.Category == ShopOfferCategory.Course).ToList();
+            var result = new List<ShopOffer>(BossCourseSlots);
+            var picked = new HashSet<string>();
+
+            while (result.Count < BossCourseSlots && courses.Count > 0)
+            {
+                var idx = random.Next(courses.Count);
+                var selected = courses[idx];
+                courses.RemoveAt(idx);
+
+                if (!picked.Add(selected.Id))
+                {
+                    continue;
+                }
+
+                result.Add(new ShopOffer
+                {
+                    OfferId = selected.Id,
+                    Category = selected.Category,
+                    Price = 10,
+                    Weight = selected.BaseWeight
+                });
+            }
+
+            return result;
         }
 
         public ServiceResult<PurchaseResult> PurchaseOffer(ShopOffer offer, int currentMoney)

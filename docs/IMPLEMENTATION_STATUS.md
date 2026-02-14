@@ -13,7 +13,7 @@
 | M1 核心迴圈 | Done | 100% |
 | M2 學習迴圈 | Done | 100% |
 | M3 局外迴圈 | Done | 100% |
-| M4 內容平衡 | In Progress | 25% |
+| M4 內容平衡 | In Progress | 50% |
 | Alpha Gate | Todo | 0% |
 
 ---
@@ -39,7 +39,7 @@
 | M3-03 | LP 上限守門 | M3 | Claude | Done | SettleContractWithCap: LP 契約獎勵上限 45/(100-45) |
 | M3-04 | 課程樹 MVP 串接 | M3 | Codex | Done | TryUnlockNode 已支援前置/互斥/LP 守門與測試 |
 | M4-01 | 詞庫內容填充 | M4 | Codex | Done | T1/T2 詞庫 100 筆（50/50）與覆蓋檢查已完成 |
-| M4-02 | 商店權重平衡 | M4 | TBD | Todo | |
+| M4-02 | 商店權重平衡 | M4 | Codex | Done | Ante 分段權重 + Boss 課程卡 2 選 1 + 價格帶測試完成 |
 | M4-03 | 盲注曲線平衡 | M4 | TBD | Todo | |
 | M4-04 | 首輪平衡報告 | M4 | TBD | Todo | |
 | A-01 | 全流程回歸 | Alpha | TBD | Todo | |

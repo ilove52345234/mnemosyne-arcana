@@ -45,6 +45,13 @@
 | Lv2->3 訓練 | $5 |
 | 重答 | $2 |
 
+### 4.1 M4-02 權重分段
+
+- Ante 1-2：`Material/Affix` 權重上調，`Course` 不出現
+- Ante 3-5：`Material/Sense` 權重上調，`Course` 不出現
+- Ante 6-8：完整池，`Course` 低機率出現
+- Boss 商店：固定 `Course` 2 選 1，價格固定 `$10`
+
 ## 5. Meta 關鍵邊界
 
 | 項目 | 規則 |

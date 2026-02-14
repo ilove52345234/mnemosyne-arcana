@@ -33,6 +33,46 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
+        public void GenerateOffers_BossShop_ReturnsTwoCourseChoices()
+        {
+            var manager = new ShopManagerV2();
+            var result = manager.GenerateOffers(4, 2026, isBossShop: true);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(2, result.Value.Count);
+            Assert.IsTrue(result.Value.All(x => x.Category == ShopOfferCategory.Course));
+            Assert.IsTrue(result.Value.All(x => x.Price == 10));
+            Assert.AreNotEqual(result.Value[0].OfferId, result.Value[1].OfferId);
+        }
+
+        [Test]
+        public void GenerateOffers_Prices_StayWithinConfiguredBands()
+        {
+            var manager = new ShopManagerV2();
+            var result = manager.GenerateOffers(6, 33);
+
+            Assert.IsTrue(result.IsSuccess);
+            foreach (var offer in result.Value)
+            {
+                switch (offer.Category)
+                {
+                    case ShopOfferCategory.Sense:
+                        Assert.That(offer.Price, Is.InRange(4, 8));
+                        break;
+                    case ShopOfferCategory.Material:
+                        Assert.That(offer.Price, Is.InRange(3, 6));
+                        break;
+                    case ShopOfferCategory.Affix:
+                        Assert.That(offer.Price, Is.InRange(2, 4));
+                        break;
+                    case ShopOfferCategory.Course:
+                        Assert.AreEqual(10, offer.Price);
+                        break;
+                }
+            }
+        }
+
+        [Test]
         public void PurchaseOffer_EnoughMoney_Succeeds()
         {
             var manager = new ShopManagerV2();

@@ -20,6 +20,7 @@ namespace MnemosyneArcana.Core.Contracts
     {
         ServiceResult<IReadOnlyList<Contract>> GenerateContracts(MetaProgress meta, int seed);
         ServiceResult<ContractSettlement> SettleContract(Contract contract, RunTelemetry telemetry);
+        ServiceResult<ContractSettlement> SettleContractWithCap(Contract contract, RunTelemetry telemetry, int lpBase);
     }
 
     public interface IMetaProgressService

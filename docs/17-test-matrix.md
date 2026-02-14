@@ -13,6 +13,7 @@
 | 答錯不斷牌型 | 是 | 是 | 是 | LearningManagerV2 + RunManagerV2 |
 | 盲注通關/失敗流程 | 否 | 是 | 是 | RunManagerV2 |
 | 商店抽樣與購買 | 是 | 是 | 是 | ShopManagerV2 |
+| 退化規則（1/3/7 天） | 是 | 是 | 是 | DecayManagerV2 |
 | 契約 3 選 1 與結算 | 是 | 是 | 是 | MetaManagerV2 |
 | 契約 LP <=45% | 是 | 是 | 是 | MetaManagerV2 |
 | 詞庫層級解鎖門檻 | 是 | 是 | 是 | MetaManagerV2 |
@@ -67,3 +68,10 @@
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |
 | TC-MIG-001 | v1->v2 遷移成功 | 生成 `saveVersion=2` 且備份存在 |
 | TC-MIG-002 | 遷移失敗回退 | 還原備份，阻擋進 Run |
+| TC-DECAY-001 | Lv1 超過 1 天未練 | 退化到 Lv0, Decayed 池 |
+| TC-DECAY-002 | Lv2 剛好 3 天未練 | 退化到 Lv1, Decayed 池 |
+| TC-DECAY-003 | Lv3 + 6 天未練 | 不退化 |
+| TC-DECAY-004 | Lv4 超過 7 天 | 退化到 Lv3, Learning 池 |
+| TC-DECAY-005 | Lv0 + 任何時間 | 不退化 |
+| TC-DECAY-006 | 答對後重設計時 | `lastPracticed` 更新 |
+| TC-DECAY-007 | 批次退化多詞 | 各詞獨立判定 |

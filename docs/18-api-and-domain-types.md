@@ -121,6 +121,26 @@
 | finalAnswerResult | AnswerResult | 套用後答案結果 |
 | overrideChipMultiplier | float | 覆寫卡牌籌碼係數（0.0/0.5/1.0） |
 
+### 2.11 WordProgress（M2-03）
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| wordId | string | 是 | 對應詞庫 ID |
+| level | LearningLevel | 是 | 當前學習等級 |
+| pool | WordPool | 是 | 所屬池 |
+| lastPracticed | DateTime | 是 | 最後練習時間（UTC） |
+
+### 2.12 DecayResult（M2-03）
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| wordId | string | 詞彙 ID |
+| decayed | bool | 是否退化 |
+| previousLevel | LearningLevel | 退化前等級 |
+| newLevel | LearningLevel | 退化後等級 |
+| previousPool | WordPool | 退化前池 |
+| newPool | WordPool | 退化後池 |
+
 ## 3. Enum 契約
 
 ```csharp
@@ -131,6 +151,7 @@ public enum BlindType { Small, Big, Boss }
 public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTriple, FullHouse, ElemFlush, PoSFlush, GrammarFlush }
 public enum ShopOfferCategory { Sense, Material, Affix, Course }
 public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
+public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }
 public enum RunPhase { Boot, RunStart, BlindStart, HandSelect, HandResolve, BlindResult, Shop, AnteAdvance, BossResolve, RunComplete, RunFail }
 ```
 

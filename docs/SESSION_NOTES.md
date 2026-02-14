@@ -219,3 +219,37 @@
   - Unity batchmode 授權限制仍在，完整 EditMode 測試尚未執行
 - 下一步：
   - M2-03：退化規則（1/3/7 天）
+
+## 交接記錄（2026-02-14）- M2-03 退化規則完成
+
+- 目標：實作詞彙遺忘退化機制（1/3/7 天間隔）
+- 完成內容：
+  - 新增 `WordPool` enum、`WordProgress`、`DecayResult` DTO
+  - 新增 `IDecayService` 介面（EvaluateDecay / EvaluateBatch / ResetDecayTimer）
+  - 實作 `DecayManagerV2`：
+    - Lv0 不退化
+    - Lv1: 1 天 → Lv0, Decayed 池
+    - Lv2: 3 天 → Lv1, Decayed 池
+    - Lv3: 7 天 → Lv2, Decayed 池
+    - Lv4: 7 天 → Lv3, Learning 池（不進 Decayed）
+    - 邊界：>= 天數觸發退化
+  - 9 個 EditMode 測試（TC-DECAY-001~007 + 2 邊界）
+  - 更新 `docs/17`、`docs/18` 對應契約與測試案例
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/ServiceInterfaces.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/DecayManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/DecayManagerTests.cs`
+  - `docs/plans/2026-02-14-m2-03-decay-rules-design.md`
+  - `docs/plans/2026-02-14-m2-03-decay-rules.md`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - Spec compliance review 通過
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在，完整 EditMode 測試需在可授權環境執行
+- 下一步：
+  - M2-04：Boss 關題型升級與全對獎勵

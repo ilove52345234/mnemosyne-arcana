@@ -11,7 +11,7 @@
 |---|---|---:|
 | M0 專案骨架 | Done | 100% |
 | M1 核心迴圈 | Done | 100% |
-| M2 學習迴圈 | In Progress | 75% |
+| M2 學習迴圈 | Done | 100% |
 | M3 局外迴圈 | Todo | 0% |
 | M4 內容平衡 | Todo | 0% |
 | Alpha Gate | Todo | 0% |
@@ -33,7 +33,7 @@
 | M2-01 | Lv0-4 行為模型 | M2 | Codex | Done | 題型/限時/籌碼係數與 Boss Lv4->Lv3 規則已實作與測試 |
 | M2-02 | 答錯三選一 | M2 | Codex | Done | 接受/重答/賭一把決策 API 與成本規則已實作與測試 |
 | M2-03 | 退化規則 | M2 | Claude | Done | DecayManagerV2 + IDecayService + 9 test cases（1/3/7 天退化間隔） |
-| M2-04 | Boss 學習規則 | M2 | TBD | Todo | |
+| M2-04 | Boss 學習規則 | M2 | Claude | Done | Boss +1 階、連對 x2、全對升級已實作與測試 |
 | M3-01 | XP/LP 結算 | M3 | TBD | Todo | |
 | M3-02 | 契約系統 | M3 | TBD | Todo | |
 | M3-03 | LP 上限守門 | M3 | TBD | Todo | |

@@ -14,6 +14,7 @@
 | 盲注通關/失敗流程 | 否 | 是 | 是 | RunManagerV2 |
 | 商店抽樣與購買 | 是 | 是 | 是 | ShopManagerV2 |
 | 退化規則（1/3/7 天） | 是 | 是 | 是 | DecayManagerV2 |
+| Boss 學習規則 | 是 | 是 | 是 | LearningManagerV2 |
 | 契約 3 選 1 與結算 | 是 | 是 | 是 | MetaManagerV2 |
 | 契約 LP <=45% | 是 | 是 | 是 | MetaManagerV2 |
 | 詞庫層級解鎖門檻 | 是 | 是 | 是 | MetaManagerV2 |
@@ -75,3 +76,12 @@
 | TC-DECAY-005 | Lv0 + 任何時間 | 不退化 |
 | TC-DECAY-006 | 答對後重設計時 | `lastPracticed` 更新 |
 | TC-DECAY-007 | 批次退化多詞 | 各詞獨立判定 |
+| TC-BOSS-001 | Boss + Lv0 | effectiveLevel = Lv1 |
+| TC-BOSS-002 | Boss + Lv2 | effectiveLevel = Lv3 |
+| TC-BOSS-003 | Boss + Lv3 | effectiveLevel = Lv3（封頂） |
+| TC-BOSS-004 | Boss + Lv4 | effectiveLevel = Lv3（回歸） |
+| TC-BOSS-005 | 連對 3 題 | chipMultiplier = 2.0 |
+| TC-BOSS-006 | 連對 2 題 | chipMultiplier = 1.0（無獎勵） |
+| TC-BOSS-007 | Boss 全對 | 打出卡各 +1 等級 |
+| TC-BOSS-008 | Boss 全對含 Lv4 | Lv4 不升，skippedAtMax = 1 |
+| TC-BOSS-009 | 非 Boss 盲注 | 無等級偏移 |

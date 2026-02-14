@@ -253,3 +253,31 @@
   - Unity batchmode 授權限制仍在，完整 EditMode 測試需在可授權環境執行
 - 下一步：
   - M2-04：Boss 關題型升級與全對獎勵
+
+## 交接記錄（2026-02-14）- M2-04 Boss 學習規則完成
+
+- 目標：實作 Boss 盲注的三個學習機制
+- 完成內容：
+  - 擴充 `GetEffectiveLevel`：Boss 時 Lv0→Lv1, Lv1→Lv2, Lv2→Lv3, Lv3→Lv3, Lv4→Lv3
+  - 新增 `GetBossStreakBonus`：每連對 3 題下一張卡籌碼 x2
+  - 新增 `ApplyBossAllCorrectReward`：Boss 全對打出卡 +1 等級（Lv4 上限跳過）
+  - 新增 DTO：`BossStreakBonus`、`WordLevelUp`、`BossRewardResult`
+  - 14 個 EditMode 測試（TC-BOSS-001~009 + 邊界）
+  - 更新 `docs/17`、`docs/18` 對應契約與測試案例
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/ServiceInterfaces.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/LearningManagerV2.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/BossLearningTests.cs`
+  - `docs/plans/2026-02-14-m2-04-boss-learning-design.md`
+  - `docs/plans/2026-02-14-m2-04-boss-learning.md`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+- 驗證結果：
+  - Spec compliance review 通過
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在
+- 下一步：
+  - M2 全部完成，進入 M3-01：XP/LP 結算

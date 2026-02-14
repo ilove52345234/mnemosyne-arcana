@@ -141,6 +141,29 @@
 | previousPool | WordPool | 退化前池 |
 | newPool | WordPool | 退化後池 |
 
+### 2.13 BossStreakBonus（M2-04）
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| consecutiveCorrect | int | 當前連對數 |
+| chipMultiplier | float | 下一張卡的籌碼倍數（1.0 或 2.0） |
+
+### 2.14 WordLevelUp（M2-04）
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| wordId | string | 詞彙 ID |
+| fromLevel | LearningLevel | 升級前等級 |
+| toLevel | LearningLevel | 升級後等級 |
+
+### 2.15 BossRewardResult（M2-04）
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| allCorrect | bool | 是否全對 |
+| upgradedWords | IReadOnlyList&lt;WordLevelUp&gt; | 升級清單 |
+| skippedAtMax | int | 已 Lv4 跳過數量 |
+
 ## 3. Enum 契約
 
 ```csharp

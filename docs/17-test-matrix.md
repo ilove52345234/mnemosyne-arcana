@@ -53,6 +53,9 @@
 | TC-RUN-002 | 出牌次數耗盡仍未達標 | `nextPhase = RunFail` |
 | TC-RUN-003 | Boss Ante8 達標 | `nextPhase = RunComplete` |
 | TC-RUN-004 | 商店後推進盲注 | `Small -> Big -> Boss -> next Ante Small` |
+| TC-RUN-005 | Standard 曲線基線 | Ante1 Small 目標分 = 100 |
+| TC-RUN-006 | Relaxed 曲線 | 同條件下目標分 < Standard |
+| TC-RUN-007 | Challenging 曲線 | 同條件下目標分 > Standard |
 | TC-SHOP-001 | 商店 seed 決定論 | 同 seed 同 ante 產出相同 offer 與價格 |
 | TC-SHOP-002 | Ante1 不出課程卡 | `category != Course` |
 | TC-SHOP-003 | 購買成功扣款 | `remainingMoney = currentMoney - cost` |

@@ -52,7 +52,24 @@
 - Ante 6-8：完整池，`Course` 低機率出現
 - Boss 商店：固定 `Course` 2 選 1，價格固定 `$10`
 
-## 5. Meta 關鍵邊界
+## 5. 盲注曲線體感檔位（M4-03）
+
+- `Standard`：採用本文件第 3 節原始數值（SoT 基線）。
+- `Relaxed`：早期壓力降低，後期逐步回到基線。
+- `Challenging`：早期壓力提高，中後期維持高於基線。
+
+### 5.1 分段倍率規則
+
+- `Relaxed`
+- Ante 1-2：Small 0.85 / Big 0.90 / Boss 0.92
+- Ante 3-5：Small 0.92 / Big 0.95 / Boss 0.97
+- Ante 6-8：Small 0.96 / Big 0.98 / Boss 1.00
+- `Challenging`
+- Ante 1-2：Small 1.10 / Big 1.12 / Boss 1.15
+- Ante 3-5：Small 1.08 / Big 1.10 / Boss 1.12
+- Ante 6-8：Small 1.05 / Big 1.08 / Boss 1.10
+
+## 6. Meta 關鍵邊界
 
 | 項目 | 規則 |
 |---|---|
@@ -61,7 +78,7 @@
 | 互斥比例 | 約 30% |
 | 詞庫層級解鎖 | T2/T3/T4/T5 門檻固定 |
 
-## 6. 修改流程
+## 7. 修改流程
 
 任一數值改動必須：
 1. 先更新本文件

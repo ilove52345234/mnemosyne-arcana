@@ -25,6 +25,7 @@ namespace MnemosyneArcana.Core.Contracts
     public enum ErrorCode { None, InvalidInput, ConfigMissing, StateConflict, PersistenceFailed, MigrationFailed, NotImplemented }
     public enum ShopOfferCategory { Sense, Material, Affix, Course }
     public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
+    public enum RunDifficultyProfile { Relaxed, Standard, Challenging }
 
     public sealed class PlayedCard
     {

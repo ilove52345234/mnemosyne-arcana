@@ -198,6 +198,7 @@ public enum HandType { Word, PoSPair, ElemPair, PoSTriple, GrammarChain, ElemTri
 public enum ShopOfferCategory { Sense, Material, Affix, Course }
 public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
 public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }
+public enum RunDifficultyProfile { Relaxed, Standard, Challenging }
 public enum RunPhase { Boot, RunStart, BlindStart, HandSelect, HandResolve, BlindResult, Shop, AnteAdvance, BossResolve, RunComplete, RunFail }
 ```
 

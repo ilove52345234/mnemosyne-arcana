@@ -99,5 +99,37 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsFalse(result.IsSuccess);
             Assert.AreEqual(ErrorCode.InvalidInput, result.Error);
         }
+
+        [Test]
+        public void StartRun_StandardProfile_UsesSotBaseline()
+        {
+            var manager = new RunManagerV2(RunDifficultyProfile.Standard);
+            manager.StartRun(99);
+            Assert.AreEqual(100, manager.CurrentState.TargetScore);
+        }
+
+        [Test]
+        public void StartRun_RelaxedProfile_HasLowerTargetThanStandard()
+        {
+            var standard = new RunManagerV2(RunDifficultyProfile.Standard);
+            standard.StartRun(99);
+
+            var relaxed = new RunManagerV2(RunDifficultyProfile.Relaxed);
+            relaxed.StartRun(99);
+
+            Assert.Less(relaxed.CurrentState.TargetScore, standard.CurrentState.TargetScore);
+        }
+
+        [Test]
+        public void StartRun_ChallengingProfile_HasHigherTargetThanStandard()
+        {
+            var standard = new RunManagerV2(RunDifficultyProfile.Standard);
+            standard.StartRun(99);
+
+            var challenging = new RunManagerV2(RunDifficultyProfile.Challenging);
+            challenging.StartRun(99);
+
+            Assert.Greater(challenging.CurrentState.TargetScore, standard.CurrentState.TargetScore);
+        }
     }
 }

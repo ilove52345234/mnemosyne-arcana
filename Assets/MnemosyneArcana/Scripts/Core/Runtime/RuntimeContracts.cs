@@ -23,6 +23,7 @@ namespace MnemosyneArcana.Core.Runtime
     {
         public Guid RunId { get; set; } = Guid.NewGuid();
         public RunPhase Phase { get; set; } = RunPhase.Boot;
+        public RunDifficultyProfile DifficultyProfile { get; set; } = RunDifficultyProfile.Standard;
         public int Ante { get; set; } = 1;
         public BlindType BlindType { get; set; } = BlindType.Small;
         public int TargetScore { get; set; } = 250;

@@ -424,3 +424,37 @@
   - 尚未在可授權環境跑完整 Unity EditMode（現環境授權限制）
 - 下一步：
   - M4-03：盲注曲線平衡與體感調整
+
+## 交接記錄（2026-02-14）- M4-03 盲注曲線平衡完成
+
+- 目標：在不破壞 SoT 標準曲線下，補上可調的體感檔位
+- 完成內容：
+  - 新增 `RunDifficultyProfile`（Relaxed / Standard / Challenging）
+  - `RunManagerV2` 支援難度檔位：
+    - `Standard`：使用 SoT 基線
+    - `Relaxed`：前期目標分降低，後期回歸基線
+    - `Challenging`：前期目標分提高，中後期維持高壓
+  - `RunState` 新增 `difficultyProfile` 追蹤執行期檔位
+  - `RunFlowTests` 新增 3 案：
+    - Standard 基線值
+    - Relaxed < Standard
+    - Challenging > Standard
+  - 更新 `docs/10`、`docs/15`、`docs/17`、`docs/18`、`docs/IMPLEMENTATION_STATUS`、`docs/PROJECT_EXECUTION_PLAN`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/RunManagerV2.cs`
+  - `Assets/MnemosyneArcana/Scripts/Core/Runtime/RuntimeContracts.cs`
+  - `Assets/MnemosyneArcana/Tests/EditMode/RunFlowTests.cs`
+  - `docs/10-runtime-state-and-event-contracts.md`
+  - `docs/15-balance-source-of-truth.md`
+  - `docs/17-test-matrix.md`
+  - `docs/18-api-and-domain-types.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - 仍需在可授權環境跑完整 Unity EditMode 測試
+- 下一步：
+  - M4-04：首輪平衡報告（彙整 M4-01~03 的數值與測試結論）

@@ -12,6 +12,7 @@
 {
   "runId": "uuid",
   "phase": "Boot|RunStart|BlindStart|HandSelect|HandResolve|BlindResult|Shop|AnteAdvance|BossResolve|RunComplete|RunFail",
+  "difficultyProfile": "Relaxed|Standard|Challenging",
   "ante": 1,
   "blindType": "Small|Big|Boss",
   "targetScore": 250,

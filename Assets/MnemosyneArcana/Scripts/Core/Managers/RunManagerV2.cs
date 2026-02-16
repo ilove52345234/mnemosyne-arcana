@@ -20,12 +20,24 @@ namespace MnemosyneArcana.Core.Managers
             };
 
         public RunState CurrentState { get; private set; } = new RunState();
+        public RunDifficultyProfile DifficultyProfile { get; private set; }
+
+        public RunManagerV2(RunDifficultyProfile difficultyProfile = RunDifficultyProfile.Standard)
+        {
+            DifficultyProfile = difficultyProfile;
+        }
+
+        public void SetDifficultyProfile(RunDifficultyProfile profile)
+        {
+            DifficultyProfile = profile;
+        }
 
         public void StartRun(int seed)
         {
             CurrentState = new RunState
             {
                 Seed = seed,
+                DifficultyProfile = DifficultyProfile,
                 Ante = 1,
                 BlindType = BlindType.Small,
                 PlaysLeft = 4,
@@ -34,7 +46,7 @@ namespace MnemosyneArcana.Core.Managers
                 CurrentScore = 0,
                 Phase = RunPhase.BlindStart
             };
-            CurrentState.TargetScore = GetBlindTarget(CurrentState.Ante, CurrentState.BlindType);
+            CurrentState.TargetScore = GetBlindTarget(CurrentState.Ante, CurrentState.BlindType, DifficultyProfile);
             CurrentState.Phase = RunPhase.HandSelect;
         }
 
@@ -130,7 +142,7 @@ namespace MnemosyneArcana.Core.Managers
             CurrentState.Phase = RunPhase.AnteAdvance;
             CurrentState.Ante = nextAnte;
             CurrentState.BlindType = nextBlind;
-            CurrentState.TargetScore = GetBlindTarget(CurrentState.Ante, CurrentState.BlindType);
+            CurrentState.TargetScore = GetBlindTarget(CurrentState.Ante, CurrentState.BlindType, DifficultyProfile);
             CurrentState.CurrentScore = 0;
             CurrentState.PlaysLeft = 4;
             CurrentState.DiscardsLeft = 3;
@@ -139,20 +151,45 @@ namespace MnemosyneArcana.Core.Managers
             return ServiceResult<RunState>.Ok(CurrentState);
         }
 
-        private static int GetBlindTarget(int ante, BlindType blindType)
+        private int GetBlindTarget(int ante, BlindType blindType, RunDifficultyProfile profile)
         {
             if (!BlindTargets.TryGetValue(ante, out var entry))
             {
                 return 100;
             }
 
-            return blindType switch
+            var baseTarget = blindType switch
             {
                 BlindType.Small => entry.Small,
                 BlindType.Big => entry.Big,
                 BlindType.Boss => entry.Boss,
                 _ => entry.Small
             };
+
+            var multiplier = GetDifficultyMultiplier(profile, ante, blindType);
+            return (int)System.Math.Max(50, System.Math.Floor(baseTarget * multiplier));
+        }
+
+        private static float GetDifficultyMultiplier(RunDifficultyProfile profile, int ante, BlindType blindType)
+        {
+            if (profile == RunDifficultyProfile.Standard)
+            {
+                return 1f;
+            }
+
+            var early = ante <= 2;
+            var mid = ante <= 5;
+
+            if (profile == RunDifficultyProfile.Relaxed)
+            {
+                if (early) return blindType == BlindType.Small ? 0.85f : blindType == BlindType.Big ? 0.90f : 0.92f;
+                if (mid) return blindType == BlindType.Small ? 0.92f : blindType == BlindType.Big ? 0.95f : 0.97f;
+                return blindType == BlindType.Small ? 0.96f : blindType == BlindType.Big ? 0.98f : 1.00f;
+            }
+
+            if (early) return blindType == BlindType.Small ? 1.10f : blindType == BlindType.Big ? 1.12f : 1.15f;
+            if (mid) return blindType == BlindType.Small ? 1.08f : blindType == BlindType.Big ? 1.10f : 1.12f;
+            return blindType == BlindType.Small ? 1.05f : blindType == BlindType.Big ? 1.08f : 1.10f;
         }
     }
 }

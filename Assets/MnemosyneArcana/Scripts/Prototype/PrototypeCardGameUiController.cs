@@ -185,7 +185,6 @@ namespace MnemosyneArcana.Prototype
             }
 
             var go = new GameObject("PrototypeCardGameUI");
-            DontDestroyOnLoad(go);
             go.AddComponent<PrototypeCardGameUiController>();
         }
 

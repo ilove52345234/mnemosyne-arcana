@@ -8,11 +8,13 @@
 - 流程：Ante1 Small -> Big -> Boss ... -> Ante8 Boss
 - 模組：`RunManagerV2` + `ScoringManagerV2` + `ShopManagerV2` + `LearningManagerV2` + `MetaManagerV2`
 
-## 2. 自動化測試（已準備）
+## 2. 自動化測試（已完成）
 
 - `Assets/MnemosyneArcana/Tests/EditMode/AlphaRegressionTests.cs`
 - `Ante1To8_AllBlindsPass_ReachesRunComplete`
 - `Ante3BigBlind_FailPath_EntersRunFail`
+- 執行指令：
+  - `UNITY_PATH='/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app/Contents/MacOS/Unity' bash scripts/run_editmode_tests.sh`
 
 ## 3. 手動/整合驗證步驟
 
@@ -24,16 +26,17 @@
 - 失敗分支是否正確進入 `RunFail`
 - 最終 Boss 是否正確進入 `RunComplete`
 
-## 4. 驗收結果記錄（待填）
+## 4. 驗收結果記錄（2026-02-16）
 
 | 檢查項 | 結果 | 證據 |
 |---|---|---|
-| Ante1-8 通關流程 | Pending | - |
-| 失敗分支流程 | Pending | - |
-| 死狀態檢查 | Pending | - |
-| 事件/狀態一致性 | Pending | - |
+| Ante1-8 通關流程 | Pass | `AlphaRegressionTests.Ante1To8_AllBlindsPass_ReachesRunComplete` |
+| 失敗分支流程 | Pass | `AlphaRegressionTests.Ante3BigBlind_FailPath_EntersRunFail` |
+| 死狀態檢查 | Pass | `run_editmode_tests.sh` 結果 `[OK] EditMode tests finished.` |
+| 事件/狀態一致性 | Pass | EditMode 測試全綠 + `RunComplete`/`RunFail` 斷言通過 |
 
-## 5. 阻塞
+## 5. 阻塞狀態
 
-- 本環境目前仍有 Unity licensing IPC 限制，無法直接完成 batchmode 驗收。
-- 需在可授權 runner 或本機授權正常環境執行最終 A-01。
+- 已解除：可授權 Unity 環境可執行 batchmode 與 EditMode 測試。
+- 已解除：`MetaManagerV2` 的 `IsExternalInit` 編譯錯誤已修正（commit `1311b71`）。
+- 後續非阻塞工作：A-02（存檔/migration）與 A-03（效能穩定性）驗收。

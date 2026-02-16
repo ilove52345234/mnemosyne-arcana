@@ -522,3 +522,30 @@
   - 本環境 Unity 授權限制仍在，A-01 最終驗收需在可授權環境完成
 - 下一步：
   - 在可授權環境執行 A-01 並填寫 `docs/22` 驗收結果
+
+## 交接記錄（2026-02-16）- A-01 全流程回歸執行完成（授權/編譯問題解除）
+
+- 目標：在可授權 Unity 環境完成 A-01 回歸，並修正阻塞編譯錯誤
+- 完成內容：
+  - 以 Unity `2022.3.62f3` 啟動 batchmode，確認授權可握手
+  - 定位並修正編譯錯誤：
+    - `MetaManagerV2.CurriculumNodeDef` 的 `init` 存取子在目前 Unity 編譯設定下觸發 `CS0518 IsExternalInit`
+    - 將 `Cost` / `RequiredAnyOfGroups` / `MutexWith` 改為 `set`
+  - 執行：
+    - `UNITY_PATH='/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app/Contents/MacOS/Unity' bash scripts/run_editmode_tests.sh`
+    - 結果：`[OK] EditMode tests finished.`
+  - 更新 A-01 驗收文件：`docs/22-alpha-a01-regression-checklist.md`
+  - 更新進度文件：`docs/IMPLEMENTATION_STATUS.md`、`docs/PROJECT_EXECUTION_PLAN.md`、`docs/20-project-analysis-2026-02-14.md`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Core/Managers/MetaManagerV2.cs`
+  - `docs/22-alpha-a01-regression-checklist.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - A-01 核心回歸測試通過（Ante1-8 通關與失敗分支）
+- 風險/阻塞：
+  - A-01 阻塞已解除；後續進入 A-02（migration）與 A-03（效能）
+- 下一步：
+  - 啟動 A-02 存檔/migration 壓測方案（測試資料集、升級/回退路徑、失敗復原）

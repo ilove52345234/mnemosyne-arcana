@@ -30,9 +30,9 @@ namespace MnemosyneArcana.Core.Managers
 
         private sealed class CurriculumNodeDef
         {
-            public int Cost { get; init; }
-            public IReadOnlyList<IReadOnlyList<string>> RequiredAnyOfGroups { get; init; } = Array.Empty<IReadOnlyList<string>>();
-            public IReadOnlyList<string> MutexWith { get; init; } = Array.Empty<string>();
+            public int Cost { get; set; }
+            public IReadOnlyList<IReadOnlyList<string>> RequiredAnyOfGroups { get; set; } = Array.Empty<IReadOnlyList<string>>();
+            public IReadOnlyList<string> MutexWith { get; set; } = Array.Empty<string>();
         }
 
         // M3-04 MVP: 先落地每個分支前 3 層（含 A/B 互斥）

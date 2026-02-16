@@ -14,7 +14,7 @@
 | M2 學習迴圈 | Done | 100% |
 | M3 局外迴圈 | Done | 100% |
 | M4 內容平衡 | Done | 100% |
-| Alpha Gate | In Progress | 25% |
+| Alpha Gate | In Progress | 40% |
 
 ---
 
@@ -43,6 +43,7 @@
 | M4-03 | 盲注曲線平衡 | M4 | Codex | Done | RunDifficultyProfile 三檔曲線（Relaxed/Standard/Challenging）與測試完成 |
 | M4-04 | 首輪平衡報告 | M4 | Codex | Done | `docs/21-m4-first-balance-report.md` 已完成 |
 | A-01 | 全流程回歸 | Alpha | Codex | Done | 可授權 Unity 環境已執行 EditMode 回歸；compile fix（IsExternalInit）已修正並驗證通過 |
+| A-UI-01 | 可操作卡牌 UI 原型 | Alpha | Codex | Done | 已完成真實卡牌 UI、拖曳上桌、商店卡片格、答題區（英文題幹/中文選項）、可收合調參面板 |
 | A-02 | 存檔/migration 壓測 | Alpha | TBD | Todo | |
 | A-03 | 效能與穩定性驗收 | Alpha | TBD | Todo | |
 | A-04 | 發版決策 | Alpha | TBD | Todo | |

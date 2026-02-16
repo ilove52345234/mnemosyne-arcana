@@ -549,3 +549,39 @@
   - A-01 阻塞已解除；後續進入 A-02（migration）與 A-03（效能）
 - 下一步：
   - 啟動 A-02 存檔/migration 壓測方案（測試資料集、升級/回退路徑、失敗復原）
+
+## 交接記錄（2026-02-16）- A-UI-01 可操作卡牌 UI 原型完成
+
+- 目標：建立可直接試玩的真實卡牌 UI，支援邊玩邊調參與答題流程驗證
+- 完成內容：
+  - 建立 `PrototypeCardGameUiController`，取代先前純面板原型
+  - 卡牌互動：
+    - 手牌可點擊上桌，也可拖曳到牌桌區上桌
+    - 上桌卡高亮與脈衝效果
+    - 抽牌進場動畫、出牌飛出動畫
+  - 答題流程：
+    - 新增答題區，流程為「開始答題並出牌」
+    - 題型調整為「英文題幹 + 中文四選一」
+    - 逐題作答後才進行本回合計分與出牌提交
+  - 商店互動：
+    - 商店改為可點擊卡片格子購買（非純文字列表）
+  - 介面可用性：
+    - 修正右欄擠壓問題（響應式欄寬與格子欄數）
+    - 調參面板改為可收合（預設收合，按需展開）
+    - 整體面板支援上下滾動
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeGameScreenController.cs`
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeSandboxController.cs`
+  - `README.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 於 Unity Editor Play Mode 手動驗證互動流程可運作
+  - 因專案同時開啟鎖定，無法在 CLI 再次跑 batchmode 測試
+- 風險/阻塞：
+  - 目前原型仍為開發迭代 UI，尚未進入最終美術與完整 UX polish
+- 下一步：
+  - A-02 存檔/migration 壓測
+  - Prototype 下一階段：拖曳放牌桌吸附、答題時間限制、答錯三選一完整接入

@@ -74,6 +74,8 @@
 | TC-CURR-002 | 缺前置節點 | 返回 `StateConflict` |
 | TC-CURR-003 | 互斥衝突 | 返回 `StateConflict` |
 | TC-CURR-004 | LP 不足 | 返回 `StateConflict` |
+| TC-ALPHA-001 | Ante1-8 全通關路徑 | 最終 `phase = RunComplete` |
+| TC-ALPHA-002 | 中途失敗路徑 | 目標未達且出牌耗盡 -> `phase = RunFail` |
 | TC-LEX-001 | 詞庫層門檻判定 | 未達門檻不可解鎖 |
 | TC-META-001 | 互斥節點 | 無法同時啟用互斥節點 |
 | TC-MIG-001 | v1->v2 遷移成功 | 生成 `saveVersion=2` 且備份存在 |

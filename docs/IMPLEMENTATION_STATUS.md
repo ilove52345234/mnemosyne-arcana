@@ -42,7 +42,7 @@
 | M4-02 | 商店權重平衡 | M4 | Codex | Done | Ante 分段權重 + Boss 課程卡 2 選 1 + 價格帶測試完成 |
 | M4-03 | 盲注曲線平衡 | M4 | Codex | Done | RunDifficultyProfile 三檔曲線（Relaxed/Standard/Challenging）與測試完成 |
 | M4-04 | 首輪平衡報告 | M4 | Codex | Done | `docs/21-m4-first-balance-report.md` 已完成 |
-| A-01 | 全流程回歸 | Alpha | Codex | In Progress | 待在可授權環境跑 Ante 1-8 |
+| A-01 | 全流程回歸 | Alpha | Codex | In Progress | 已補 AlphaRegressionTests 與清單，待可授權環境完成最終驗收 |
 | A-02 | 存檔/migration 壓測 | Alpha | TBD | Todo | |
 | A-03 | 效能與穩定性驗收 | Alpha | TBD | Todo | |
 | A-04 | 發版決策 | Alpha | TBD | Todo | |

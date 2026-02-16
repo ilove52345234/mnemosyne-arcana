@@ -500,3 +500,25 @@
   - 無新增阻塞（維持現有 Unity 授權限制）
 - 下一步：
   - 持續 A-01 回歸，完成後同步更新 `docs/20` 與看板
+
+## 交接記錄（2026-02-16）- A-01 全流程回歸準備完成
+
+- 目標：把 A-01 回歸執行前的自動化與流程文件準備到可執行狀態
+- 完成內容：
+  - 新增 `AlphaRegressionTests`（Ante1-8 通關路徑 + 失敗路徑）
+  - 新增 `docs/22-alpha-a01-regression-checklist.md`（執行步驟、驗收表、阻塞）
+  - 更新 `docs/17` 的 Alpha 測試案例 ID
+  - 更新 `docs/IMPLEMENTATION_STATUS` 與 `docs/PROJECT_EXECUTION_PLAN`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Tests/EditMode/AlphaRegressionTests.cs`
+  - `docs/22-alpha-a01-regression-checklist.md`
+  - `docs/17-test-matrix.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - 本環境 Unity 授權限制仍在，A-01 最終驗收需在可授權環境完成
+- 下一步：
+  - 在可授權環境執行 A-01 並填寫 `docs/22` 驗收結果

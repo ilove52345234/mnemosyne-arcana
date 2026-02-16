@@ -458,3 +458,26 @@
   - 仍需在可授權環境跑完整 Unity EditMode 測試
 - 下一步：
   - M4-04：首輪平衡報告（彙整 M4-01~03 的數值與測試結論）
+
+## 交接記錄（2026-02-14）- M4-04 首輪平衡報告完成
+
+- 目標：產出 M4 首輪平衡總結，作為進入 Alpha Gate 的決策依據
+- 完成內容：
+  - 新增 `docs/21-m4-first-balance-report.md`
+  - 彙整 M4-01~03 的可量化結果：
+    - 詞庫分布與覆蓋率
+    - 商店權重與價格帶
+    - 盲注曲線三檔體感策略
+  - 列出 Alpha 前風險與建議執行順序
+  - 更新進度看板：M4 全完成，Alpha Gate 啟動
+- 變更檔案：
+  - `docs/21-m4-first-balance-report.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/PROJECT_EXECUTION_PLAN.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `bash scripts/validate_configs.sh` 通過
+- 風險/阻塞：
+  - Unity batchmode 授權限制仍在，A-01 需在可授權環境執行
+- 下一步：
+  - A-01：Ante 1-8 全流程回歸

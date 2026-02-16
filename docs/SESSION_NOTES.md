@@ -481,3 +481,22 @@
   - Unity batchmode 授權限制仍在，A-01 需在可授權環境執行
 - 下一步：
   - A-01：Ante 1-8 全流程回歸
+
+## 交接記錄（2026-02-16）- 文件狀態一致性修正（docs/20）
+
+- 目標：修正 `docs/20` 與看板狀態不一致問題，建立單一可信狀態
+- 完成內容：
+  - 更新 `docs/20-project-analysis-2026-02-14.md` 內容至最新狀態：
+    - `M3` / `M4` 由 Todo 改為 Done
+    - `Alpha Gate` 改為 In Progress
+    - 移除已完成缺口（如 `TryUnlockNode` 未實作）
+    - 將下一步改為 `A-01~A-04` 驗收路徑
+- 變更檔案：
+  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 與 `docs/IMPLEMENTATION_STATUS.md`、`docs/PROJECT_EXECUTION_PLAN.md` 對齊
+- 風險/阻塞：
+  - 無新增阻塞（維持現有 Unity 授權限制）
+- 下一步：
+  - 持續 A-01 回歸，完成後同步更新 `docs/20` 與看板

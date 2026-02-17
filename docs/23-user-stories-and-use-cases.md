@@ -46,3 +46,24 @@
 2. Unity MCP 可重現 Play Mode 原型 UI 存在。
 3. EditMode 測試全綠，且新增 use case 測試全綠。
 4. 再進入 A-02（存檔/migration）實作。
+
+## 4. 驗收測試實作（2026-02-17）
+
+- `Assets/MnemosyneArcana/Tests/EditMode/UserStoryAcceptanceTests.cs`
+- US-01：`US01_PlayStartsWithPrototypeUi`
+- US-02：`US02_SingleHandCanScoreAndMoveToBlindResult`
+- US-03：`US03_BlindCanPassOrFail`
+- US-04：`US04_ShopCanGenerateAndPurchaseWithBalanceGuard`
+- US-05：`US05_CanCompleteFullAnte1To8Run`
+- US-06：`US06_MetaSettlementAndContractCapAreValid`
+
+## 5. 第二批故事（2026-02-17）
+
+### US-07 失敗後可重開新局
+- 驗收：`US07_CanRestartRunAfterFailure`
+
+### US-08 Boss 商店固定課程二選一
+- 驗收：`US08_BossShopAlwaysOffersTwoCoursesAtPrice10`
+
+### US-09 答錯三選一可用且守門正確
+- 驗收：`US09_WrongAnswerThreeChoicesWorkAsDesigned`

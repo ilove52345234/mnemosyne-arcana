@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
 
 namespace MnemosyneArcana.Prototype.Editor
 {
@@ -18,14 +17,7 @@ namespace MnemosyneArcana.Prototype.Editor
             {
                 return;
             }
-
-            if (Object.FindObjectOfType<PrototypeCardGameUiController>() != null)
-            {
-                return;
-            }
-
-            var go = new GameObject("PrototypeCardGameUI");
-            go.AddComponent<PrototypeCardGameUiController>();
+            PrototypePlayModeBootstrap.EnsurePrototypeUiForCurrentScene();
         }
     }
 }

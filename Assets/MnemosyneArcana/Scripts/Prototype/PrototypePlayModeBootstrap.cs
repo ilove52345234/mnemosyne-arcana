@@ -7,18 +7,24 @@ namespace MnemosyneArcana.Prototype
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void EnsurePrototypeUiInPlayMode()
         {
+            EnsurePrototypeUiForCurrentScene();
+        }
+
+        public static bool EnsurePrototypeUiForCurrentScene()
+        {
             if (!Application.isEditor)
             {
-                return;
+                return false;
             }
 
             if (Object.FindObjectOfType<PrototypeCardGameUiController>() != null)
             {
-                return;
+                return false;
             }
 
             var go = new GameObject("PrototypeCardGameUI");
             go.AddComponent<PrototypeCardGameUiController>();
+            return true;
         }
     }
 }

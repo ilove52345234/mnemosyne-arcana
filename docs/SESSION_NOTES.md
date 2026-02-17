@@ -690,3 +690,24 @@
 - 下一步：
   - 固定種子多輪（建議 >=30）統計十模型通關/卡關分佈
   - 用分佈數據回調 M8/M9 高段係數，鎖定目標通關率帶
+
+## 交接記錄（2026-02-17）- 十模型 30 輪批次驗證工具接入
+
+- 目標：將「多 seed 分佈驗證」做成可重複操作的原型工具
+- 完成內容：
+  - 原型新增按鈕：`10模型30輪`
+  - 新增批次流程：`TenModelBatchValidationFlow(30)`
+  - 每模型輸出統計摘要：
+    - `clear=x/30`
+    - `modeFailAnte=y(count)`
+    - `expected=z`
+  - 抽離模型設定為 `GetTenModelProfiles()`，避免單輪/批次配置分叉
+- 驗證結果：
+  - Unity MCP EditMode：`118/118 passed`
+  - PlayMode 啟動後無 runtime 例外（既有 `10 模型驗證` 可持續運行）
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/SESSION_NOTES.md`
+- 下一步：
+  - 直接執行 `10模型30輪` 並回填統計數據到 `docs/25-gate-model-sweep-report-2026-02-17.md`

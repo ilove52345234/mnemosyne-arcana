@@ -208,6 +208,7 @@ namespace MnemosyneArcana.Prototype
         private Coroutine _useCaseVerificationCoroutine;
         private Coroutine _fullValidationCoroutine;
         private Coroutine _modelValidationCoroutine;
+        private Coroutine _modelBatchValidationCoroutine;
 
         internal bool IsCardInteractionLocked => _isPlayingCardAnim;
         internal RectTransform DragLayer => _dragLayer;
@@ -459,6 +460,7 @@ namespace MnemosyneArcana.Prototype
             CreateButton(actionRow4, "驗證全部用例", StartUseCaseVerification);
             CreateButton(actionRow4, "全流程最終驗收", StartFullValidationFlow);
             CreateButton(actionRow4, "10模型驗證", StartTenModelValidation);
+            CreateButton(actionRow4, "10模型30輪", StartTenModelBatchValidation);
 
             _shopText = CreateText(leftCol, "商店：尚未生成", 14, TextAnchor.UpperLeft, FontStyle.Normal);
             _shopText.gameObject.AddComponent<LayoutElement>().minHeight = 36;
@@ -1133,6 +1135,34 @@ namespace MnemosyneArcana.Prototype
             _modelValidationCoroutine = StartCoroutine(TenModelValidationFlow());
         }
 
+        private void StartTenModelBatchValidation()
+        {
+            if (_modelBatchValidationCoroutine != null)
+            {
+                AddLog("10 模型 30 輪驗證已在執行中。");
+                return;
+            }
+
+            _modelBatchValidationCoroutine = StartCoroutine(TenModelBatchValidationFlow(30));
+        }
+
+        private static (string Label, int Learned, float Retention, float Retrieval, float Mastery, int ExpectedChokeAnte)[] GetTenModelProfiles()
+        {
+            return new[]
+            {
+                (Label: "M0", Learned: 0, Retention: 0.75f, Retrieval: 0.70f, Mastery: 0.20f, ExpectedChokeAnte: 1),
+                (Label: "M1", Learned: 2000, Retention: 0.80f, Retrieval: 0.75f, Mastery: 0.40f, ExpectedChokeAnte: 1),
+                (Label: "M2", Learned: 3000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.50f, ExpectedChokeAnte: 2),
+                (Label: "M3", Learned: 4000, Retention: 0.84f, Retrieval: 0.80f, Mastery: 0.60f, ExpectedChokeAnte: 2),
+                (Label: "M4", Learned: 5000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.70f, ExpectedChokeAnte: 3),
+                (Label: "M5", Learned: 6000, Retention: 0.88f, Retrieval: 0.84f, Mastery: 0.80f, ExpectedChokeAnte: 4),
+                (Label: "M6", Learned: 7000, Retention: 0.90f, Retrieval: 0.86f, Mastery: 0.88f, ExpectedChokeAnte: 5),
+                (Label: "M7", Learned: 8000, Retention: 0.92f, Retrieval: 0.88f, Mastery: 0.93f, ExpectedChokeAnte: 6),
+                (Label: "M8", Learned: 9000, Retention: 0.94f, Retrieval: 0.90f, Mastery: 0.96f, ExpectedChokeAnte: 7),
+                (Label: "M9", Learned: 10000, Retention: 0.97f, Retrieval: 0.93f, Mastery: 0.98f, ExpectedChokeAnte: 9)
+            };
+        }
+
         private IEnumerator AutoRunToCompleteFlow()
         {
             AddLog("自動通關：開始推進到 RunComplete。");
@@ -1476,19 +1506,7 @@ namespace MnemosyneArcana.Prototype
             var baselineModel = _currentGateModelIndex;
             var rng = new System.Random(_seed + 1009);
 
-            var models = new[]
-            {
-                (Label: "M0", Learned: 0, Retention: 0.75f, Retrieval: 0.70f, Mastery: 0.20f, ExpectedChokeAnte: 1),
-                (Label: "M1", Learned: 2000, Retention: 0.80f, Retrieval: 0.75f, Mastery: 0.40f, ExpectedChokeAnte: 1),
-                (Label: "M2", Learned: 3000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.50f, ExpectedChokeAnte: 2),
-                (Label: "M3", Learned: 4000, Retention: 0.84f, Retrieval: 0.80f, Mastery: 0.60f, ExpectedChokeAnte: 2),
-                (Label: "M4", Learned: 5000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.70f, ExpectedChokeAnte: 3),
-                (Label: "M5", Learned: 6000, Retention: 0.88f, Retrieval: 0.84f, Mastery: 0.80f, ExpectedChokeAnte: 4),
-                (Label: "M6", Learned: 7000, Retention: 0.90f, Retrieval: 0.86f, Mastery: 0.88f, ExpectedChokeAnte: 5),
-                (Label: "M7", Learned: 8000, Retention: 0.92f, Retrieval: 0.88f, Mastery: 0.93f, ExpectedChokeAnte: 6),
-                (Label: "M8", Learned: 9000, Retention: 0.94f, Retrieval: 0.90f, Mastery: 0.96f, ExpectedChokeAnte: 7),
-                (Label: "M9", Learned: 10000, Retention: 0.97f, Retrieval: 0.93f, Mastery: 0.98f, ExpectedChokeAnte: 9)
-            };
+            var models = GetTenModelProfiles();
 
             for (var modelIndex = 0; modelIndex < models.Length; modelIndex++)
             {
@@ -1598,6 +1616,143 @@ namespace MnemosyneArcana.Prototype
             AddLog("10 模型驗證：完成，已還原原始參數。");
 
             _modelValidationCoroutine = null;
+        }
+
+        private IEnumerator TenModelBatchValidationFlow(int runsPerModel)
+        {
+            if (_autoDemoCoroutine != null)
+            {
+                StopCoroutine(_autoDemoCoroutine);
+                _autoDemoCoroutine = null;
+            }
+
+            var models = GetTenModelProfiles();
+            AddLog(string.Format("10 模型 {0} 輪驗證：開始。", runsPerModel));
+
+            var baselineLearned = _learnedCount;
+            var baselineRetention = _retentionRate;
+            var baselineRetrieval = _retrievalRate;
+            var baselineMastery = _overallMasteryRate;
+            var baselineModel = _currentGateModelIndex;
+
+            var clearCounts = new int[models.Length];
+            var failAnteCounts = new int[models.Length, 10];
+            var totalRuns = 0;
+
+            for (var seedOffset = 0; seedOffset < runsPerModel; seedOffset++)
+            {
+                var rng = new System.Random(_seed + 5000 + seedOffset * 97);
+                for (var modelIndex = 0; modelIndex < models.Length; modelIndex++)
+                {
+                    totalRuns++;
+                    var model = models[modelIndex];
+                    _learnedCount = model.Learned;
+                    _retentionRate = model.Retention;
+                    _retrievalRate = model.Retrieval;
+                    _overallMasteryRate = model.Mastery;
+                    _currentGateModelIndex = modelIndex;
+                    _learningEfficiencyBoost = 1f;
+                    _consecutiveRecoveryFailures = 0;
+                    _inRecoveryGate = false;
+
+                    StartRun();
+
+                    var guard = 0;
+                    while (_runManager.CurrentState.Phase != RunPhase.RunComplete &&
+                           _runManager.CurrentState.Phase != RunPhase.RunFail &&
+                           guard < 512)
+                    {
+                        guard++;
+                        var phase = _runManager.CurrentState.Phase;
+                        if (phase == RunPhase.HandSelect)
+                        {
+                            var correct = 0;
+                            for (var i = 0; i < 5; i++)
+                            {
+                                var answerChance = Mathf.Clamp01(0.35f + modelIndex * 0.055f);
+                                if (rng.NextDouble() < answerChance)
+                                {
+                                    correct++;
+                                }
+                            }
+
+                            var handScore = BuildModelHandScore(
+                                _runManager.CurrentState.TargetScore,
+                                _runManager.CurrentState.PlaysLeft,
+                                correct,
+                                modelIndex,
+                                rng);
+                            _runManager.SubmitHandScore(handScore);
+                        }
+                        else if (phase == RunPhase.BlindResult)
+                        {
+                            ResolveBlind();
+                        }
+                        else if (phase == RunPhase.Shop)
+                        {
+                            GenerateShopOffers();
+                            BuyFirstOffer();
+                            AdvanceAfterShop();
+                        }
+
+                        yield return null;
+                    }
+
+                    if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
+                    {
+                        clearCounts[modelIndex]++;
+                        SettleCompletedRunMeta();
+                    }
+                    else if (_runManager.CurrentState.Phase == RunPhase.RunFail)
+                    {
+                        var failedAnte = Mathf.Clamp(_runManager.CurrentState.Ante, 1, 9);
+                        failAnteCounts[modelIndex, failedAnte]++;
+                    }
+                }
+
+                if ((seedOffset + 1) % 10 == 0 || seedOffset == runsPerModel - 1)
+                {
+                    AddLog(string.Format(
+                        "10 模型 {0} 輪驗證：進度 {1}/{0}（累計樣本 {2}）。",
+                        runsPerModel,
+                        seedOffset + 1,
+                        totalRuns));
+                }
+            }
+
+            for (var modelIndex = 0; modelIndex < models.Length; modelIndex++)
+            {
+                var modeAnte = 1;
+                var modeCount = failAnteCounts[modelIndex, 1];
+                for (var ante = 2; ante <= 9; ante++)
+                {
+                    if (failAnteCounts[modelIndex, ante] > modeCount)
+                    {
+                        modeAnte = ante;
+                        modeCount = failAnteCounts[modelIndex, ante];
+                    }
+                }
+
+                var clears = clearCounts[modelIndex];
+                AddLog(string.Format(
+                    "10 模型 {0} 輪：{1} clear={2}/{0}, modeFailAnte={3}({4}), expected={5}",
+                    runsPerModel,
+                    models[modelIndex].Label,
+                    clears,
+                    modeAnte,
+                    modeCount,
+                    models[modelIndex].ExpectedChokeAnte));
+            }
+
+            _learnedCount = baselineLearned;
+            _retentionRate = baselineRetention;
+            _retrievalRate = baselineRetrieval;
+            _overallMasteryRate = baselineMastery;
+            _currentGateModelIndex = baselineModel;
+            SyncGateModelWithEffectiveVocab();
+            AddLog(string.Format("10 模型 {0} 輪驗證：完成，已還原原始參數。", runsPerModel));
+
+            _modelBatchValidationCoroutine = null;
         }
 
         private IEnumerator AutoStartTenModelValidationFlow()

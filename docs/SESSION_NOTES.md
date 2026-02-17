@@ -729,3 +729,20 @@
   - `docs/SESSION_NOTES.md`
 - 下一步：
   - 目標將 M9 通關率從 100% 回調至設計區間（建議先試 30%~60%）
+
+## 交接記錄（2026-02-17）- M9 通關率校準完成（30 輪）
+
+- 目標：將高段模型 M9 從過易（100%）回調到可控通關率區間
+- 執行方式：
+  - Unity MCP 重複執行 Prototype `10模型30輪`
+  - 以 `BuildModelHandScore` 的 M9 係數與答題機率做迭代調參
+- 最終結果：
+  - `M0~M8`：仍維持 `clear=0/30` 且卡關點與預期一致
+  - `M9`：`clear=12/30`（40%），落在目標區間 `30%~60%`
+- 驗證結果：
+  - Unity MCP EditMode：`118/118 passed`
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/SESSION_NOTES.md`

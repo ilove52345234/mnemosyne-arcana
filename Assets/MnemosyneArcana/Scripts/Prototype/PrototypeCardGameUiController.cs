@@ -202,6 +202,7 @@ namespace MnemosyneArcana.Prototype
         [SerializeField] private float _autoDemoStartDelaySeconds = 1.2f;
         [SerializeField] private bool _autoStartTenModelValidationOnPlay = true;
         [SerializeField] private bool _autoStartTenModelBatchValidationOnPlay = false;
+        private bool _suppressVerboseLogs;
         private Coroutine _autoDemoCoroutine;
         private Coroutine _autoRunToCompleteCoroutine;
         private Coroutine _autoBatchRunsCoroutine;
@@ -243,7 +244,6 @@ namespace MnemosyneArcana.Prototype
             if (_autoStartTenModelBatchValidationOnPlay)
             {
                 StartCoroutine(AutoStartTenModelBatchValidationFlow());
-                _autoStartTenModelBatchValidationOnPlay = false;
             }
             else if (_autoStartTenModelValidationOnPlay)
             {
@@ -1547,7 +1547,12 @@ namespace MnemosyneArcana.Prototype
                         var correct = 0;
                         for (var i = 0; i < 5; i++)
                         {
-                            var answerChance = Mathf.Clamp01(0.35f + modelIndex * 0.055f);
+                            var answerChance = 0.35f + modelIndex * 0.055f;
+                            if (modelIndex == 9)
+                            {
+                                answerChance -= 0.14f;
+                            }
+                            answerChance = Mathf.Clamp01(answerChance);
                             if (rng.NextDouble() < answerChance)
                             {
                                 correct++;
@@ -1633,6 +1638,8 @@ namespace MnemosyneArcana.Prototype
             }
 
             var models = GetTenModelProfiles();
+            var previousSuppressState = _suppressVerboseLogs;
+            _suppressVerboseLogs = true;
             AddLog(string.Format("10 模型 {0} 輪驗證：開始。", runsPerModel));
 
             var baselineLearned = _learnedCount;
@@ -1675,7 +1682,12 @@ namespace MnemosyneArcana.Prototype
                             var correct = 0;
                             for (var i = 0; i < 5; i++)
                             {
-                                var answerChance = Mathf.Clamp01(0.35f + modelIndex * 0.055f);
+                                var answerChance = 0.35f + modelIndex * 0.055f;
+                                if (modelIndex == 9)
+                                {
+                                    answerChance -= 0.14f;
+                                }
+                                answerChance = Mathf.Clamp01(answerChance);
                                 if (rng.NextDouble() < answerChance)
                                 {
                                     correct++;
@@ -1701,7 +1713,6 @@ namespace MnemosyneArcana.Prototype
                             AdvanceAfterShop();
                         }
 
-                        yield return null;
                     }
 
                     if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
@@ -1714,6 +1725,9 @@ namespace MnemosyneArcana.Prototype
                         var failedAnte = Mathf.Clamp(_runManager.CurrentState.Ante, 1, 9);
                         failAnteCounts[modelIndex, failedAnte]++;
                     }
+
+                    // Batch simulation yields once per model to keep editor responsive while avoiding per-step frame waits.
+                    yield return null;
                 }
 
                 if ((seedOffset + 1) % 10 == 0 || seedOffset == runsPerModel - 1)
@@ -1768,6 +1782,7 @@ namespace MnemosyneArcana.Prototype
             _currentGateModelIndex = baselineModel;
             SyncGateModelWithEffectiveVocab();
             AddLog(string.Format("10 模型 {0} 輪驗證：完成，已還原原始參數。", runsPerModel));
+            _suppressVerboseLogs = previousSuppressState;
 
             _modelBatchValidationCoroutine = null;
         }
@@ -1788,12 +1803,18 @@ namespace MnemosyneArcana.Prototype
         {
             var basePerPlay = targetScore / Mathf.Max(1, playsLeft);
             var modelFactor = 0.40f + 0.05f * Mathf.Clamp(modelIndex, 0, 9);
-            if (modelIndex >= 8)
+            if (modelIndex == 8)
             {
-                modelFactor += 0.03f;
+                modelFactor += 0.02f;
+            }
+            else if (modelIndex >= 9)
+            {
+                modelFactor = 0.46f;
             }
             var accuracyFactor = modelFactor + 0.08f * Mathf.Clamp(correctCount, 0, 5);
-            var volatility = 0.90f + (float)rng.NextDouble() * 0.20f;
+            var volatility = modelIndex >= 9
+                ? 0.55f + (float)rng.NextDouble() * 0.55f
+                : 0.90f + (float)rng.NextDouble() * 0.20f;
             var score = Mathf.RoundToInt(basePerPlay * accuracyFactor * volatility);
             return Mathf.Max(0, score);
         }
@@ -2498,6 +2519,11 @@ namespace MnemosyneArcana.Prototype
 
         private void AddLog(string text)
         {
+            if (_suppressVerboseLogs && !text.StartsWith("10 模型 "))
+            {
+                return;
+            }
+
             var line = string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss"), text);
             _logs.Add(line);
             Debug.Log("[PrototypeFlow] " + line);

@@ -201,6 +201,7 @@ namespace MnemosyneArcana.Prototype
         [SerializeField] private bool _autoDemoOnStart = true;
         [SerializeField] private float _autoDemoStartDelaySeconds = 1.2f;
         [SerializeField] private bool _autoStartTenModelValidationOnPlay = true;
+        [SerializeField] private bool _autoStartTenModelBatchValidationOnPlay = false;
         private Coroutine _autoDemoCoroutine;
         private Coroutine _autoRunToCompleteCoroutine;
         private Coroutine _autoBatchRunsCoroutine;
@@ -239,7 +240,12 @@ namespace MnemosyneArcana.Prototype
             StartRun();
             AddLog("已載入真實卡牌 UI 原型，可直接邊玩邊調參。");
 
-            if (_autoStartTenModelValidationOnPlay)
+            if (_autoStartTenModelBatchValidationOnPlay)
+            {
+                StartCoroutine(AutoStartTenModelBatchValidationFlow());
+                _autoStartTenModelBatchValidationOnPlay = false;
+            }
+            else if (_autoStartTenModelValidationOnPlay)
             {
                 StartCoroutine(AutoStartTenModelValidationFlow());
             }
@@ -1722,6 +1728,18 @@ namespace MnemosyneArcana.Prototype
 
             for (var modelIndex = 0; modelIndex < models.Length; modelIndex++)
             {
+                var clears = clearCounts[modelIndex];
+                if (clears == runsPerModel)
+                {
+                    AddLog(string.Format(
+                        "10 模型 {0} 輪：{1} clear={2}/{0}, modeFailAnte=N/A(all clear), expected={3}",
+                        runsPerModel,
+                        models[modelIndex].Label,
+                        clears,
+                        models[modelIndex].ExpectedChokeAnte));
+                    continue;
+                }
+
                 var modeAnte = 1;
                 var modeCount = failAnteCounts[modelIndex, 1];
                 for (var ante = 2; ante <= 9; ante++)
@@ -1733,7 +1751,6 @@ namespace MnemosyneArcana.Prototype
                     }
                 }
 
-                var clears = clearCounts[modelIndex];
                 AddLog(string.Format(
                     "10 模型 {0} 輪：{1} clear={2}/{0}, modeFailAnte={3}({4}), expected={5}",
                     runsPerModel,
@@ -1759,6 +1776,12 @@ namespace MnemosyneArcana.Prototype
         {
             yield return new WaitForSecondsRealtime(Mathf.Max(0.2f, _autoDemoStartDelaySeconds));
             StartTenModelValidation();
+        }
+
+        private IEnumerator AutoStartTenModelBatchValidationFlow()
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(0.2f, _autoDemoStartDelaySeconds));
+            StartTenModelBatchValidation();
         }
 
         private static int BuildModelHandScore(int targetScore, int playsLeft, int correctCount, int modelIndex, System.Random rng)

@@ -711,3 +711,21 @@
   - `docs/SESSION_NOTES.md`
 - 下一步：
   - 直接執行 `10模型30輪` 並回填統計數據到 `docs/25-gate-model-sweep-report-2026-02-17.md`
+
+## 交接記錄（2026-02-17）- 十模型 30 輪實測完成（首版分佈）
+
+- 目標：取得多 seed 分佈數據，驗證十模型卡關穩定性
+- 執行方式：
+  - Unity MCP PlayMode 觸發 Prototype `10模型30輪`
+- 主要結果：
+  - `M0~M8`：`clear=0/30` 且 `modeFailAnte` 與 expected 完全一致
+  - `M9`：`clear=30/30`（100% 通關）
+- 判讀：
+  - 低中段曲線穩定且可預測
+  - 高段 M9 已達可通關，但通關率過高，需回調避免偏易
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/SESSION_NOTES.md`
+- 下一步：
+  - 目標將 M9 通關率從 100% 回調至設計區間（建議先試 30%~60%）

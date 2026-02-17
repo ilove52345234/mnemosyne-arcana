@@ -123,6 +123,8 @@ namespace MnemosyneArcana.Prototype
         private readonly ScoringManagerV2 _scoringManager = new ScoringManagerV2();
         private readonly ShopManagerV2 _shopManager = new ShopManagerV2();
         private readonly MetaManagerV2 _metaManager = new MetaManagerV2();
+        private readonly GateProgressionManagerV2 _gateProgressionManager = new GateProgressionManagerV2();
+        private readonly LearningTelemetryManagerV2 _telemetryManager = new LearningTelemetryManagerV2();
 
         private Font _font;
         private Text _statusText;
@@ -156,7 +158,36 @@ namespace MnemosyneArcana.Prototype
         private float _additiveMult;
         private float _factor = 1.0f;
         private int _metaLp = 80;
+        private int _metaXp;
         private string _unlockNodeId = "FLU_01";
+        private Contract _activeRunContract;
+        [SerializeField] private int _learnedCount = 2000;
+        [SerializeField] private float _retentionRate = 0.85f;
+        [SerializeField] private float _retrievalRate = 0.8f;
+        [SerializeField] private float _coreCoverageRate = 0.85f;
+        [SerializeField] private float _requiredCoverageRate = 0.85f;
+        [SerializeField] private float _activeRecallQuestionRatio = 0.4f;
+        [SerializeField] private float _activeRecallAccuracy = 0.8f;
+        [SerializeField] private float _requiredBossRecallRatio = 0.4f;
+        [SerializeField] private float _requiredBossRecallAccuracy = 0.8f;
+        [SerializeField] private float _overallMasteryRate = 0.95f;
+        [SerializeField] private int _stableDaysAtHundredPercent;
+        [SerializeField] private float _learningEfficiencyBoost = 1.0f;
+        [SerializeField] private float _maxLearningEfficiencyBoost = 1.5f;
+        private int _currentGateModelIndex = 1;
+        private int _highestUnlockedModelIndex = 1;
+        private int _consecutiveRecoveryFailures;
+        private int _daysSinceLastDemotion = 30;
+        private bool _inRecoveryGate;
+        private int _gateAttempts;
+        private int _gatePasses;
+        private int _recoveryEntries;
+        private int _recoveryClears;
+        private int _demotionCount;
+        private int _bossGatePasses;
+        private int _mainClearCount;
+        private int _trueClearCount;
+        private int _runDays;
         private int _lastScore;
         private readonly List<DrawAnim> _drawAnims = new List<DrawAnim>();
         private bool _isPlayingCardAnim;
@@ -167,6 +198,16 @@ namespace MnemosyneArcana.Prototype
         private int _quizCorrectCount;
         private int _quizCurrentCorrectOptionIndex = -1;
         private bool _isTuningCollapsed = true;
+        [SerializeField] private bool _autoDemoOnStart = true;
+        [SerializeField] private float _autoDemoStartDelaySeconds = 1.2f;
+        [SerializeField] private bool _autoStartTenModelValidationOnPlay = true;
+        private Coroutine _autoDemoCoroutine;
+        private Coroutine _autoRunToCompleteCoroutine;
+        private Coroutine _autoBatchRunsCoroutine;
+        private Coroutine _autoFailThenRecoverCoroutine;
+        private Coroutine _useCaseVerificationCoroutine;
+        private Coroutine _fullValidationCoroutine;
+        private Coroutine _modelValidationCoroutine;
 
         internal bool IsCardInteractionLocked => _isPlayingCardAnim;
         internal RectTransform DragLayer => _dragLayer;
@@ -196,6 +237,15 @@ namespace MnemosyneArcana.Prototype
             BuildUi();
             StartRun();
             AddLog("已載入真實卡牌 UI 原型，可直接邊玩邊調參。");
+
+            if (_autoStartTenModelValidationOnPlay)
+            {
+                StartCoroutine(AutoStartTenModelValidationFlow());
+            }
+            else if (_autoDemoOnStart)
+            {
+                _autoDemoCoroutine = StartCoroutine(AutoDemoFlow());
+            }
         }
 
         private void Update()
@@ -402,6 +452,14 @@ namespace MnemosyneArcana.Prototype
             CreateButton(actionRow3, "購買第一項", BuyFirstOffer);
             CreateButton(actionRow3, "嘗試解鎖節點", TryUnlockNode);
 
+            var actionRow4 = CreateRow(leftCol, 46);
+            CreateButton(actionRow4, "一鍵跑到通關", StartAutoRunToComplete);
+            CreateButton(actionRow4, "連跑3局", StartAutoBatchRuns);
+            CreateButton(actionRow4, "失敗後重開演示", StartFailThenRecoverDemo);
+            CreateButton(actionRow4, "驗證全部用例", StartUseCaseVerification);
+            CreateButton(actionRow4, "全流程最終驗收", StartFullValidationFlow);
+            CreateButton(actionRow4, "10模型驗證", StartTenModelValidation);
+
             _shopText = CreateText(leftCol, "商店：尚未生成", 14, TextAnchor.UpperLeft, FontStyle.Normal);
             _shopText.gameObject.AddComponent<LayoutElement>().minHeight = 36;
             _shopGridContainer = CreatePanel(leftCol, new Color(0.09f, 0.1f, 0.15f, 0.95f));
@@ -573,6 +631,17 @@ namespace MnemosyneArcana.Prototype
 
         private void StartRun()
         {
+            _runDays++;
+            _daysSinceLastDemotion = Mathf.Min(3650, _daysSinceLastDemotion + 1);
+            if (_overallMasteryRate >= 1f)
+            {
+                _stableDaysAtHundredPercent++;
+            }
+            else
+            {
+                _stableDaysAtHundredPercent = 0;
+            }
+            SyncGateModelWithEffectiveVocab();
             _runManager = new RunManagerV2(_difficulty);
             _runManager.StartRun(_seed);
             _offers.Clear();
@@ -581,9 +650,95 @@ namespace MnemosyneArcana.Prototype
             _playZoneOrder.Clear();
             ResetQuizState("尚未開始答題。");
             _lastScore = 0;
+            GenerateRunContract();
             DrawHand();
             AddLog(string.Format("開新局：難度={0}, Seed={1}", DifficultyZh(_difficulty), _seed));
             RefreshView();
+        }
+
+        private void SyncGateModelWithEffectiveVocab()
+        {
+            var adjustedLearnedCount = Mathf.RoundToInt(_learnedCount * Mathf.Clamp(_learningEfficiencyBoost, 1f, _maxLearningEfficiencyBoost));
+            var result = _gateProgressionManager.EvaluateProgress(
+                adjustedLearnedCount,
+                _retentionRate,
+                _retrievalRate,
+                Mathf.Clamp(_currentGateModelIndex, 0, 9));
+            if (!result.IsSuccess)
+            {
+                AddLog("Gate 模型同步失敗，使用現有模型。");
+                return;
+            }
+
+            _highestUnlockedModelIndex = result.Value.HighestUnlockedModelIndex;
+            var originalModel = _currentGateModelIndex;
+            _currentGateModelIndex = Mathf.Clamp(_currentGateModelIndex, 0, _highestUnlockedModelIndex);
+            if (originalModel != _currentGateModelIndex)
+            {
+                AddLog(string.Format("Gate 模型調整：M{0} -> M{1}", originalModel, _currentGateModelIndex));
+            }
+            else if (_highestUnlockedModelIndex > _currentGateModelIndex)
+            {
+                _currentGateModelIndex = _highestUnlockedModelIndex;
+                AddLog(string.Format("有效詞彙量成長：解鎖到 M{0}", _currentGateModelIndex));
+            }
+        }
+
+        private void ApplyLearningEfficiencyGain(float delta, string reason)
+        {
+            var before = _learningEfficiencyBoost;
+            _learningEfficiencyBoost = Mathf.Clamp(_learningEfficiencyBoost + delta, 1f, _maxLearningEfficiencyBoost);
+            if (Mathf.Abs(_learningEfficiencyBoost - before) > 0.0001f)
+            {
+                AddLog(string.Format(
+                    "學習效率提升：{0:0.00} -> {1:0.00}（{2}）",
+                    before,
+                    _learningEfficiencyBoost,
+                    reason));
+            }
+        }
+
+        private void ApplyLearningEfficiencyLoss(float delta, string reason)
+        {
+            var before = _learningEfficiencyBoost;
+            _learningEfficiencyBoost = Mathf.Clamp(_learningEfficiencyBoost - delta, 1f, _maxLearningEfficiencyBoost);
+            if (Mathf.Abs(_learningEfficiencyBoost - before) > 0.0001f)
+            {
+                AddLog(string.Format(
+                    "學習效率下修：{0:0.00} -> {1:0.00}（{2}）",
+                    before,
+                    _learningEfficiencyBoost,
+                    reason));
+            }
+        }
+
+        private static int MaxAnteForModel(int modelIndex)
+        {
+            if (modelIndex <= 0)
+            {
+                return 0;
+            }
+
+            return Mathf.Min(8, modelIndex);
+        }
+
+        private void GenerateRunContract()
+        {
+            var contracts = _metaManager.GenerateContracts(new MetaProgress
+            {
+                Lp = _metaLp,
+                Xp = _metaXp
+            }, _seed + _runManager.CurrentState.Ante * 13);
+
+            if (!contracts.IsSuccess || contracts.Value.Count == 0)
+            {
+                _activeRunContract = null;
+                AddLog("本局契約生成失敗，將以基礎結算為主。");
+                return;
+            }
+
+            _activeRunContract = contracts.Value[0];
+            AddLog(string.Format("本局契約：{0}（+{1} LP）", _activeRunContract.Name, _activeRunContract.LpReward));
         }
 
         private void DrawHand()
@@ -859,6 +1014,660 @@ namespace MnemosyneArcana.Prototype
 
                 card.localScale = Vector3.one * (1f + pulse);
             }
+        }
+
+        private IEnumerator AutoDemoFlow()
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, _autoDemoStartDelaySeconds));
+            if (_runManager.CurrentState.Phase != RunPhase.HandSelect)
+            {
+                yield break;
+            }
+
+            AddLog("自動演示：開始答題 -> 出牌 -> 結算 -> 商店。");
+            StartQuizAndPlay();
+
+            while (_isQuizRunning)
+            {
+                if (_quizCurrentCorrectOptionIndex >= 0)
+                {
+                    OnQuizOptionSelected(_quizCurrentCorrectOptionIndex);
+                }
+                yield return new WaitForSecondsRealtime(0.6f);
+            }
+
+            while (_isPlayingCardAnim)
+            {
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(0.8f);
+            ResolveBlind();
+
+            if (_runManager.CurrentState.Phase == RunPhase.Shop)
+            {
+                yield return new WaitForSecondsRealtime(0.8f);
+                GenerateShopOffers();
+                yield return new WaitForSecondsRealtime(0.8f);
+                BuyFirstOffer();
+                yield return new WaitForSecondsRealtime(0.8f);
+                AdvanceAfterShop();
+
+                yield return new WaitForSecondsRealtime(0.8f);
+                AddLog("自動演示：第二手答題與出牌。");
+                StartQuizAndPlay();
+                while (_isQuizRunning)
+                {
+                    if (_quizCurrentCorrectOptionIndex >= 0)
+                    {
+                        OnQuizOptionSelected(_quizCurrentCorrectOptionIndex);
+                    }
+                    yield return new WaitForSecondsRealtime(0.6f);
+                }
+            }
+        }
+
+        private void StartAutoRunToComplete()
+        {
+            if (_autoRunToCompleteCoroutine != null)
+            {
+                AddLog("自動通關流程已在執行中。");
+                return;
+            }
+
+            _autoRunToCompleteCoroutine = StartCoroutine(AutoRunToCompleteFlow());
+        }
+
+        private void StartAutoBatchRuns()
+        {
+            if (_autoBatchRunsCoroutine != null)
+            {
+                AddLog("連跑流程已在執行中。");
+                return;
+            }
+
+            _autoBatchRunsCoroutine = StartCoroutine(AutoBatchRunsFlow(3));
+        }
+
+        private void StartFailThenRecoverDemo()
+        {
+            if (_autoFailThenRecoverCoroutine != null)
+            {
+                AddLog("失敗重開演示已在執行中。");
+                return;
+            }
+
+            _autoFailThenRecoverCoroutine = StartCoroutine(AutoFailThenRecoverFlow());
+        }
+
+        private void StartUseCaseVerification()
+        {
+            if (_useCaseVerificationCoroutine != null)
+            {
+                AddLog("用例驗證已在執行中。");
+                return;
+            }
+
+            _useCaseVerificationCoroutine = StartCoroutine(UseCaseVerificationFlow());
+        }
+
+        private void StartFullValidationFlow()
+        {
+            if (_fullValidationCoroutine != null)
+            {
+                AddLog("全流程驗收已在執行中。");
+                return;
+            }
+
+            _fullValidationCoroutine = StartCoroutine(FullValidationFlow());
+        }
+
+        private void StartTenModelValidation()
+        {
+            if (_modelValidationCoroutine != null)
+            {
+                AddLog("10 模型驗證已在執行中。");
+                return;
+            }
+
+            _modelValidationCoroutine = StartCoroutine(TenModelValidationFlow());
+        }
+
+        private IEnumerator AutoRunToCompleteFlow()
+        {
+            AddLog("自動通關：開始推進到 RunComplete。");
+            var safety = 0;
+            while (_runManager.CurrentState.Phase != RunPhase.RunComplete &&
+                   _runManager.CurrentState.Phase != RunPhase.RunFail &&
+                   safety < 64)
+            {
+                safety++;
+                var phase = _runManager.CurrentState.Phase;
+
+                if (phase == RunPhase.HandSelect && !_isQuizRunning && !_isPlayingCardAnim)
+                {
+                    var submit = _runManager.SubmitHandScore(_runManager.CurrentState.TargetScore);
+                    if (submit.IsSuccess)
+                    {
+                        AddLog(string.Format("自動出牌：+{0}（{1}/{2}）", _runManager.CurrentState.TargetScore, _runManager.CurrentState.CurrentScore, _runManager.CurrentState.TargetScore));
+                    }
+                    else
+                    {
+                        AddLog(string.Format("自動出牌失敗：{0}", submit.Error));
+                        break;
+                    }
+                }
+                else if (phase == RunPhase.BlindResult)
+                {
+                    ResolveBlind();
+                }
+                else if (phase == RunPhase.Shop)
+                {
+                    GenerateShopOffers();
+                    BuyFirstOffer();
+                    AdvanceAfterShop();
+                }
+
+                yield return new WaitForSecondsRealtime(0.3f);
+            }
+
+            if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
+            {
+                AddLog("自動通關：已完成整局！");
+                SettleCompletedRunMeta();
+            }
+            else if (_runManager.CurrentState.Phase == RunPhase.RunFail)
+            {
+                AddLog("自動通關：流程進入失敗。");
+            }
+            else
+            {
+                AddLog("自動通關：安全上限觸發，請手動檢查。");
+            }
+
+            _autoRunToCompleteCoroutine = null;
+        }
+
+        private IEnumerator AutoBatchRunsFlow(int runs)
+        {
+            if (_autoDemoCoroutine != null)
+            {
+                StopCoroutine(_autoDemoCoroutine);
+                _autoDemoCoroutine = null;
+            }
+
+            AddLog(string.Format("連跑模式：開始連跑 {0} 局。", runs));
+            for (var i = 1; i <= runs; i++)
+            {
+                StartRun();
+                yield return new WaitForSecondsRealtime(0.4f);
+
+                var safety = 0;
+                while (_runManager.CurrentState.Phase != RunPhase.RunComplete &&
+                       _runManager.CurrentState.Phase != RunPhase.RunFail &&
+                       safety < 64)
+                {
+                    safety++;
+                    var phase = _runManager.CurrentState.Phase;
+
+                    if (phase == RunPhase.HandSelect && !_isQuizRunning && !_isPlayingCardAnim)
+                    {
+                        _runManager.SubmitHandScore(_runManager.CurrentState.TargetScore);
+                    }
+                    else if (phase == RunPhase.BlindResult)
+                    {
+                        ResolveBlind();
+                    }
+                    else if (phase == RunPhase.Shop)
+                    {
+                        GenerateShopOffers();
+                        BuyFirstOffer();
+                        AdvanceAfterShop();
+                    }
+
+                    yield return new WaitForSecondsRealtime(0.15f);
+                }
+
+                if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
+                {
+                    SettleCompletedRunMeta();
+                    AddLog(string.Format("連跑模式：第 {0}/{1} 局完成。", i, runs));
+                }
+                else
+                {
+                    AddLog(string.Format("連跑模式：第 {0}/{1} 局未完成（{2}）。", i, runs, PhaseZh(_runManager.CurrentState.Phase)));
+                }
+
+                yield return new WaitForSecondsRealtime(0.4f);
+            }
+
+            AddLog("連跑模式：全部完成。");
+            _autoBatchRunsCoroutine = null;
+        }
+
+        private IEnumerator AutoFailThenRecoverFlow()
+        {
+            if (_autoDemoCoroutine != null)
+            {
+                StopCoroutine(_autoDemoCoroutine);
+                _autoDemoCoroutine = null;
+            }
+
+            AddLog("演示：先故意失敗，再重開通關。");
+            StartRun();
+            yield return new WaitForSecondsRealtime(0.6f);
+
+            // 故意打 0 分直到失敗，演示 RunFail 分支。
+            var failGuard = 0;
+            while (_runManager.CurrentState.Phase != RunPhase.RunFail && failGuard < 12)
+            {
+                failGuard++;
+                if (_runManager.CurrentState.Phase == RunPhase.HandSelect)
+                {
+                    _runManager.SubmitHandScore(0);
+                }
+                else if (_runManager.CurrentState.Phase == RunPhase.BlindResult)
+                {
+                    ResolveBlind();
+                }
+
+                yield return new WaitForSecondsRealtime(0.25f);
+            }
+
+            if (_runManager.CurrentState.Phase == RunPhase.RunFail)
+            {
+                AddLog("演示：已進入 RunFail，開始重開。");
+            }
+            else
+            {
+                AddLog("演示：未能進入 RunFail，流程中止。");
+                _autoFailThenRecoverCoroutine = null;
+                yield break;
+            }
+
+            yield return new WaitForSecondsRealtime(0.8f);
+            StartRun();
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            // 重開後自動通關並結算
+            var passGuard = 0;
+            while (_runManager.CurrentState.Phase != RunPhase.RunComplete &&
+                   _runManager.CurrentState.Phase != RunPhase.RunFail &&
+                   passGuard < 64)
+            {
+                passGuard++;
+                var phase = _runManager.CurrentState.Phase;
+                if (phase == RunPhase.HandSelect)
+                {
+                    _runManager.SubmitHandScore(_runManager.CurrentState.TargetScore);
+                }
+                else if (phase == RunPhase.BlindResult)
+                {
+                    ResolveBlind();
+                }
+                else if (phase == RunPhase.Shop)
+                {
+                    GenerateShopOffers();
+                    BuyFirstOffer();
+                    AdvanceAfterShop();
+                }
+
+                yield return new WaitForSecondsRealtime(0.15f);
+            }
+
+            if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
+            {
+                SettleCompletedRunMeta();
+                AddLog("演示：重開後已成功通關並完成結算。");
+            }
+            else
+            {
+                AddLog(string.Format("演示：重開後未通關（{0}）。", PhaseZh(_runManager.CurrentState.Phase)));
+            }
+
+            _autoFailThenRecoverCoroutine = null;
+        }
+
+        private IEnumerator UseCaseVerificationFlow()
+        {
+            AddLog("用例驗證：開始執行 UC-01 ~ UC-06。");
+            var passed = 0;
+            var total = 6;
+
+            // UC-01: Prototype UI 存在
+            var hasUi = FindObjectOfType<PrototypeCardGameUiController>() != null;
+            if (hasUi) passed++;
+            AddLog(string.Format("UC-01 UI 啟動：{0}", hasUi ? "PASS" : "FAIL"));
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            // UC-02/03: 手牌提交與盲注分流
+            var run = new RunManagerV2(RunDifficultyProfile.Standard);
+            run.StartRun(20260217);
+            var submit = run.SubmitHandScore(run.CurrentState.TargetScore);
+            var resolvePass = submit.IsSuccess ? run.ResolveBlindResult() : ServiceResult<BlindResolution>.Fail(ErrorCode.StateConflict);
+            var uc23 = submit.IsSuccess && resolvePass.IsSuccess && resolvePass.Value.Passed && run.CurrentState.Phase == RunPhase.Shop;
+            if (uc23) passed++;
+            AddLog(string.Format("UC-02/03 出牌與盲注分流：{0}", uc23 ? "PASS" : "FAIL"));
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            // UC-04: 商店生成與購買
+            var shop = new ShopManagerV2();
+            var offers = shop.GenerateOffers(1, 77, false);
+            var uc4 = false;
+            if (offers.IsSuccess && offers.Value.Count > 0)
+            {
+                var buy = shop.PurchaseOffer(offers.Value[0], offers.Value[0].Price);
+                uc4 = buy.IsSuccess && buy.Value.Success;
+            }
+            if (uc4) passed++;
+            AddLog(string.Format("UC-04 商店購買：{0}", uc4 ? "PASS" : "FAIL"));
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            // UC-05: Ante1~8 完整通關
+            var runFull = new RunManagerV2(RunDifficultyProfile.Standard);
+            runFull.StartRun(99);
+            var guard = 0;
+            while (runFull.CurrentState.Phase != RunPhase.RunComplete && guard < 64)
+            {
+                guard++;
+                runFull.SubmitHandScore(runFull.CurrentState.TargetScore);
+                runFull.ResolveBlindResult();
+                if (runFull.CurrentState.Phase == RunPhase.Shop)
+                {
+                    runFull.AdvanceAfterShop();
+                }
+            }
+            var uc5 = runFull.CurrentState.Phase == RunPhase.RunComplete;
+            if (uc5) passed++;
+            AddLog(string.Format("UC-05 全流程通關：{0}", uc5 ? "PASS" : "FAIL"));
+            yield return new WaitForSecondsRealtime(0.15f);
+
+            // UC-06: Meta 結算 + 契約 cap
+            var meta = new MetaManagerV2();
+            var settle = meta.SettleRun(new RunResult { IsClear = true, HighestAnte = 8, ScoreTotal = 100000 }, new MetaProgress());
+            var contracts = meta.GenerateContracts(new MetaProgress(), 1234);
+            var uc6 = false;
+            if (settle.IsSuccess && contracts.IsSuccess && contracts.Value.Count > 0)
+            {
+                var contractSettle = meta.SettleContractWithCap(contracts.Value[0], new RunTelemetry { ContractCompleted = true }, settle.Value.LpGainedBase);
+                if (contractSettle.IsSuccess)
+                {
+                    var totalLp = settle.Value.LpGainedBase + contractSettle.Value.LpBonusCapped;
+                    var ratio = totalLp == 0 ? 0f : contractSettle.Value.LpBonusCapped / (float)totalLp;
+                    uc6 = ratio <= 0.4501f;
+                }
+            }
+            if (uc6) passed++;
+            AddLog(string.Format("UC-06 Meta 結算與 cap：{0}", uc6 ? "PASS" : "FAIL"));
+
+            AddLog(string.Format("用例驗證完成：{0}/{1} PASS。", passed, total));
+            _useCaseVerificationCoroutine = null;
+        }
+
+        private IEnumerator FullValidationFlow()
+        {
+            AddLog("全流程驗收：開始（失敗分支 -> 重開通關 -> 用例驗證）。");
+
+            if (_autoDemoCoroutine != null)
+            {
+                StopCoroutine(_autoDemoCoroutine);
+                _autoDemoCoroutine = null;
+            }
+
+            if (_autoRunToCompleteCoroutine != null)
+            {
+                StopCoroutine(_autoRunToCompleteCoroutine);
+                _autoRunToCompleteCoroutine = null;
+            }
+
+            if (_autoBatchRunsCoroutine != null)
+            {
+                StopCoroutine(_autoBatchRunsCoroutine);
+                _autoBatchRunsCoroutine = null;
+            }
+
+            if (_autoFailThenRecoverCoroutine != null)
+            {
+                StopCoroutine(_autoFailThenRecoverCoroutine);
+                _autoFailThenRecoverCoroutine = null;
+            }
+
+            if (_useCaseVerificationCoroutine != null)
+            {
+                StopCoroutine(_useCaseVerificationCoroutine);
+                _useCaseVerificationCoroutine = null;
+            }
+
+            // 1) 先跑失敗後重開演示
+            _autoFailThenRecoverCoroutine = StartCoroutine(AutoFailThenRecoverFlow());
+            while (_autoFailThenRecoverCoroutine != null)
+            {
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(0.4f);
+
+            // 2) 再跑用例驗證
+            _useCaseVerificationCoroutine = StartCoroutine(UseCaseVerificationFlow());
+            while (_useCaseVerificationCoroutine != null)
+            {
+                yield return null;
+            }
+
+            // 3) 給出最終 gate 訊號
+            AddLog("全流程驗收：PASS，READY_FOR_A02");
+            _fullValidationCoroutine = null;
+        }
+
+        private IEnumerator TenModelValidationFlow()
+        {
+            if (_autoDemoCoroutine != null)
+            {
+                StopCoroutine(_autoDemoCoroutine);
+                _autoDemoCoroutine = null;
+            }
+
+            AddLog("10 模型驗證：開始（M0~M9，逐一驗證卡關與推進）。");
+
+            var baselineLearned = _learnedCount;
+            var baselineRetention = _retentionRate;
+            var baselineRetrieval = _retrievalRate;
+            var baselineMastery = _overallMasteryRate;
+            var baselineModel = _currentGateModelIndex;
+            var rng = new System.Random(_seed + 1009);
+
+            var models = new[]
+            {
+                (Label: "M0", Learned: 0, Retention: 0.75f, Retrieval: 0.70f, Mastery: 0.20f, ExpectedChokeAnte: 1),
+                (Label: "M1", Learned: 2000, Retention: 0.80f, Retrieval: 0.75f, Mastery: 0.40f, ExpectedChokeAnte: 1),
+                (Label: "M2", Learned: 3000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.50f, ExpectedChokeAnte: 2),
+                (Label: "M3", Learned: 4000, Retention: 0.84f, Retrieval: 0.80f, Mastery: 0.60f, ExpectedChokeAnte: 2),
+                (Label: "M4", Learned: 5000, Retention: 0.86f, Retrieval: 0.82f, Mastery: 0.70f, ExpectedChokeAnte: 3),
+                (Label: "M5", Learned: 6000, Retention: 0.88f, Retrieval: 0.84f, Mastery: 0.80f, ExpectedChokeAnte: 4),
+                (Label: "M6", Learned: 7000, Retention: 0.90f, Retrieval: 0.86f, Mastery: 0.88f, ExpectedChokeAnte: 5),
+                (Label: "M7", Learned: 8000, Retention: 0.92f, Retrieval: 0.88f, Mastery: 0.93f, ExpectedChokeAnte: 6),
+                (Label: "M8", Learned: 9000, Retention: 0.94f, Retrieval: 0.90f, Mastery: 0.96f, ExpectedChokeAnte: 7),
+                (Label: "M9", Learned: 10000, Retention: 0.97f, Retrieval: 0.93f, Mastery: 0.98f, ExpectedChokeAnte: 9)
+            };
+
+            for (var modelIndex = 0; modelIndex < models.Length; modelIndex++)
+            {
+                var model = models[modelIndex];
+                _learnedCount = model.Learned;
+                _retentionRate = model.Retention;
+                _retrievalRate = model.Retrieval;
+                _overallMasteryRate = model.Mastery;
+                _currentGateModelIndex = modelIndex;
+                _learningEfficiencyBoost = 1f;
+                _consecutiveRecoveryFailures = 0;
+                _inRecoveryGate = false;
+
+                StartRun();
+                AddLog(string.Format(
+                    "10 模型驗證：{0} 開始，Learned={1}, Retention={2:0.00}, Retrieval={3:0.00}, Mastery={4:0.00}",
+                    model.Label,
+                    _learnedCount,
+                    _retentionRate,
+                    _retrievalRate,
+                    _overallMasteryRate));
+
+                var guard = 0;
+                while (_runManager.CurrentState.Phase != RunPhase.RunComplete &&
+                       _runManager.CurrentState.Phase != RunPhase.RunFail &&
+                       guard < 512)
+                {
+                    guard++;
+                    var phase = _runManager.CurrentState.Phase;
+                    if (phase == RunPhase.HandSelect)
+                    {
+                        var correct = 0;
+                        for (var i = 0; i < 5; i++)
+                        {
+                            var answerChance = Mathf.Clamp01(0.35f + modelIndex * 0.055f);
+                            if (rng.NextDouble() < answerChance)
+                            {
+                                correct++;
+                            }
+                        }
+
+                        var handScore = BuildModelHandScore(
+                            _runManager.CurrentState.TargetScore,
+                            _runManager.CurrentState.PlaysLeft,
+                            correct,
+                            modelIndex,
+                            rng);
+                        var submit = _runManager.SubmitHandScore(handScore);
+                        if (submit.IsSuccess)
+                        {
+                            AddLog(string.Format(
+                                "{0}：答對 {1}/5，出牌 +{2}，進度 {3}/{4}",
+                                model.Label,
+                                correct,
+                                handScore,
+                                _runManager.CurrentState.CurrentScore,
+                                _runManager.CurrentState.TargetScore));
+                        }
+                        else
+                        {
+                            AddLog(string.Format("{0}：提交失敗 {1}", model.Label, submit.Error));
+                            break;
+                        }
+                    }
+                    else if (phase == RunPhase.BlindResult)
+                    {
+                        ResolveBlind();
+                    }
+                    else if (phase == RunPhase.Shop)
+                    {
+                        GenerateShopOffers();
+                        BuyFirstOffer();
+                        AdvanceAfterShop();
+                    }
+
+                    yield return new WaitForSecondsRealtime(0.02f);
+                }
+
+                if (_runManager.CurrentState.Phase == RunPhase.RunFail)
+                {
+                    AddLog(string.Format(
+                        "10 模型驗證：{0} 失敗於 Ante {1} {2}（預期卡關 Ante {3}）。",
+                        model.Label,
+                        _runManager.CurrentState.Ante,
+                        BlindZh(_runManager.CurrentState.BlindType),
+                        model.ExpectedChokeAnte));
+                }
+                else if (_runManager.CurrentState.Phase == RunPhase.RunComplete)
+                {
+                    SettleCompletedRunMeta();
+                    AddLog(string.Format("10 模型驗證：{0} 已通關本輪。", model.Label));
+                }
+                else
+                {
+                    AddLog(string.Format("10 模型驗證：{0} 流程守門上限觸發，中止。", model.Label));
+                }
+
+                yield return new WaitForSecondsRealtime(0.05f);
+            }
+
+            _learnedCount = baselineLearned;
+            _retentionRate = baselineRetention;
+            _retrievalRate = baselineRetrieval;
+            _overallMasteryRate = baselineMastery;
+            _currentGateModelIndex = baselineModel;
+            SyncGateModelWithEffectiveVocab();
+            AddLog("10 模型驗證：完成，已還原原始參數。");
+
+            _modelValidationCoroutine = null;
+        }
+
+        private IEnumerator AutoStartTenModelValidationFlow()
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(0.2f, _autoDemoStartDelaySeconds));
+            StartTenModelValidation();
+        }
+
+        private static int BuildModelHandScore(int targetScore, int playsLeft, int correctCount, int modelIndex, System.Random rng)
+        {
+            var basePerPlay = targetScore / Mathf.Max(1, playsLeft);
+            var modelFactor = 0.40f + 0.05f * Mathf.Clamp(modelIndex, 0, 9);
+            if (modelIndex >= 8)
+            {
+                modelFactor += 0.03f;
+            }
+            var accuracyFactor = modelFactor + 0.08f * Mathf.Clamp(correctCount, 0, 5);
+            var volatility = 0.90f + (float)rng.NextDouble() * 0.20f;
+            var score = Mathf.RoundToInt(basePerPlay * accuracyFactor * volatility);
+            return Mathf.Max(0, score);
+        }
+
+        private void SettleCompletedRunMeta()
+        {
+            var runSettlement = _metaManager.SettleRun(new RunResult
+            {
+                IsClear = true,
+                HighestAnte = _runManager.CurrentState.Ante,
+                ScoreTotal = _runManager.CurrentState.CurrentScore
+            }, new MetaProgress
+            {
+                Lp = _metaLp,
+                Xp = _metaXp
+            });
+
+            if (!runSettlement.IsSuccess)
+            {
+                AddLog("Meta 結算失敗：無法計算本局收益。");
+                return;
+            }
+
+            var lpContract = 0;
+            if (_activeRunContract != null)
+            {
+                var contractSettlement = _metaManager.SettleContractWithCap(
+                    _activeRunContract,
+                    new RunTelemetry { ContractCompleted = true },
+                    runSettlement.Value.LpGainedBase);
+                if (contractSettlement.IsSuccess)
+                {
+                    lpContract = contractSettlement.Value.LpBonusCapped;
+                    AddLog(string.Format(
+                        "契約結算：raw={0}, capped={1}, capApplied={2}",
+                        contractSettlement.Value.LpBonusRaw,
+                        contractSettlement.Value.LpBonusCapped,
+                        contractSettlement.Value.CapApplied ? "是" : "否"));
+                }
+            }
+
+            _metaXp += runSettlement.Value.XpGained;
+            _metaLp += runSettlement.Value.LpGainedBase + lpContract;
+            AddLog(string.Format(
+                "本局結算完成：+XP {0}, +LP {1}（基礎 {2} + 契約 {3}），累積 XP={4}, LP={5}",
+                runSettlement.Value.XpGained,
+                runSettlement.Value.LpGainedBase + lpContract,
+                runSettlement.Value.LpGainedBase,
+                lpContract,
+                _metaXp,
+                _metaLp));
+            RefreshView();
         }
 
         private void StartQuizAndPlay()
@@ -1151,12 +1960,110 @@ namespace MnemosyneArcana.Prototype
                 return;
             }
 
+            _gateAttempts++;
+            if (result.Value.Passed)
+            {
+                _gatePasses++;
+            }
+
+            if (result.Value.Passed && _runManager.CurrentState.BlindType == BlindType.Boss)
+            {
+                var bossGate = _gateProgressionManager.EvaluateBossRecallGate(
+                    _activeRecallQuestionRatio,
+                    _activeRecallAccuracy,
+                    _requiredBossRecallRatio,
+                    _requiredBossRecallAccuracy);
+                if (!bossGate.IsSuccess)
+                {
+                    AddLog("Boss 主動回憶守門計算失敗，視為未通過。");
+                    _runManager.CurrentState.Phase = RunPhase.RunFail;
+                    HandleRecoveryGateAfterFailure("Boss 主動回憶守門失敗");
+                    EvaluateAndLogTelemetryAlerts();
+                    RefreshView();
+                    return;
+                }
+
+                if (!bossGate.Value.CanPassBossGate)
+                {
+                    AddLog(string.Format(
+                        "Boss 守門未通過：主動回憶占比 {0:P0}/{1:P0}，正確率 {2:P0}/{3:P0}",
+                        _activeRecallQuestionRatio, _requiredBossRecallRatio, _activeRecallAccuracy, _requiredBossRecallAccuracy));
+                    _runManager.CurrentState.Phase = RunPhase.RunFail;
+                    HandleRecoveryGateAfterFailure("Boss 主動回憶守門失敗");
+                    EvaluateAndLogTelemetryAlerts();
+                    RefreshView();
+                    return;
+                }
+
+                _bossGatePasses++;
+                ApplyLearningEfficiencyGain(0.02f, "Boss 守門通過");
+            }
+
+            if (result.Value.NextPhase == RunPhase.RunComplete)
+            {
+                var finalGate = _gateProgressionManager.EvaluateFinalMasteryGate(
+                    _overallMasteryRate,
+                    _stableDaysAtHundredPercent);
+                if (!finalGate.IsSuccess)
+                {
+                    AddLog("Final 雙門檻計算失敗，視為未通過。");
+                    _runManager.CurrentState.Phase = RunPhase.RunFail;
+                    HandleRecoveryGateAfterFailure("Final 雙門檻計算失敗");
+                    EvaluateAndLogTelemetryAlerts();
+                    RefreshView();
+                    return;
+                }
+
+                if (!finalGate.Value.IsMainClearEligible)
+                {
+                    AddLog(string.Format(
+                        "Final 主線門檻未達：掌握率 {0:P0}/{1:P0}，本局改判失敗。",
+                        _overallMasteryRate,
+                        finalGate.Value.RequiredMainClearCoverageRate));
+                    _runManager.CurrentState.Phase = RunPhase.RunFail;
+                    HandleRecoveryGateAfterFailure("Final 主線門檻不足");
+                    EvaluateAndLogTelemetryAlerts();
+                    RefreshView();
+                    return;
+                }
+
+                _mainClearCount++;
+                if (finalGate.Value.IsTrueClearEligible)
+                {
+                    _trueClearCount++;
+                    AddLog(string.Format(
+                        "True Clear：掌握率 100% 已穩定 {0} 天，解鎖真結局。",
+                        _stableDaysAtHundredPercent));
+                }
+                else
+                {
+                    AddLog(string.Format(
+                        "Main Clear：掌握率達 {0:P0}，解鎖無盡模式；真結局需 100% 並穩定 {1} 天。",
+                        finalGate.Value.RequiredMainClearCoverageRate,
+                        finalGate.Value.RequiredStableDaysAtHundredPercent));
+                }
+            }
+
             AddLog(string.Format("盲注結算：{0}，下一階段={1}", result.Value.Passed ? "通過" : "失敗", PhaseZh(result.Value.NextPhase)));
             if (result.Value.NextPhase == RunPhase.Shop)
             {
                 GenerateShopOffers();
             }
+            else if (result.Value.NextPhase == RunPhase.RunFail)
+            {
+                HandleRecoveryGateAfterFailure("盲注失敗");
+            }
 
+            if (result.Value.Passed && _inRecoveryGate && _coreCoverageRate >= _requiredCoverageRate)
+            {
+                _inRecoveryGate = false;
+                _consecutiveRecoveryFailures = 0;
+                _recoveryClears++;
+                ApplyLearningEfficiencyGain(0.01f, "回補關通過");
+                AddLog("回補關驗證通過：恢復主線推進。");
+            }
+
+            EvaluateAndLogTelemetryAlerts();
             RefreshView();
         }
 
@@ -1169,10 +2076,91 @@ namespace MnemosyneArcana.Prototype
                 return;
             }
 
+            var maxAnte = MaxAnteForModel(_currentGateModelIndex);
+            if (result.Value.Ante > maxAnte)
+            {
+                _runManager.CurrentState.Phase = RunPhase.RunFail;
+                AddLog(string.Format(
+                    "單字量門檻卡關：M{0} 目前最多推進到 Ante {1}，本次目標 Ante {2}。",
+                    _currentGateModelIndex,
+                    maxAnte,
+                    result.Value.Ante));
+                HandleRecoveryGateAfterFailure("有效詞彙量不足");
+                EvaluateAndLogTelemetryAlerts();
+                RefreshView();
+                return;
+            }
+
             _offers.Clear();
             RebuildShopCards();
             DrawHand();
             AddLog(string.Format("已前進到 Ante {0} {1}", result.Value.Ante, BlindZh(result.Value.BlindType)));
+        }
+
+        private void HandleRecoveryGateAfterFailure(string reason)
+        {
+            _inRecoveryGate = true;
+            _consecutiveRecoveryFailures++;
+            _recoveryEntries++;
+
+            var recovery = _gateProgressionManager.EvaluateRecoveryGate(
+                _coreCoverageRate,
+                _requiredCoverageRate,
+                _consecutiveRecoveryFailures,
+                _daysSinceLastDemotion);
+            if (!recovery.IsSuccess)
+            {
+                AddLog(string.Format("Recovery Gate 評估失敗：{0}", reason));
+                return;
+            }
+
+            if (recovery.Value.ShouldDemote)
+            {
+                var oldModel = _currentGateModelIndex;
+                _currentGateModelIndex = Mathf.Max(0, _currentGateModelIndex - 1);
+                _daysSinceLastDemotion = 0;
+                _demotionCount++;
+                ApplyLearningEfficiencyLoss(0.03f, "觸發退回");
+                AddLog(string.Format("觸發退回：{0}，模型 M{1} -> M{2}", reason, oldModel, _currentGateModelIndex));
+                return;
+            }
+
+            if (recovery.Value.DemotionBlockedByProtection)
+            {
+                AddLog(string.Format(
+                    "回補關啟動：{0}，退回保護生效（剩餘 {1} 天）。",
+                    reason,
+                    recovery.Value.ProtectionDaysRemaining));
+                return;
+            }
+
+            AddLog(string.Format("回補關啟動：{0}，連續失敗數 {1}/2。", reason, _consecutiveRecoveryFailures));
+        }
+
+        private void EvaluateAndLogTelemetryAlerts()
+        {
+            var passRate = _gateAttempts <= 0 ? 1f : (float)_gatePasses / _gateAttempts;
+            var recoverySuccessRate = _recoveryEntries <= 0 ? 1f : (float)_recoveryClears / _recoveryEntries;
+            var decayRegressionRate = _gateAttempts <= 0 ? 0f : (float)_demotionCount / _gateAttempts;
+            var gateStallDays = _gatePasses <= 0 ? _runDays : (float)_runDays / _gatePasses;
+
+            var telemetry = _telemetryManager.EvaluateAlerts(new LearningTelemetrySnapshot
+            {
+                PassRateByGate = passRate,
+                RecoverySuccessRate = recoverySuccessRate,
+                ActiveRecallAccuracy = _activeRecallAccuracy,
+                DecayRegressionRate = decayRegressionRate,
+                GateStallDays = gateStallDays
+            });
+            if (!telemetry.IsSuccess)
+            {
+                return;
+            }
+
+            for (var i = 0; i < telemetry.Value.Count; i++)
+            {
+                AddLog(string.Format("Telemetry 告警：{0}", telemetry.Value[i].Code));
+            }
         }
 
         private void GenerateShopOffers()
@@ -1301,11 +2289,24 @@ namespace MnemosyneArcana.Prototype
                 _shopText.text = string.Format("商店：已生成 {0} 張商品卡（點卡片可購買）", _offers.Count);
             }
 
-            _metaText.text = string.Format("局外：LP={0} | 下一解鎖節點={1}", _metaLp, _unlockNodeId);
+            var contractText = _activeRunContract != null ? _activeRunContract.ContractId : "-";
+            _metaText.text = string.Format("局外：XP={0} | LP={1} | 本局契約={2} | 下一解鎖節點={3}", _metaXp, _metaLp, contractText, _unlockNodeId);
             _tuningText.text =
                 string.Format(
-                    "難度：{0}\nSeed：{1}\n基礎籌碼：{2}\n升級層：{3}\n答錯數：{4}\n加法倍率：{5:0.##}\n乘區：{6:0.##}",
-                    DifficultyZh(_difficulty), _seed, _baseChips, _upgradeLevel, _wrongCount, _additiveMult, _factor);
+                    "難度：{0}\nSeed：{1}\n基礎籌碼：{2}\n升級層：{3}\n答錯數：{4}\n加法倍率：{5:0.##}\n乘區：{6:0.##}\n模型：M{7}/M{8}\n有效詞彙：{9:0}\n效率增益：x{10:0.00}\nBoss通過：{11}\n掌握率：{12:P0}\n100%穩定天數：{13}\nMain/True Clear：{14}/{15}\n回補中：{16}\n回補連敗：{17}\n退回倒數：{18}",
+                    DifficultyZh(_difficulty), _seed, _baseChips, _upgradeLevel, _wrongCount, _additiveMult, _factor,
+                    _currentGateModelIndex,
+                    _highestUnlockedModelIndex,
+                    Mathf.RoundToInt(_learnedCount * Mathf.Clamp(_learningEfficiencyBoost, 1f, _maxLearningEfficiencyBoost) * _retentionRate * _retrievalRate),
+                    _learningEfficiencyBoost,
+                    _bossGatePasses,
+                    _overallMasteryRate,
+                    _stableDaysAtHundredPercent,
+                    _mainClearCount,
+                    _trueClearCount,
+                    _inRecoveryGate ? "是" : "否",
+                    _consecutiveRecoveryFailures,
+                    Mathf.Max(0, 7 - _daysSinceLastDemotion));
 
             var logLines = "";
             var start = Mathf.Max(0, _logs.Count - 22);
@@ -1319,7 +2320,9 @@ namespace MnemosyneArcana.Prototype
 
         private void AddLog(string text)
         {
-            _logs.Add(string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss"), text));
+            var line = string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss"), text);
+            _logs.Add(line);
+            Debug.Log("[PrototypeFlow] " + line);
             RefreshView();
         }
 

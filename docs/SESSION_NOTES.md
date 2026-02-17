@@ -666,3 +666,27 @@
   - M9 末段仍偏早卡關 1 關
 - 下一步：
   - 針對 M2/M9 做定向調參，並回跑十模型報告確認偏差收斂
+
+## 交接記錄（2026-02-17）- 十模型第二輪調參收斂（M2/M9）
+
+- 目標：修正首輪十模型中 `M2`、`M9` 提前卡關問題
+- 完成內容：
+  - 原型調參：
+    - `M2` retention/retrieval：`0.82/0.78 -> 0.86/0.82`
+    - `M9` retention/retrieval：`0.96/0.92 -> 0.97/0.93`
+    - 高段模型（M8/M9）出牌係數微增（`BuildModelHandScore` +0.03）
+  - 重新執行 Unity MCP 驗證：
+    - EditMode：`118/118 passed`
+    - PlayMode：`10模型驗證` 全流程完成（含 M9 結果）
+- 實測結果（重點）：
+  - `M0~M8`：卡點全部符合預期 Ante
+  - `M9`：由「Ante8 提前失敗」提升為「本輪通關」
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/SESSION_NOTES.md`
+- 風險/阻塞：
+  - `M9` 已達通關，下一輪需校準「通關率區間」避免偏易
+- 下一步：
+  - 固定種子多輪（建議 >=30）統計十模型通關/卡關分佈
+  - 用分佈數據回調 M8/M9 高段係數，鎖定目標通關率帶

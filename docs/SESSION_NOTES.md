@@ -585,3 +585,84 @@
 - 下一步：
   - A-02 存檔/migration 壓測
   - Prototype 下一階段：拖曳放牌桌吸附、答題時間限制、答錯三選一完整接入
+
+## 交接記錄（2026-02-16）- Unity MCP 串接與接續作業準備
+
+- 目標：建立「改完即測」的 Unity MCP 工作前置，讓新 session 可直接接續
+- 完成內容：
+  - 已在 Codex 全域設定新增 MCP server：
+    - `codex mcp add unityMCP --url http://localhost:8080/mcp`
+  - 設定驗證：
+    - `codex mcp list` 顯示 `unityMCP` 已 `enabled`
+  - 補充：當前舊 session 尚未讀到新 MCP 資源，需重開 session 載入新設定
+  - 已整理 Alpha 缺口補齊計畫，供後續直接執行：
+    - `docs/plans/2026-02-16-alpha-gap-closure.md`
+- 變更檔案：
+  - `docs/plans/2026-02-16-alpha-gap-closure.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - `codex mcp add unityMCP --url http://localhost:8080/mcp`：成功（Added global MCP server）
+  - `codex mcp list`：可見 `unityMCP`
+- 風險/阻塞：
+  - Unity 端 MCP HTTP server（`localhost:8080`）需保持啟動，否則無法取用 Unity MCP 工具
+  - 新增 MCP 設定後需重開 Codex session 才會穩定讀取 resources
+- 下一步（新 session 第一批動作）：
+  - 啟動 Unity MCP server（Unity 視窗 `Window > MCP for Unity`）
+  - 新開 Codex session 後先檢查 MCP 可用性（`list_mcp_resources`）
+  - 進入 A-02（存檔/migration）實作時採「每完成一小步就跑測試」節奏：
+    - `bash scripts/validate_configs.sh`
+    - `UNITY_PATH='/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app/Contents/MacOS/Unity' bash scripts/run_editmode_tests.sh`
+
+## 交接記錄（2026-02-17）- 10000 詞彙成長曲線問題建檔與追蹤啟動
+
+- 目標：將「0~10000 詞彙量模型」的卡關、遺忘退回、真學習驗證需求轉為可執行追蹤項目
+- 完成內容：
+  - 新增主文件：`docs/24-vocab-growth-curve-and-gating-plan.md`
+  - 明確定義 11 段詞彙量模型（M0~M10）
+  - 定義 EffectiveVocab 通關門檻（LearnedCount × RetentionRate × RetrievalRate）
+  - 定義 Recovery Gate、退回規則與 7 天 1 次退關保護
+  - 補上 telemetry 追蹤與告警閾值
+  - 在實作看板新增追蹤任務：
+    - `A-BAL-01` EffectiveVocab 關卡門檻
+    - `A-BAL-02` Recovery Gate 與退回保護
+    - `A-BAL-03` Boss 主動回憶題守門
+    - `A-DATA-01` 學習 telemetry 與告警
+- 變更檔案：
+  - `docs/24-vocab-growth-curve-and-gating-plan.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 文件新增成功，任務已加入看板可追蹤
+- 風險/阻塞：
+  - 尚未落地程式層 gate API 與 telemetry 寫入管線
+- 下一步：
+  - 先實作 `A-BAL-01`（EffectiveVocab gate API）並補對應 EditMode 測試
+
+## 交接記錄（2026-02-17）- 十模型驗證取代固定 70% 驗證
+
+- 目標：將驗證策略由固定單一玩家假設（70%）改為 M0~M9 十模型驗證
+- 完成內容：
+  - 原型驗證入口改為 `10模型驗證`，逐一跑 M0~M9 並輸出卡關位置
+  - Final 結算已採雙門檻：
+    - Main Clear：掌握率 >= 95%
+    - True Clear：掌握率 = 100% 且穩定 7 天
+  - 10 模型流程實測（Unity MCP）已取得首輪結果：
+    - M0/M1/M3/M4/M5/M6/M8 卡點符合預期
+    - M2、M9 各偏早 1 關
+  - 文件同步更新：
+    - `docs/24-vocab-growth-curve-and-gating-plan.md`
+    - `docs/25-gate-model-sweep-report-2026-02-17.md`
+    - `docs/IMPLEMENTATION_STATUS.md`
+- 變更檔案：
+  - `docs/24-vocab-growth-curve-and-gating-plan.md`
+  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/IMPLEMENTATION_STATUS.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity MCP EditMode：`118/118 passed`
+  - PlayMode log 可觀測 `10 模型驗證` 與各模型卡關輸出
+- 風險/阻塞：
+  - M7 在首輪截圖窗口內未完整收斂，需下一輪補齊完整紀錄
+  - M9 末段仍偏早卡關 1 關
+- 下一步：
+  - 針對 M2/M9 做定向調參，並回跑十模型報告確認偏差收斂

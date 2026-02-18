@@ -1579,6 +1579,10 @@ namespace MnemosyneArcana.Prototype
                 {
                     OnQuizOptionSelected(_quizCurrentCorrectOptionIndex);
                 }
+                else
+                {
+                    SubmitQuizAnswer(true);
+                }
                 yield return new WaitForSecondsRealtime(0.6f);
             }
 
@@ -1607,6 +1611,10 @@ namespace MnemosyneArcana.Prototype
                     if (_quizCurrentCorrectOptionIndex >= 0)
                     {
                         OnQuizOptionSelected(_quizCurrentCorrectOptionIndex);
+                    }
+                    else
+                    {
+                        SubmitQuizAnswer(true);
                     }
                     yield return new WaitForSecondsRealtime(0.6f);
                 }
@@ -2572,6 +2580,7 @@ namespace MnemosyneArcana.Prototype
 
             if (useSpelling)
             {
+                _quizCurrentCorrectOptionIndex = -1;
                 _quizPromptText.text = string.Format("請拼出單字「{0}」（示意先以正確/錯誤按鈕代替）。", word.Text);
                 if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = true;
                 if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = true;
@@ -2581,6 +2590,7 @@ namespace MnemosyneArcana.Prototype
                 return;
             }
 
+            _quizCurrentCorrectOptionIndex = -1;
             _quizPromptText.text = string.Format("請聽辨單字「{0}」發音（示意）。", word.Text);
             if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = false;
             if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = false;
@@ -3590,17 +3600,17 @@ namespace MnemosyneArcana.Prototype
                 {
                     var revealCard = CreatePanel(_playZoneCardsContainer, BoostColor(CardColor(word.Element), 1.05f));
                     var revealLe = revealCard.gameObject.AddComponent<LayoutElement>();
-                    revealLe.preferredWidth = 108;
-                    revealLe.minWidth = 98;
-                    revealLe.minHeight = 96;
+                    revealLe.preferredWidth = 126;
+                    revealLe.minWidth = 112;
+                    revealLe.minHeight = 118;
                     var revealOutline = revealCard.gameObject.AddComponent<Outline>();
-                    revealOutline.effectColor = new Color(0.06f, 0.08f, 0.14f, 0.9f);
-                    revealOutline.effectDistance = new Vector2(2f, -2f);
+                    revealOutline.effectColor = new Color(0.9f, 0.96f, 1f, 0.38f);
+                    revealOutline.effectDistance = new Vector2(3f, -3f);
 
                     var frontText = CreateText(
                         revealCard,
                         string.Format("{0}\n元素 {1}\n詞性 {2}\n等級 {3}", word.Text, ElementZh(word.Element), PosZh(word.Pos), word.Level),
-                        11,
+                        12,
                         TextAnchor.UpperLeft,
                         FontStyle.Bold);
                     frontText.rectTransform.anchorMin = Vector2.zero;
@@ -3611,7 +3621,7 @@ namespace MnemosyneArcana.Prototype
 
                     SetCardQuizCastPhase(CardQuizCastPhase.CardFlipReveal);
                     var flipOutStart = Time.unscaledTime;
-                    const float flipHalf = 0.09f;
+                    const float flipHalf = 0.12f;
                     while (Time.unscaledTime - flipOutStart < flipHalf)
                     {
                         var t = Mathf.Clamp01((Time.unscaledTime - flipOutStart) / flipHalf);
@@ -3625,10 +3635,20 @@ namespace MnemosyneArcana.Prototype
                         word.MeaningZh,
                         isCorrect ? "答對" : "答錯");
                     frontText.alignment = TextAnchor.UpperLeft;
-                    frontText.fontSize = 10;
+                    frontText.fontSize = 12;
                     revealCard.GetComponent<Image>().color = isCorrect
-                        ? new Color(0.56f, 0.78f, 0.58f, 0.98f)
-                        : new Color(0.78f, 0.52f, 0.52f, 0.98f);
+                        ? new Color(0.38f, 0.82f, 0.5f, 0.99f)
+                        : new Color(0.88f, 0.46f, 0.46f, 0.99f);
+                    revealOutline.effectColor = isCorrect
+                        ? new Color(0.76f, 1f, 0.82f, 0.58f)
+                        : new Color(1f, 0.86f, 0.86f, 0.58f);
+
+                    var backBadge = CreateText(revealCard, isCorrect ? "CORRECT" : "WRONG", 13, TextAnchor.UpperRight, FontStyle.Bold);
+                    backBadge.rectTransform.anchorMin = Vector2.zero;
+                    backBadge.rectTransform.anchorMax = Vector2.one;
+                    backBadge.rectTransform.offsetMin = new Vector2(6, 6);
+                    backBadge.rectTransform.offsetMax = new Vector2(-6, -6);
+                    backBadge.color = new Color(0.95f, 0.98f, 1f, 0.92f);
 
                     var flipInStart = Time.unscaledTime;
                     while (Time.unscaledTime - flipInStart < flipHalf)
@@ -3637,9 +3657,11 @@ namespace MnemosyneArcana.Prototype
                         revealCard.localScale = new Vector3(Mathf.Lerp(0.02f, 1f, t), 1f, 1f);
                         yield return null;
                     }
+
+                    yield return new WaitForSecondsRealtime(0.22f);
                 }
 
-                yield return new WaitForSecondsRealtime(0.06f);
+                yield return new WaitForSecondsRealtime(0.12f);
             }
 
             _lastScore = finalScore;

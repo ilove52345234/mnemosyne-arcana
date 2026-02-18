@@ -22,6 +22,23 @@
 
 ## 迭代紀錄
 
+### Round R13（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r10-m3-3.png`
+- Score:
+  - Layout: 25/30
+  - Readability: 21/25
+  - Interaction: 23/25
+  - Polish: 14/20
+  - Total: 83/100
+- 本輪修改:
+  - M3.1：翻牌可視強化（卡背尺寸、對比色、描邊、停留時間、CORRECT/WRONG 徽章）。
+  - 自動流程補齊非選項題型（拼字/發音）自動提交，避免流程卡住。
+- 未解決問題:
+  - 截圖時機仍常落在「待命中」或答題過程，尚未穩定截到翻牌瞬間。
+- 下一輪優先:
+  - 新增「強制演示入口」按鈕，一鍵進入翻牌揭露並截圖。
+
 ### Round R12（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r10-m3-1.png`

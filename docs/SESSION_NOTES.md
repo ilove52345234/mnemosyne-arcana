@@ -17,6 +17,27 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 M3.1 翻牌可視強化
+
+- 目標：提升翻牌揭露可視性並避免非選項題型卡住
+- 完成內容：
+  - 翻牌卡背顯示強化（對比色、描邊、徽章、停留時間）
+  - 拼字/發音題型加入自動提交流程支援（自動演示可前進）
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity 編譯無 error
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r10-m3-3.png`
+- 風險/阻塞：
+  - 目前截圖時機不穩，未必剛好落在翻牌瞬間
+- 下一步：
+  - 加一鍵強制演示入口，確保可穩定截到翻牌證據
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 M3 逐張出卡與翻牌揭露
 
 - 目標：把答題完成後的出卡流程升級為逐張出卡 + 翻牌揭露

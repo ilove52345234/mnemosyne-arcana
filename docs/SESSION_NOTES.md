@@ -870,3 +870,28 @@
   - 無 Critical 阻塞
 - 下一步：
   - 進入 `A-02`：存檔/migration 壓測與失敗回退驗證
+
+## 交接記錄（2026-02-18）- 文件系統化重整（System/Tech/Management）
+
+- 目標：把文件改為「以系統為中心」可視化結構，並建立單一進度總表。
+- 完成內容：
+  - 新增 `docs/INDEX.md` 作為總入口。
+  - 新增 `docs/PROGRESS_OVERVIEW.md` 作為全域資料夾進度總表。
+  - 新增 `docs/systems/S1~S9/*/SYSTEM.md`，每個系統固定五區塊：
+    1) 設計規劃
+    2) 規格文件
+    3) 實作紀錄
+    4) 驗測報告與調整建議
+    5) 更新紀錄
+  - 新增 `docs/tech/*/README.md` 與 `docs/management/*/README.md` 分組入口。
+  - `README.md` 新增系統化入口說明。
+- 變更檔案：
+  - `README.md`
+  - `docs/INDEX.md`
+  - `docs/PROGRESS_OVERVIEW.md`
+  - `docs/systems/**/SYSTEM.md`
+  - `docs/tech/**/README.md`
+  - `docs/management/**/README.md`
+  - `docs/SESSION_NOTES.md`
+- 下一步：
+  - 依 `docs/PROGRESS_OVERVIEW.md` 持續逐系統回填驗測結果與參數調整建議。

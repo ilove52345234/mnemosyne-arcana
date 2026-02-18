@@ -44,6 +44,3 @@
 | GS-10 | 詞庫演進/五池抽樣 | M-Low/M-Mid/M-High | Pending |
 | GS-11 | Telemetry/告警 | M-Low/M-Mid/M-High | Pending |
 | GS-12 | NFR 行為穩定 | M-Low/M-Mid/M-High(+M-Edge) | Pending |
-| GS-13 | 遺物系統（Legacy） | 先裁決 Retain/Retire | Pending |
-| GS-14 | 卡牌進化（Legacy） | 先裁決 Retain/Retire | Pending |
-| GS-15 | 舊書房系統（Legacy） | 先裁決 Retain/Retire | Pending |

@@ -43,9 +43,6 @@
 | GS-10 | 詞庫演進/五池抽樣 | `docs/02` | 行為驗測不足 | 補長週期抽樣觀測 |
 | GS-11 | Telemetry/告警 | `docs/09` `docs/24` | 有規則測試 | 補場景觸發一致性 |
 | GS-12 | NFR 穩定性 | `docs/09` | 已有測試 | 補行為場景下資源曲線 |
-| GS-13 | 遺物系統（Legacy） | `docs/archive/legacy-vocab-v2/*` | 未納入現行主規格 | 先做保留/淘汰決策，再決定是否驗測 |
-| GS-14 | 卡牌進化/詞族進化（Legacy） | `docs/archive/legacy-vocab-v2/*` | 未納入現行主規格 | 先做保留/淘汰決策，再決定是否驗測 |
-| GS-15 | 舊書房系統（Legacy） | `docs/archive/legacy-vocab-v2/*` | 未納入現行主規格 | 先做保留/淘汰決策，再決定是否驗測 |
 
 ## 5. 驗測分期
 
@@ -57,12 +54,6 @@
 - 行為腳本（操作步驟）
 - 觀測指標
 - Pass/Fail 與偏差說明
-
-### Phase B：Legacy 系統裁決（GS-13 ~ GS-15）
-
-1. 先做設計裁決：`Retain` / `Retire` / `Merge`。
-2. `Retain` 的系統才進入三模型驗測。
-3. `Retire` 的系統必須留書面理由，避免未來再被當成「漏測」。
 
 ## 6. 每系統最小驗測模板
 
@@ -77,9 +68,8 @@
 ## 7. 驗收門檻（本計劃）
 
 1. `GS-01 ~ GS-12` 全部完成三模型行為驗測。
-2. `GS-13 ~ GS-15` 全部完成裁決（不是放著不處理）。
-3. 覆蓋矩陣新增「Behavior Verified」欄位，未達成不得標記完成。
-4. 最終報告需區分：
+2. 覆蓋矩陣新增「Behavior Verified」欄位，未達成不得標記完成。
+3. 最終報告需區分：
 - Code-level pass
 - Behavior-level pass
 
@@ -96,6 +86,4 @@
 2. GS-07 Gate/Recovery/Demotion（30 seeds 行為批次）
 3. GS-05 + GS-06（商店經濟 + Build 五層交互）
 4. GS-09 + GS-10（Meta + 詞庫演進）
-5. GS-13~GS-15 Legacy 裁決
-6. 回填矩陣與最終報告
-
+5. 回填矩陣與最終報告

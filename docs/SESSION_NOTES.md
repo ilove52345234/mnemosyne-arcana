@@ -17,6 +17,28 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 M3 逐張出卡與翻牌揭露
+
+- 目標：把答題完成後的出卡流程升級為逐張出卡 + 翻牌揭露
+- 完成內容：
+  - `PlayCardsAnimationThenSubmit` 改為逐張出卡序列
+  - 新增翻牌揭露節點與卡背資料（答案、正誤、`ART PLACEHOLDER`）
+  - 支援將答題正誤旗標映射到揭露卡
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity 編譯無 error
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r10-m3-1.png`
+- 風險/阻塞：
+  - 翻牌可視效果仍偏弱，需再強化視覺停留
+- 下一步：
+  - M3.1：翻牌視覺強化（卡背對比/停留時間）並補證據截圖
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 M2 題目舞台改版
 
 - 目標：完成中央單卡放大答題舞台與多題型容器

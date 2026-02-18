@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R12（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r10-m3-1.png`
+- Score:
+  - Layout: 25/30
+  - Readability: 21/25
+  - Interaction: 23/25
+  - Polish: 13/20
+  - Total: 82/100
+- 本輪修改:
+  - 完成 M3 程式層：出卡協程改為逐張出卡，加入翻牌揭露時序節點。
+  - 牌桌區生成雙面揭露卡內容（答案、正誤、`ART PLACEHOLDER`）。
+  - `PlayCardsAnimationThenSubmit` 新增正誤旗標參數，支援答題結果映射到揭露卡。
+- 未解決問題:
+  - 目前翻牌可視強度偏弱，截圖不易看出翻面過程（需視覺強化）。
+- 下一輪優先:
+  - 增加翻牌視覺對比（卡背顏色、描邊、揭露停留時間）並補一張可視證據圖。
+
 ### Round R11（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r10-m2-1.png`

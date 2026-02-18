@@ -2705,7 +2705,7 @@ namespace MnemosyneArcana.Prototype
             }
 
             SetCardQuizCastPhase(CardQuizCastPhase.CastAnimationQueue);
-            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, score.Value.FinalScore));
+            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, _quizCardCorrectness.ToList(), score.Value.FinalScore));
         }
 
         private void PlaySelectedCards(bool wrong)
@@ -2766,7 +2766,8 @@ namespace MnemosyneArcana.Prototype
                 AddLog("出牌計分失敗。");
                 return;
             }
-            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, score.Value.FinalScore));
+            var correctFlags = Enumerable.Repeat(!wrong, selected.Count).ToList();
+            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, correctFlags, score.Value.FinalScore));
         }
 
         private void ResolveBlind()
@@ -3536,55 +3537,109 @@ namespace MnemosyneArcana.Prototype
             }
         }
 
-        private IEnumerator PlayCardsAnimationThenSubmit(IReadOnlyList<int> selectedIndexes, int finalScore)
+        private IEnumerator PlayCardsAnimationThenSubmit(IReadOnlyList<int> selectedIndexes, IReadOnlyList<bool> correctnessFlags, int finalScore)
         {
             _isPlayingCardAnim = true;
             SetCardQuizCastPhase(CardQuizCastPhase.CastAnimationQueue);
-            var start = Time.unscaledTime;
-            const float duration = 0.3f;
+            if (_quizPromptText != null)
+            {
+                _quizPromptText.text = "答題完成，依序出卡與翻牌揭露中...";
+            }
 
-            var moving = new List<(RectTransform rect, CanvasGroup group, Vector2 from, Vector2 to)>();
+            if (_playZoneCardsContainer != null)
+            {
+                for (var i = _playZoneCardsContainer.childCount - 1; i >= 0; i--)
+                {
+                    Destroy(_playZoneCardsContainer.GetChild(i).gameObject);
+                }
+            }
+
             for (var i = 0; i < selectedIndexes.Count; i++)
             {
                 var idx = selectedIndexes[i];
-                if (idx < 0 || idx >= _handContainer.childCount)
+                if (idx < 0 || idx >= _hand.Count || idx >= _handContainer.childCount)
                 {
                     continue;
                 }
 
-                var card = _handContainer.GetChild(idx) as RectTransform;
-                if (card == null)
-                {
-                    continue;
-                }
-
-                var group = card.GetComponent<CanvasGroup>();
+                var handRect = _handContainer.GetChild(idx) as RectTransform;
+                if (handRect == null) continue;
+                var group = handRect.GetComponent<CanvasGroup>();
                 if (group == null)
                 {
-                    group = card.gameObject.AddComponent<CanvasGroup>();
+                    group = handRect.gameObject.AddComponent<CanvasGroup>();
                 }
 
-                moving.Add((card, group, card.anchoredPosition, card.anchoredPosition + new Vector2(0f, 120f)));
-            }
-
-            while (Time.unscaledTime - start < duration)
-            {
-                var t = Mathf.Clamp01((Time.unscaledTime - start) / duration);
-                var eased = 1f - Mathf.Pow(1f - t, 3f);
-                for (var i = 0; i < moving.Count; i++)
+                var from = handRect.anchoredPosition;
+                var to = from + new Vector2(0f, 140f);
+                var moveStart = Time.unscaledTime;
+                const float moveDuration = 0.18f;
+                while (Time.unscaledTime - moveStart < moveDuration)
                 {
-                    var m = moving[i];
-                    if (m.rect == null || m.group == null)
+                    var t = Mathf.Clamp01((Time.unscaledTime - moveStart) / moveDuration);
+                    var eased = 1f - Mathf.Pow(1f - t, 3f);
+                    handRect.anchoredPosition = Vector2.Lerp(from, to, eased);
+                    handRect.localScale = Vector3.Lerp(Vector3.one, new Vector3(0.92f, 0.92f, 1f), eased);
+                    group.alpha = Mathf.Lerp(1f, 0.15f, eased);
+                    yield return null;
+                }
+
+                var word = _hand[idx];
+                var isCorrect = i < correctnessFlags.Count && correctnessFlags[i];
+                if (_playZoneCardsContainer != null)
+                {
+                    var revealCard = CreatePanel(_playZoneCardsContainer, BoostColor(CardColor(word.Element), 1.05f));
+                    var revealLe = revealCard.gameObject.AddComponent<LayoutElement>();
+                    revealLe.preferredWidth = 108;
+                    revealLe.minWidth = 98;
+                    revealLe.minHeight = 96;
+                    var revealOutline = revealCard.gameObject.AddComponent<Outline>();
+                    revealOutline.effectColor = new Color(0.06f, 0.08f, 0.14f, 0.9f);
+                    revealOutline.effectDistance = new Vector2(2f, -2f);
+
+                    var frontText = CreateText(
+                        revealCard,
+                        string.Format("{0}\n元素 {1}\n詞性 {2}\n等級 {3}", word.Text, ElementZh(word.Element), PosZh(word.Pos), word.Level),
+                        11,
+                        TextAnchor.UpperLeft,
+                        FontStyle.Bold);
+                    frontText.rectTransform.anchorMin = Vector2.zero;
+                    frontText.rectTransform.anchorMax = Vector2.one;
+                    frontText.rectTransform.offsetMin = new Vector2(6, 6);
+                    frontText.rectTransform.offsetMax = new Vector2(-6, -6);
+                    frontText.color = new Color(0.07f, 0.08f, 0.1f, 1f);
+
+                    SetCardQuizCastPhase(CardQuizCastPhase.CardFlipReveal);
+                    var flipOutStart = Time.unscaledTime;
+                    const float flipHalf = 0.09f;
+                    while (Time.unscaledTime - flipOutStart < flipHalf)
                     {
-                        continue;
+                        var t = Mathf.Clamp01((Time.unscaledTime - flipOutStart) / flipHalf);
+                        revealCard.localScale = new Vector3(Mathf.Lerp(1f, 0.02f, t), 1f, 1f);
+                        yield return null;
                     }
 
-                    m.rect.anchoredPosition = Vector2.Lerp(m.from, m.to, eased);
-                    m.rect.localScale = Vector3.Lerp(Vector3.one, new Vector3(0.92f, 0.92f, 1f), eased);
-                    m.group.alpha = Mathf.Lerp(1f, 0.15f, eased);
+                    frontText.text = string.Format(
+                        "{0}\n答案：{1}\n結果：{2}\n[ART PLACEHOLDER]",
+                        word.Text,
+                        word.MeaningZh,
+                        isCorrect ? "答對" : "答錯");
+                    frontText.alignment = TextAnchor.UpperLeft;
+                    frontText.fontSize = 10;
+                    revealCard.GetComponent<Image>().color = isCorrect
+                        ? new Color(0.56f, 0.78f, 0.58f, 0.98f)
+                        : new Color(0.78f, 0.52f, 0.52f, 0.98f);
+
+                    var flipInStart = Time.unscaledTime;
+                    while (Time.unscaledTime - flipInStart < flipHalf)
+                    {
+                        var t = Mathf.Clamp01((Time.unscaledTime - flipInStart) / flipHalf);
+                        revealCard.localScale = new Vector3(Mathf.Lerp(0.02f, 1f, t), 1f, 1f);
+                        yield return null;
+                    }
                 }
 
-                yield return null;
+                yield return new WaitForSecondsRealtime(0.06f);
             }
 
             _lastScore = finalScore;

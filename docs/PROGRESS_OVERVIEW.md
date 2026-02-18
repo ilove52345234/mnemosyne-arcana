@@ -55,7 +55,7 @@
 | S7 Final/Endless | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S8 Telemetry/Observability | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S9 NFR/Quality | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
-| S10 UI/UX | In Progress | Done | Done | Done | Done (round-3) | 2026-02-19 | P0 優先實作：`PRIORITY_P0_CARD_QUIZ_CAST_FLOW.md`（選牌答題後出卡） |
+| S10 UI/UX | In Progress | Done | Done | Done | Done (round-3) | 2026-02-19 | 持續 P0：強化翻牌揭露節奏；測試平移控制（X/Y 軸 + 中心拖曳）已就緒 |
 
 ## 更新規範
 1. 每完成一輪系統驗測，先更新對應 `docs/systems/Sx-*/SYSTEM.md` 的第 4/5 區塊。

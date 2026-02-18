@@ -17,6 +17,30 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R20 測試平移控制收斂與穩定修正
+
+- 目標：讓測試平移更直覺可用，同時排除黑屏風險
+- 完成內容：
+  - 橫向測試軸維持預設開啟
+  - 新增固定縱向軸（不需先滑到最右）
+  - 新增中央拖曳把手「中心拖曳平移（測試）」，可直接拖曳控制 X/Y
+  - 黑屏問題路徑回退到穩定方案（移除不穩定遮罩型實作）
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+  - `docs/PROGRESS_OVERVIEW.md`
+- 驗證結果：
+  - Unity compile refresh 成功
+  - Unity Console `error` = 0
+- 風險/阻塞：
+  - 測試軸是臨時工具，正式版需關閉或移除
+- 下一步：
+  - 回到 P0 主線：翻牌揭露段落強化（答案呈現與前後卡面節奏）
+
+---
+
 ## 交接記錄（2026-02-19）- S10-R19 答題完成到出卡過場
 
 - 目標：提升 P0 主線銜接品質，避免答題完成後直接硬切出卡

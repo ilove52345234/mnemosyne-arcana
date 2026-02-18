@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R20（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-debug-current-issue-fixed-3.png`（測試畫面）
+- Score:
+  - Layout: 27/30
+  - Readability: 22/25
+  - Interaction: 25/25
+  - Polish: 16/20
+  - Total: 90/100
+- 本輪修改:
+  - 測試操作增強：橫向軸預設開啟、補固定縱向軸。
+  - 新增「中心拖曳平移（測試）」把手，可直接從中央拖曳控制 X/Y 位移。
+  - 針對黑屏問題做穩定化調整（移除不穩定遮罩路徑，回到穩定主版面偏移方案）。
+- 未解決問題:
+  - 測試軸仍屬臨時測試工具，正式版需移除。
+- 下一輪優先:
+  - 回到 P0 翻牌揭露強化（前後卡面切換節奏與結果呈現）。
+
 ### Round R19（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r19-quiz-to-cast-transition-1.png`

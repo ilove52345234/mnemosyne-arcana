@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using MnemosyneArcana.Core.Contracts;
 using MnemosyneArcana.Core.Managers;
@@ -232,6 +235,130 @@ namespace MnemosyneArcana.Tests.EditMode
 
             Assert.IsFalse(result.IsSuccess);
             Assert.AreEqual(ErrorCode.StateConflict, result.Error);
+        }
+
+        [Test]
+        public void Curriculum_AllDefinedNodes_CanUnlockWithSatisfiedConditions()
+        {
+            foreach (var node in GetCurriculumNodeDefs())
+            {
+                var prereqs = node.RequiredAnyOfGroups
+                    .Where(group => group.Length > 0)
+                    .Select(group => group[0])
+                    .Distinct()
+                    .ToArray();
+
+                var result = _meta.TryUnlockNode(node.NodeId, new MetaProgress
+                {
+                    Lp = node.Cost + 10,
+                    CurriculumNodes = prereqs
+                });
+
+                Assert.IsTrue(result.IsSuccess, $"Node {node.NodeId} should unlock when prerequisites are met.");
+                Assert.AreEqual(node.Cost, result.Value.SpentLp);
+                CollectionAssert.Contains(result.Value.UnlockedNodes, node.NodeId);
+            }
+        }
+
+        [Test]
+        public void Curriculum_AllDefinedNodes_EnforcePrereqAndMutexConstraints()
+        {
+            foreach (var node in GetCurriculumNodeDefs())
+            {
+                if (node.RequiredAnyOfGroups.Length > 0)
+                {
+                    var missingPrereq = _meta.TryUnlockNode(node.NodeId, new MetaProgress
+                    {
+                        Lp = node.Cost + 10,
+                        CurriculumNodes = Array.Empty<string>()
+                    });
+                    Assert.IsFalse(missingPrereq.IsSuccess, $"Node {node.NodeId} should fail without prerequisites.");
+                    Assert.AreEqual(ErrorCode.StateConflict, missingPrereq.Error);
+                }
+
+                if (node.MutexWith.Length > 0)
+                {
+                    var prereqs = node.RequiredAnyOfGroups
+                        .Where(group => group.Length > 0)
+                        .Select(group => group[0])
+                        .Distinct()
+                        .ToList();
+                    prereqs.Add(node.MutexWith[0]);
+
+                    var mutexConflict = _meta.TryUnlockNode(node.NodeId, new MetaProgress
+                    {
+                        Lp = node.Cost + 10,
+                        CurriculumNodes = prereqs.ToArray()
+                    });
+                    Assert.IsFalse(mutexConflict.IsSuccess, $"Node {node.NodeId} should fail when mutex node is unlocked.");
+                    Assert.AreEqual(ErrorCode.StateConflict, mutexConflict.Error);
+                }
+            }
+        }
+
+        private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()
+        {
+            var defsField = typeof(MetaManagerV2).GetField("CurriculumNodeDefs", BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.NotNull(defsField);
+
+            var defsObject = defsField.GetValue(null);
+            Assert.NotNull(defsObject);
+
+            var result = new List<CurriculumNodeInfo>();
+            var enumerable = (System.Collections.IEnumerable)defsObject;
+            foreach (var entry in enumerable)
+            {
+                var entryType = entry.GetType();
+                var keyProp = entryType.GetProperty("Key");
+                var valueProp = entryType.GetProperty("Value");
+                Assert.NotNull(keyProp);
+                Assert.NotNull(valueProp);
+
+                var nodeId = (string)keyProp.GetValue(entry);
+                var value = valueProp.GetValue(entry);
+                var valueType = value.GetType();
+
+                var cost = (int)valueType.GetProperty("Cost").GetValue(value);
+                var groupsRaw = (System.Collections.IEnumerable)valueType.GetProperty("RequiredAnyOfGroups").GetValue(value);
+                var mutexRaw = (System.Collections.IEnumerable)valueType.GetProperty("MutexWith").GetValue(value);
+
+                var groups = new List<string[]>();
+                foreach (var groupObj in groupsRaw)
+                {
+                    var groupItems = new List<string>();
+                    foreach (var groupItem in (System.Collections.IEnumerable)groupObj)
+                    {
+                        groupItems.Add(groupItem.ToString());
+                    }
+
+                    groups.Add(groupItems.ToArray());
+                }
+
+                var mutex = new List<string>();
+                foreach (var m in mutexRaw)
+                {
+                    mutex.Add(m.ToString());
+                }
+
+                result.Add(new CurriculumNodeInfo
+                {
+                    NodeId = nodeId,
+                    Cost = cost,
+                    RequiredAnyOfGroups = groups.ToArray(),
+                    MutexWith = mutex.ToArray()
+                });
+            }
+
+            Assert.IsNotEmpty(result);
+            return result;
+        }
+
+        private sealed class CurriculumNodeInfo
+        {
+            public string NodeId { get; set; }
+            public int Cost { get; set; }
+            public string[][] RequiredAnyOfGroups { get; set; }
+            public string[] MutexWith { get; set; }
         }
     }
 }

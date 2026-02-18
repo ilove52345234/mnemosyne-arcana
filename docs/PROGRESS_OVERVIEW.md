@@ -46,7 +46,7 @@
 
 | System | Status | Design | Spec | Implementation | Verification | Last Update | Next Action |
 |---|---|---|---|---|---|---|---|
-| S1 Run/Blind | In Progress | Done | Done | Done | Done（待你決策） | 2026-02-18 | 等待你確認是否標記 Done |
+| S1 Run/Blind | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S2 Scoring/HandType | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S3 Learning/Boss | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S4 Gate/Recovery/Demotion | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |

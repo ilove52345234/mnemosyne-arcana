@@ -22,6 +22,28 @@
 
 ## 迭代紀錄
 
+### Round R7（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r7-1.png`
+  - `Assets/Screenshots/S10-auto-loop-r7-2.png`
+  - `Assets/Screenshots/S10-auto-loop-r7-3.png`
+- Score:
+  - Layout: 23/30
+  - Readability: 20/25
+  - Interaction: 17/25
+  - Polish: 12/20
+  - Total: 72/100
+- 本輪修改:
+  - 手機模式操作按鈕字級提升（主按鈕/次按鈕）。
+  - 手牌卡片最小寬度與字級提升。
+  - 新增 `UpdateButtonTypography()`，確保響應式切換後字級會重新套用。
+- 未解決問題:
+  - 卡牌材質層次與高光仍不足，與 Balatro 手機版仍有質感落差。
+  - 拖曳目標區的可視反饋仍偏弱。
+- 下一輪優先:
+  - 強化卡牌外框/陰影/高光。
+  - 加入拖曳中高亮、放置成功反饋。
+
 ### Round R6（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r6-1.png`

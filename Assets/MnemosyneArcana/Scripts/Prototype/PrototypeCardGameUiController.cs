@@ -132,15 +132,40 @@ namespace MnemosyneArcana.Prototype
         private Text _shopText;
         private Text _quizStatusText;
         private Text _quizPromptText;
+        private Text _multText;
         private Text _metaText;
         private Text _tuningText;
         private Text _logText;
+        private Text _sidebarRoundScoreText;
+        private Text _sidebarPaceText;
+        private Text _sidebarResourceText;
+        private Text _deckStackText;
+        private Text _discardStackText;
+        private Text _bottomDeckText;
+        private Text _bottomDiscardText;
+        private Text _bottomHintText;
+        private LayoutElement _playFillerLayoutElement;
+        private LayoutElement _playPageLayoutElement;
+        private RectTransform _playPageContainer;
+        private RectTransform _shopPageContainer;
+        private RectTransform _quizPageContainer;
+        private Button _playTabButton;
+        private Button _shopTabButton;
+        private Button _quizTabButton;
+        private int _activeMainPageIndex;
+        private RectTransform _sidebarRunInfoPanel;
+        private RectTransform _sidebarMetaPanel;
+        private RectTransform _sidebarLogPanel;
+        private RectTransform _sidebarStackPanel;
+        private bool _isCompactMobileLayout;
         private RectTransform _handContainer;
         private RectTransform _playZoneContainer;
         private RectTransform _playZoneCardsContainer;
         private RectTransform _shopGridContainer;
         private RectTransform _dragLayer;
         private GridLayoutGroup _shopGridLayout;
+        private HorizontalLayoutGroup _handLayoutGroup;
+        private HorizontalLayoutGroup _playZoneCardsLayoutGroup;
         private LayoutElement _leftColLayout;
         private LayoutElement _rightColLayout;
         private RectTransform _rightColRoot;
@@ -236,6 +261,7 @@ namespace MnemosyneArcana.Prototype
         private void Awake()
         {
             _font = LoadBuiltinFont();
+            EnsureRuntimeCamera();
             EnsureEventSystem();
             DisableLegacyPrototypeControllers();
             BuildDeck();
@@ -314,6 +340,27 @@ namespace MnemosyneArcana.Prototype
             es.AddComponent<StandaloneInputModule>();
         }
 
+        private void EnsureRuntimeCamera()
+        {
+            var cams = FindObjectsOfType<Camera>(true);
+            for (var i = 0; i < cams.Length; i++)
+            {
+                if (cams[i] != null && cams[i].enabled && cams[i].targetDisplay == 0)
+                {
+                    return;
+                }
+            }
+
+            var go = new GameObject("PrototypeUICamera");
+            go.transform.SetParent(transform, false);
+            var cam = go.AddComponent<Camera>();
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.03f, 0.04f, 0.07f, 1f);
+            cam.cullingMask = 0;
+            cam.depth = -100f;
+            cam.orthographic = true;
+        }
+
         private void BuildUi()
         {
             var canvasGo = new GameObject("PrototypeCanvas");
@@ -321,52 +368,33 @@ namespace MnemosyneArcana.Prototype
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 1000;
-            canvasGo.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.referenceResolution = new Vector2(720f, 1560f);
+            scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
 
             BuildThemeBackground(canvasGo.transform);
 
-            var rootFrame = CreatePanel(canvasGo.transform, new Color(0.09f, 0.11f, 0.15f, 0.92f));
+            var rootFrame = CreatePanel(canvasGo.transform, new Color(0.06f, 0.07f, 0.11f, 0.94f));
             rootFrame.anchorMin = Vector2.zero;
             rootFrame.anchorMax = Vector2.one;
-            rootFrame.offsetMin = new Vector2(12, 12);
-            rootFrame.offsetMax = new Vector2(-12, -12);
+            rootFrame.offsetMin = new Vector2(18, 16);
+            rootFrame.offsetMax = new Vector2(-18, -16);
 
-            var viewport = CreatePanel(rootFrame, new Color(0f, 0f, 0f, 0f));
-            viewport.anchorMin = Vector2.zero;
-            viewport.anchorMax = Vector2.one;
-            viewport.offsetMin = Vector2.zero;
-            viewport.offsetMax = Vector2.zero;
-            var viewportImage = viewport.GetComponent<Image>();
-            viewportImage.color = new Color(0f, 0f, 0f, 0.001f);
-            viewportImage.raycastTarget = true;
-            viewport.gameObject.AddComponent<RectMask2D>();
-
-            var scrollRect = rootFrame.gameObject.AddComponent<ScrollRect>();
-            scrollRect.horizontal = false;
-            scrollRect.vertical = true;
-            scrollRect.movementType = ScrollRect.MovementType.Clamped;
-            scrollRect.scrollSensitivity = 30f;
-            scrollRect.viewport = viewport;
-
-            var root = CreatePanel(viewport, new Color(0f, 0f, 0f, 0f));
-            root.anchorMin = new Vector2(0f, 1f);
-            root.anchorMax = new Vector2(1f, 1f);
-            root.pivot = new Vector2(0.5f, 1f);
-            root.anchoredPosition = Vector2.zero;
-            root.sizeDelta = new Vector2(0f, 0f);
-            scrollRect.content = root;
-
-            var rootFitter = root.gameObject.AddComponent<ContentSizeFitter>();
-            rootFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            rootFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var root = CreatePanel(rootFrame, new Color(0f, 0f, 0f, 0f));
+            root.anchorMin = Vector2.zero;
+            root.anchorMax = Vector2.one;
+            root.offsetMin = Vector2.zero;
+            root.offsetMax = Vector2.zero;
 
             var rootLayout = root.gameObject.AddComponent<HorizontalLayoutGroup>();
             rootLayout.spacing = 10;
             rootLayout.childControlWidth = true;
             rootLayout.childControlHeight = true;
             rootLayout.childForceExpandWidth = true;
-            rootLayout.childForceExpandHeight = false;
+            rootLayout.childForceExpandHeight = true;
             rootLayout.padding = new RectOffset(0, 0, 0, 10);
 
             _dragLayer = CreatePanel(canvasGo.transform, new Color(0f, 0f, 0f, 0f));
@@ -380,30 +408,34 @@ namespace MnemosyneArcana.Prototype
                 dragLayerImage.raycastTarget = false;
             }
 
-            var leftCol = CreatePanel(root, new Color(0.14f, 0.17f, 0.23f, 0.95f));
-            _leftColLayout = leftCol.gameObject.AddComponent<LayoutElement>();
-            _leftColLayout.flexibleWidth = 3.5f;
-            _leftColLayout.minWidth = 420;
-            _leftColLayout.preferredHeight = 900;
-            var leftLayout = leftCol.gameObject.AddComponent<VerticalLayoutGroup>();
-            leftLayout.spacing = 8;
-            leftLayout.padding = new RectOffset(10, 10, 10, 10);
-            var leftFitter = leftCol.gameObject.AddComponent<ContentSizeFitter>();
-            leftFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            leftFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            var rightCol = CreatePanel(root, new Color(0.12f, 0.15f, 0.2f, 0.95f));
+            var rightCol = CreatePanel(root, new Color(0.11f, 0.09f, 0.14f, 0.97f));
             _rightColRoot = rightCol;
             _rightColLayout = rightCol.gameObject.AddComponent<LayoutElement>();
-            _rightColLayout.flexibleWidth = 1.8f;
-            _rightColLayout.minWidth = 240;
-            _rightColLayout.preferredHeight = 900;
+            _rightColLayout.flexibleWidth = 1.15f;
+            _rightColLayout.flexibleHeight = 1f;
+            _rightColLayout.minWidth = 150;
+            _rightColLayout.preferredWidth = 185;
+            _rightColLayout.preferredHeight = -1;
             var rightLayout = rightCol.gameObject.AddComponent<VerticalLayoutGroup>();
             rightLayout.spacing = 8;
             rightLayout.padding = new RectOffset(10, 10, 10, 10);
             var rightFitter = rightCol.gameObject.AddComponent<ContentSizeFitter>();
             rightFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            rightFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            rightFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            var leftCol = CreatePanel(root, new Color(0.08f, 0.1f, 0.16f, 0.97f));
+            _leftColLayout = leftCol.gameObject.AddComponent<LayoutElement>();
+            _leftColLayout.flexibleWidth = 4.2f;
+            _leftColLayout.flexibleHeight = 1f;
+            _leftColLayout.minWidth = 560;
+            _leftColLayout.preferredHeight = -1;
+            var leftLayout = leftCol.gameObject.AddComponent<VerticalLayoutGroup>();
+            leftLayout.spacing = 8;
+            leftLayout.padding = new RectOffset(10, 10, 10, 10);
+            leftLayout.childForceExpandHeight = true;
+            var leftFitter = leftCol.gameObject.AddComponent<ContentSizeFitter>();
+            leftFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            leftFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             if (_playerMode)
             {
@@ -427,22 +459,58 @@ namespace MnemosyneArcana.Prototype
                 tuningContentLayout.childForceExpandHeight = false;
             }
 
-            _statusText = CreateText(leftCol, "狀態", 20, TextAnchor.UpperLeft, FontStyle.Bold);
-            _statusText.gameObject.AddComponent<LayoutElement>().minHeight = 82;
+            var hudPanel = CreatePanel(leftCol, new Color(0.16f, 0.12f, 0.08f, 0.92f));
+            hudPanel.gameObject.AddComponent<LayoutElement>().minHeight = 96;
+            var hudLayout = hudPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+            hudLayout.padding = new RectOffset(12, 12, 10, 10);
+            hudLayout.spacing = 4;
+            hudLayout.childControlWidth = true;
+            hudLayout.childControlHeight = true;
+            hudLayout.childForceExpandWidth = true;
+            hudLayout.childForceExpandHeight = false;
+            _statusText = CreateText(hudPanel, "狀態", 21, TextAnchor.UpperLeft, FontStyle.Bold);
+            _statusText.color = new Color(1f, 0.95f, 0.84f, 1f);
+            _statusText.gameObject.AddComponent<LayoutElement>().minHeight = 80;
+
+            CreateText(leftCol, "增益卡區（Joker Slot）", 15, TextAnchor.MiddleLeft, FontStyle.Bold);
+            var jokerRow = CreatePanel(leftCol, new Color(0.05f, 0.07f, 0.13f, 0.95f));
+            jokerRow.gameObject.AddComponent<LayoutElement>().minHeight = 84;
+            var jokerLayout = jokerRow.gameObject.AddComponent<HorizontalLayoutGroup>();
+            jokerLayout.spacing = 8;
+            jokerLayout.padding = new RectOffset(8, 8, 8, 8);
+            jokerLayout.childControlWidth = true;
+            jokerLayout.childControlHeight = true;
+            jokerLayout.childForceExpandWidth = true;
+            jokerLayout.childForceExpandHeight = true;
+            for (var i = 0; i < 6; i++)
+            {
+                var slot = CreatePanel(jokerRow, new Color(0.18f, 0.23f, 0.35f, 0.92f));
+                slot.gameObject.AddComponent<LayoutElement>().minWidth = 92;
+                var slotText = CreateText(slot, string.Format("JOKER\n{0}", i + 1), 11, TextAnchor.MiddleCenter, FontStyle.Bold);
+                slotText.color = new Color(0.86f, 0.92f, 1f, 0.86f);
+                slotText.rectTransform.anchorMin = Vector2.zero;
+                slotText.rectTransform.anchorMax = Vector2.one;
+                slotText.rectTransform.offsetMin = Vector2.zero;
+                slotText.rectTransform.offsetMax = Vector2.zero;
+            }
 
             CreateText(leftCol, "手牌（可拖曳到牌桌區，或點擊快速上桌）", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _handContainer = CreatePanel(leftCol, new Color(0.08f, 0.09f, 0.13f, 0.95f));
-            _handContainer.gameObject.AddComponent<LayoutElement>().minHeight = 230;
+            _handContainer = CreatePanel(leftCol, new Color(0.03f, 0.05f, 0.1f, 0.95f));
+            _handContainer.gameObject.AddComponent<LayoutElement>().minHeight = 218;
             var handLayout = _handContainer.gameObject.AddComponent<HorizontalLayoutGroup>();
+            _handLayoutGroup = handLayout;
             handLayout.spacing = 10;
             handLayout.childControlWidth = true;
             handLayout.childControlHeight = true;
-            handLayout.childForceExpandWidth = true;
+            handLayout.childForceExpandWidth = false;
             handLayout.childForceExpandHeight = true;
             handLayout.padding = new RectOffset(10, 10, 10, 10);
 
             _selectedText = CreateText(leftCol, "已上桌卡牌：0 張", 15, TextAnchor.MiddleLeft, FontStyle.Normal);
-            _playZoneContainer = CreatePanel(leftCol, new Color(0.08f, 0.12f, 0.18f, 0.92f));
+            _multText = CreateText(leftCol, "x1.0 Mult", 30, TextAnchor.MiddleCenter, FontStyle.Bold);
+            _multText.color = new Color(0.95f, 0.94f, 0.88f, 1f);
+            _multText.gameObject.AddComponent<LayoutElement>().minHeight = 42;
+            _playZoneContainer = CreatePanel(leftCol, new Color(0.08f, 0.08f, 0.12f, 0.92f));
             _playZoneContainer.gameObject.AddComponent<LayoutElement>().minHeight = 118;
             var playZoneLayout = _playZoneContainer.gameObject.AddComponent<VerticalLayoutGroup>();
             playZoneLayout.spacing = 6;
@@ -453,9 +521,10 @@ namespace MnemosyneArcana.Prototype
             playZoneLayout.childForceExpandHeight = false;
 
             CreateText(_playZoneContainer, "牌桌區（拖曳卡牌到這裡）", 14, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _playZoneCardsContainer = CreatePanel(_playZoneContainer, new Color(0.06f, 0.08f, 0.12f, 0.95f));
-            _playZoneCardsContainer.gameObject.AddComponent<LayoutElement>().minHeight = 72;
+            _playZoneCardsContainer = CreatePanel(_playZoneContainer, new Color(0.03f, 0.04f, 0.08f, 0.96f));
+            _playZoneCardsContainer.gameObject.AddComponent<LayoutElement>().minHeight = 64;
             var playZoneCardLayout = _playZoneCardsContainer.gameObject.AddComponent<HorizontalLayoutGroup>();
+            _playZoneCardsLayoutGroup = playZoneCardLayout;
             playZoneCardLayout.spacing = 6;
             playZoneCardLayout.padding = new RectOffset(6, 6, 6, 6);
             playZoneCardLayout.childControlWidth = false;
@@ -463,13 +532,51 @@ namespace MnemosyneArcana.Prototype
             playZoneCardLayout.childForceExpandWidth = false;
             playZoneCardLayout.childForceExpandHeight = true;
 
-            var actionRow1 = CreateRow(leftCol, 46);
-            CreateButton(actionRow1, "抽新手牌", DrawHand);
-            CreateButton(actionRow1, "開始答題並出牌", StartQuizAndPlay);
-            CreateButton(actionRow1, "清空上桌", ClearPlayZone);
+            var pageTabs = CreateRow(leftCol, 42);
+            _playTabButton = CreateButtonWithLabel(pageTabs, "出牌頁", 30);
+            _shopTabButton = CreateButtonWithLabel(pageTabs, "商店頁", 30);
+            _quizTabButton = CreateButtonWithLabel(pageTabs, "答題頁", 30);
+            _playTabButton.onClick.AddListener(delegate { SetMainPage(0); });
+            _shopTabButton.onClick.AddListener(delegate { SetMainPage(1); });
+            _quizTabButton.onClick.AddListener(delegate { SetMainPage(2); });
 
-            var quizPanel = CreatePanel(leftCol, new Color(0.1f, 0.14f, 0.2f, 0.95f));
-            quizPanel.gameObject.AddComponent<LayoutElement>().minHeight = 186;
+            _playPageContainer = CreatePanel(leftCol, new Color(0f, 0f, 0f, 0f));
+            var playPageLayout = _playPageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            playPageLayout.spacing = 8;
+            playPageLayout.padding = new RectOffset(0, 0, 0, 0);
+            playPageLayout.childControlWidth = true;
+            playPageLayout.childControlHeight = true;
+            playPageLayout.childForceExpandWidth = true;
+            playPageLayout.childForceExpandHeight = true;
+            var playPageElement = _playPageContainer.gameObject.AddComponent<LayoutElement>();
+            _playPageLayoutElement = playPageElement;
+            playPageElement.minHeight = 0;
+            playPageElement.flexibleHeight = 2f;
+
+            _shopPageContainer = CreatePanel(leftCol, new Color(0f, 0f, 0f, 0f));
+            var shopPageLayout = _shopPageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            shopPageLayout.spacing = 8;
+            shopPageLayout.padding = new RectOffset(0, 0, 0, 0);
+            shopPageLayout.childControlWidth = true;
+            shopPageLayout.childControlHeight = true;
+            shopPageLayout.childForceExpandWidth = true;
+            shopPageLayout.childForceExpandHeight = false;
+            _shopPageContainer.gameObject.AddComponent<LayoutElement>().minHeight = 0;
+
+            _quizPageContainer = CreatePanel(leftCol, new Color(0f, 0f, 0f, 0f));
+            var quizPageLayout = _quizPageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            quizPageLayout.spacing = 8;
+            quizPageLayout.padding = new RectOffset(0, 0, 0, 0);
+            quizPageLayout.childControlWidth = true;
+            quizPageLayout.childControlHeight = true;
+            quizPageLayout.childForceExpandWidth = true;
+            quizPageLayout.childForceExpandHeight = false;
+            _quizPageContainer.gameObject.AddComponent<LayoutElement>().minHeight = 0;
+
+            var quizPanel = CreatePanel(_quizPageContainer, new Color(0.06f, 0.08f, 0.15f, 0.96f));
+            var quizPanelElement = quizPanel.gameObject.AddComponent<LayoutElement>();
+            quizPanelElement.minHeight = 186;
+            quizPanelElement.flexibleHeight = 1f;
             var quizLayout = quizPanel.gameObject.AddComponent<VerticalLayoutGroup>();
             quizLayout.spacing = 6;
             quizLayout.padding = new RectOffset(8, 8, 8, 8);
@@ -496,12 +603,78 @@ namespace MnemosyneArcana.Prototype
                 _quizOptionTexts.Add(optText);
             }
 
-            var actionRow2 = CreateRow(leftCol, 46);
+            var actionRow1 = CreateRow(_playPageContainer, 52);
+            CreateButton(actionRow1, "抽新手牌", DrawHand);
+            CreateButton(actionRow1, "清空上桌", ClearPlayZone);
+            CreateButton(actionRow1, "前往答題頁", delegate { SetMainPage(2); });
+
+            var actionRow2 = CreateRow(_playPageContainer, 52);
             CreateButton(actionRow2, "結算盲注", ResolveBlind);
             CreateButton(actionRow2, "前往下一關", AdvanceAfterShop);
             CreateButton(actionRow2, "重開本局", StartRun);
 
-            var actionRow3 = CreateRow(leftCol, 46);
+            var quizActionRow = CreateRow(_quizPageContainer, 52);
+            CreateButton(quizActionRow, "開始答題並出牌", StartQuizAndPlay);
+            CreateButton(quizActionRow, "返回出牌頁", delegate { SetMainPage(0); });
+
+            var bottomRail = CreatePanel(_playPageContainer, new Color(0.05f, 0.08f, 0.15f, 0.92f));
+            var bottomRailElement = bottomRail.gameObject.AddComponent<LayoutElement>();
+            bottomRailElement.minHeight = 120;
+            bottomRailElement.flexibleHeight = 1f;
+            var bottomRailLayout = bottomRail.gameObject.AddComponent<HorizontalLayoutGroup>();
+            bottomRailLayout.spacing = 8;
+            bottomRailLayout.padding = new RectOffset(8, 8, 8, 8);
+            bottomRailLayout.childControlWidth = true;
+            bottomRailLayout.childControlHeight = true;
+            bottomRailLayout.childForceExpandWidth = true;
+            bottomRailLayout.childForceExpandHeight = true;
+
+            var bottomDeckPanel = CreatePanel(bottomRail, new Color(0.2f, 0.25f, 0.42f, 0.95f));
+            bottomDeckPanel.gameObject.AddComponent<LayoutElement>().minWidth = 110;
+            var bottomDeckTitle = CreateText(bottomDeckPanel, "牌庫", 13, TextAnchor.UpperCenter, FontStyle.Bold);
+            bottomDeckTitle.rectTransform.anchorMin = Vector2.zero;
+            bottomDeckTitle.rectTransform.anchorMax = Vector2.one;
+            bottomDeckTitle.rectTransform.offsetMin = new Vector2(6, 6);
+            bottomDeckTitle.rectTransform.offsetMax = new Vector2(-6, -6);
+            _bottomDeckText = CreateText(bottomDeckPanel, "0", 30, TextAnchor.MiddleCenter, FontStyle.Bold);
+            _bottomDeckText.rectTransform.anchorMin = Vector2.zero;
+            _bottomDeckText.rectTransform.anchorMax = Vector2.one;
+            _bottomDeckText.rectTransform.offsetMin = new Vector2(6, 32);
+            _bottomDeckText.rectTransform.offsetMax = new Vector2(-6, -6);
+
+            var bottomDiscardPanel = CreatePanel(bottomRail, new Color(0.28f, 0.2f, 0.36f, 0.95f));
+            bottomDiscardPanel.gameObject.AddComponent<LayoutElement>().minWidth = 110;
+            var bottomDiscardTitle = CreateText(bottomDiscardPanel, "棄牌", 13, TextAnchor.UpperCenter, FontStyle.Bold);
+            bottomDiscardTitle.rectTransform.anchorMin = Vector2.zero;
+            bottomDiscardTitle.rectTransform.anchorMax = Vector2.one;
+            bottomDiscardTitle.rectTransform.offsetMin = new Vector2(6, 6);
+            bottomDiscardTitle.rectTransform.offsetMax = new Vector2(-6, -6);
+            _bottomDiscardText = CreateText(bottomDiscardPanel, "0", 30, TextAnchor.MiddleCenter, FontStyle.Bold);
+            _bottomDiscardText.rectTransform.anchorMin = Vector2.zero;
+            _bottomDiscardText.rectTransform.anchorMax = Vector2.one;
+            _bottomDiscardText.rectTransform.offsetMin = new Vector2(6, 32);
+            _bottomDiscardText.rectTransform.offsetMax = new Vector2(-6, -6);
+
+            var playFillerPanel = CreatePanel(_playPageContainer, new Color(0.03f, 0.05f, 0.1f, 0.92f));
+            var playFillerElement = playFillerPanel.gameObject.AddComponent<LayoutElement>();
+            _playFillerLayoutElement = playFillerElement;
+            playFillerElement.minHeight = 34;
+            playFillerElement.flexibleHeight = 0f;
+            var playFillerTitle = CreateText(playFillerPanel, "戰鬥流程提示", 12, TextAnchor.UpperLeft, FontStyle.Bold);
+            playFillerTitle.rectTransform.anchorMin = new Vector2(0f, 0f);
+            playFillerTitle.rectTransform.anchorMax = new Vector2(1f, 1f);
+            playFillerTitle.rectTransform.offsetMin = new Vector2(8f, 34f);
+            playFillerTitle.rectTransform.offsetMax = new Vector2(-8f, -8f);
+            playFillerTitle.color = new Color(0.78f, 0.84f, 0.96f, 0.9f);
+
+            _bottomHintText = CreateText(playFillerPanel, "拖曳手牌到牌桌區，切到答題頁完成答題後出牌。", 11, TextAnchor.LowerCenter, FontStyle.Normal);
+            _bottomHintText.rectTransform.anchorMin = new Vector2(0f, 0f);
+            _bottomHintText.rectTransform.anchorMax = new Vector2(1f, 1f);
+            _bottomHintText.rectTransform.offsetMin = new Vector2(8f, 6f);
+            _bottomHintText.rectTransform.offsetMax = new Vector2(-8f, -24f);
+            _bottomHintText.color = new Color(0.66f, 0.72f, 0.9f, 0.85f);
+
+            var actionRow3 = CreateRow(_shopPageContainer, 52);
             CreateButton(actionRow3, "生成商店商品", GenerateShopOffers);
             CreateButton(actionRow3, "購買第一項", BuyFirstOffer);
             if (!_playerMode)
@@ -511,7 +684,7 @@ namespace MnemosyneArcana.Prototype
 
             if (!_playerMode)
             {
-                var actionRow4 = CreateRow(leftCol, 46);
+                var actionRow4 = CreateRow(_shopPageContainer, 46);
                 CreateButton(actionRow4, "一鍵跑到通關", StartAutoRunToComplete);
                 CreateButton(actionRow4, "連跑3局", StartAutoBatchRuns);
                 CreateButton(actionRow4, "失敗後重開演示", StartFailThenRecoverDemo);
@@ -521,9 +694,9 @@ namespace MnemosyneArcana.Prototype
                 CreateButton(actionRow4, "10模型30輪", StartTenModelBatchValidation);
             }
 
-            _shopText = CreateText(leftCol, "商店：尚未生成", 14, TextAnchor.UpperLeft, FontStyle.Normal);
+            _shopText = CreateText(_shopPageContainer, "商店：尚未生成", 14, TextAnchor.UpperLeft, FontStyle.Normal);
             _shopText.gameObject.AddComponent<LayoutElement>().minHeight = 36;
-            _shopGridContainer = CreatePanel(leftCol, new Color(0.09f, 0.1f, 0.15f, 0.95f));
+            _shopGridContainer = CreatePanel(_shopPageContainer, new Color(0.04f, 0.06f, 0.12f, 0.95f));
             _shopGridContainer.gameObject.AddComponent<LayoutElement>().minHeight = 168;
             _shopGridLayout = _shopGridContainer.gameObject.AddComponent<GridLayoutGroup>();
             _shopGridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
@@ -531,12 +704,104 @@ namespace MnemosyneArcana.Prototype
             _shopGridLayout.cellSize = new Vector2(165, 72);
             _shopGridLayout.spacing = new Vector2(8, 8);
             _shopGridLayout.padding = new RectOffset(8, 8, 8, 8);
+            SetMainPage(0);
 
             if (_playerMode)
             {
-                CreateText(_tuningContentContainer, "局外資訊", 18, TextAnchor.MiddleLeft, FontStyle.Bold);
-                _tuningText = CreateText(_tuningContentContainer, "玩家模式：已隱藏調參功能。", 14, TextAnchor.UpperLeft, FontStyle.Normal);
-                _tuningText.gameObject.AddComponent<LayoutElement>().minHeight = 50;
+                _sidebarRoundScoreText = CreateSidebarStatCard(
+                    _tuningContentContainer,
+                    "分數",
+                    new Color(0.72f, 0.24f, 0.28f, 0.96f),
+                    "0");
+                _sidebarPaceText = CreateSidebarStatCard(
+                    _tuningContentContainer,
+                    "節奏",
+                    new Color(0.18f, 0.34f, 0.64f, 0.96f),
+                    "手牌 5 | 棄牌 0");
+                _sidebarResourceText = CreateSidebarStatCard(
+                    _tuningContentContainer,
+                    "資源",
+                    new Color(0.78f, 0.48f, 0.12f, 0.96f),
+                    "$0");
+
+                var runInfoPanel = CreatePanel(_tuningContentContainer, new Color(0.14f, 0.1f, 0.18f, 0.95f));
+                _sidebarRunInfoPanel = runInfoPanel;
+                runInfoPanel.gameObject.AddComponent<LayoutElement>().minHeight = 122;
+                var runInfoLayout = runInfoPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+                runInfoLayout.padding = new RectOffset(8, 8, 8, 8);
+                runInfoLayout.spacing = 6;
+                runInfoLayout.childControlWidth = true;
+                runInfoLayout.childControlHeight = true;
+                runInfoLayout.childForceExpandWidth = true;
+                runInfoLayout.childForceExpandHeight = false;
+                CreateText(runInfoPanel, "回合資訊（Run Info）", 16, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _tuningText = CreateText(runInfoPanel, "玩家模式：已隱藏調參功能。", 13, TextAnchor.UpperLeft, FontStyle.Normal);
+                _tuningText.gameObject.AddComponent<LayoutElement>().minHeight = 44;
+
+                var metaPanel = CreatePanel(_tuningContentContainer, new Color(0.11f, 0.16f, 0.24f, 0.95f));
+                _sidebarMetaPanel = metaPanel;
+                metaPanel.gameObject.AddComponent<LayoutElement>().minHeight = 118;
+                var metaLayout = metaPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+                metaLayout.padding = new RectOffset(8, 8, 8, 8);
+                metaLayout.spacing = 6;
+                metaLayout.childControlWidth = true;
+                metaLayout.childControlHeight = true;
+                metaLayout.childForceExpandWidth = true;
+                metaLayout.childForceExpandHeight = false;
+                CreateText(metaPanel, "局外進度", 16, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _metaText = CreateText(metaPanel, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
+                _metaText.gameObject.AddComponent<LayoutElement>().minHeight = 80;
+
+                var logPanel = CreatePanel(_tuningContentContainer, new Color(0.09f, 0.11f, 0.19f, 0.95f));
+                _sidebarLogPanel = logPanel;
+                logPanel.gameObject.AddComponent<LayoutElement>().minHeight = 150;
+                var logLayout = logPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+                logLayout.padding = new RectOffset(8, 8, 8, 8);
+                logLayout.spacing = 6;
+                logLayout.childControlWidth = true;
+                logLayout.childControlHeight = true;
+                logLayout.childForceExpandWidth = true;
+                logLayout.childForceExpandHeight = false;
+                CreateText(logPanel, "事件紀錄", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _logText = CreateText(logPanel, "-", 13, TextAnchor.UpperLeft, FontStyle.Normal);
+                _logText.gameObject.AddComponent<LayoutElement>().minHeight = 110;
+
+                var stackPanel = CreatePanel(_tuningContentContainer, new Color(0.1f, 0.09f, 0.14f, 0.95f));
+                _sidebarStackPanel = stackPanel;
+                stackPanel.gameObject.AddComponent<LayoutElement>().minHeight = 120;
+                var stackLayout = stackPanel.gameObject.AddComponent<HorizontalLayoutGroup>();
+                stackLayout.padding = new RectOffset(8, 8, 8, 8);
+                stackLayout.spacing = 8;
+                stackLayout.childControlWidth = true;
+                stackLayout.childControlHeight = true;
+                stackLayout.childForceExpandWidth = true;
+                stackLayout.childForceExpandHeight = true;
+
+                var deckCard = CreatePanel(stackPanel, new Color(0.2f, 0.25f, 0.42f, 0.95f));
+                deckCard.gameObject.AddComponent<LayoutElement>().minWidth = 90;
+                var deckLabel = CreateText(deckCard, "牌庫", 13, TextAnchor.UpperCenter, FontStyle.Bold);
+                deckLabel.rectTransform.anchorMin = Vector2.zero;
+                deckLabel.rectTransform.anchorMax = Vector2.one;
+                deckLabel.rectTransform.offsetMin = new Vector2(6, 6);
+                deckLabel.rectTransform.offsetMax = new Vector2(-6, -6);
+                _deckStackText = CreateText(deckCard, "0", 26, TextAnchor.MiddleCenter, FontStyle.Bold);
+                _deckStackText.rectTransform.anchorMin = Vector2.zero;
+                _deckStackText.rectTransform.anchorMax = Vector2.one;
+                _deckStackText.rectTransform.offsetMin = new Vector2(6, 30);
+                _deckStackText.rectTransform.offsetMax = new Vector2(-6, -6);
+
+                var discardCard = CreatePanel(stackPanel, new Color(0.3f, 0.2f, 0.36f, 0.95f));
+                discardCard.gameObject.AddComponent<LayoutElement>().minWidth = 90;
+                var discardLabel = CreateText(discardCard, "棄牌", 13, TextAnchor.UpperCenter, FontStyle.Bold);
+                discardLabel.rectTransform.anchorMin = Vector2.zero;
+                discardLabel.rectTransform.anchorMax = Vector2.one;
+                discardLabel.rectTransform.offsetMin = new Vector2(6, 6);
+                discardLabel.rectTransform.offsetMax = new Vector2(-6, -6);
+                _discardStackText = CreateText(discardCard, "0", 26, TextAnchor.MiddleCenter, FontStyle.Bold);
+                _discardStackText.rectTransform.anchorMin = Vector2.zero;
+                _discardStackText.rectTransform.anchorMax = Vector2.one;
+                _discardStackText.rectTransform.offsetMin = new Vector2(6, 30);
+                _discardStackText.rectTransform.offsetMax = new Vector2(-6, -6);
             }
             else
             {
@@ -567,22 +832,21 @@ namespace MnemosyneArcana.Prototype
                 var tuneRow5 = CreateRow(_tuningContentContainer, 42);
                 CreateButton(tuneRow5, "節點切換", CycleUnlockNode);
                 CreateButton(tuneRow5, "清空紀錄", delegate { _logs.Clear(); RefreshView(); });
+                _metaText = CreateText(_tuningContentContainer, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
+                _metaText.gameObject.AddComponent<LayoutElement>().minHeight = 80;
+
+                CreateText(_tuningContentContainer, "事件紀錄", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _logText = CreateText(_tuningContentContainer, "-", 13, TextAnchor.UpperLeft, FontStyle.Normal);
+                _logText.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
             }
-
-            _metaText = CreateText(_tuningContentContainer, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
-            _metaText.gameObject.AddComponent<LayoutElement>().minHeight = 80;
-
-            CreateText(_tuningContentContainer, "事件紀錄", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _logText = CreateText(_tuningContentContainer, "-", 13, TextAnchor.UpperLeft, FontStyle.Normal);
-            _logText.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
 
             if (_playerMode)
             {
                 if (_rightColLayout != null)
                 {
-                    _rightColLayout.minWidth = 220;
-                    _rightColLayout.preferredWidth = 240;
-                    _rightColLayout.flexibleWidth = 1f;
+                    _rightColLayout.minWidth = 190;
+                    _rightColLayout.preferredWidth = 220;
+                    _rightColLayout.flexibleWidth = 0.9f;
                 }
             }
             else
@@ -605,28 +869,49 @@ namespace MnemosyneArcana.Prototype
             return row;
         }
 
+        private Text CreateSidebarStatCard(Transform parent, string title, Color color, string initialValue)
+        {
+            var panel = CreatePanel(parent, color);
+            panel.gameObject.AddComponent<LayoutElement>().minHeight = 84;
+            var layout = panel.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(8, 8, 8, 8);
+            layout.spacing = 4;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            var titleText = CreateText(panel, title, 11, TextAnchor.MiddleCenter, FontStyle.Bold);
+            titleText.color = new Color(0.95f, 0.96f, 1f, 0.95f);
+
+            var valueText = CreateText(panel, initialValue, 19, TextAnchor.MiddleCenter, FontStyle.Bold);
+            valueText.color = new Color(1f, 0.98f, 0.88f, 1f);
+            valueText.gameObject.AddComponent<LayoutElement>().minHeight = 40;
+            return valueText;
+        }
+
         private void BuildThemeBackground(Transform canvasRoot)
         {
-            var bg = CreatePanel(canvasRoot, new Color(0.05f, 0.07f, 0.11f, 0.92f));
+            var bg = CreatePanel(canvasRoot, new Color(0.03f, 0.04f, 0.07f, 0.94f));
             bg.anchorMin = Vector2.zero;
             bg.anchorMax = Vector2.one;
             bg.offsetMin = Vector2.zero;
             bg.offsetMax = Vector2.zero;
             bg.SetAsFirstSibling();
 
-            var topBand = CreatePanel(bg, new Color(0.13f, 0.28f, 0.43f, 0.32f));
-            topBand.anchorMin = new Vector2(0f, 0.78f);
+            var topBand = CreatePanel(bg, new Color(0.46f, 0.31f, 0.14f, 0.26f));
+            topBand.anchorMin = new Vector2(0f, 0.76f);
             topBand.anchorMax = new Vector2(1f, 1f);
             topBand.offsetMin = Vector2.zero;
             topBand.offsetMax = Vector2.zero;
 
-            var leftGlow = CreatePanel(bg, new Color(0.2f, 0.45f, 0.35f, 0.18f));
+            var leftGlow = CreatePanel(bg, new Color(0.1f, 0.4f, 0.3f, 0.15f));
             leftGlow.anchorMin = new Vector2(0f, 0f);
             leftGlow.anchorMax = new Vector2(0.45f, 0.5f);
             leftGlow.offsetMin = Vector2.zero;
             leftGlow.offsetMax = Vector2.zero;
 
-            var rightGlow = CreatePanel(bg, new Color(0.45f, 0.3f, 0.18f, 0.18f));
+            var rightGlow = CreatePanel(bg, new Color(0.52f, 0.34f, 0.14f, 0.2f));
             rightGlow.anchorMin = new Vector2(0.55f, 0.05f);
             rightGlow.anchorMax = new Vector2(1f, 0.6f);
             rightGlow.offsetMin = Vector2.zero;
@@ -663,17 +948,30 @@ namespace MnemosyneArcana.Prototype
             var go = new GameObject(label, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var image = go.GetComponent<Image>();
-            image.color = new Color(0.2f, 0.26f, 0.36f, 1f);
+            var isPrimary =
+                label == "開始答題並出牌" ||
+                label == "結算盲注" ||
+                label == "前往下一關";
+            image.color = isPrimary
+                ? new Color(0.56f, 0.36f, 0.12f, 0.98f)
+                : new Color(0.17f, 0.22f, 0.34f, 0.98f);
             var button = go.GetComponent<Button>();
             button.onClick.AddListener(delegate { onClick(); });
 
-            var text = CreateText(go.transform, label, 14, TextAnchor.MiddleCenter, FontStyle.Normal);
-            text.color = new Color(0.93f, 0.96f, 1f, 1f);
+            var text = CreateText(go.transform, label, _isCompactMobileLayout ? 16 : 14, TextAnchor.MiddleCenter, isPrimary ? FontStyle.Bold : FontStyle.Normal);
+            text.color = isPrimary
+                ? new Color(0.14f, 0.08f, 0.03f, 1f)
+                : new Color(0.93f, 0.96f, 1f, 1f);
+            var outline = text.gameObject.AddComponent<Outline>();
+            outline.effectColor = isPrimary
+                ? new Color(0.98f, 0.82f, 0.52f, 0.28f)
+                : new Color(0.05f, 0.07f, 0.13f, 0.7f);
+            outline.effectDistance = new Vector2(0.7f, -0.7f);
             var textRect = text.rectTransform;
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(6, 4);
-            textRect.offsetMax = new Vector2(-6, -4);
+            textRect.offsetMin = new Vector2(6, 3);
+            textRect.offsetMax = new Vector2(-6, -3);
         }
 
         private Button CreateButtonWithLabel(Transform parent, string label, int minHeight)
@@ -681,13 +979,16 @@ namespace MnemosyneArcana.Prototype
             var go = new GameObject(label, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             go.transform.SetParent(parent, false);
             var image = go.GetComponent<Image>();
-            image.color = new Color(0.2f, 0.26f, 0.36f, 1f);
+            image.color = new Color(0.18f, 0.22f, 0.32f, 0.98f);
             var button = go.GetComponent<Button>();
             var le = go.GetComponent<LayoutElement>();
             le.minHeight = minHeight;
 
-            var text = CreateText(go.transform, label, 13, TextAnchor.MiddleCenter, FontStyle.Normal);
+            var text = CreateText(go.transform, label, _isCompactMobileLayout ? 14 : 13, TextAnchor.MiddleCenter, FontStyle.Bold);
             text.color = new Color(0.93f, 0.96f, 1f, 1f);
+            var outline = text.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.05f, 0.07f, 0.13f, 0.72f);
+            outline.effectDistance = new Vector2(0.7f, -0.7f);
             var textRect = text.rectTransform;
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
@@ -853,21 +1154,27 @@ namespace MnemosyneArcana.Prototype
             {
                 var index = i;
                 var card = _hand[i];
-                var go = new GameObject("Card", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement), typeof(CanvasGroup), typeof(CardDragHandler));
+                var go = new GameObject("Card", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement), typeof(CanvasGroup), typeof(Outline), typeof(CardDragHandler));
                 go.transform.SetParent(_handContainer, false);
 
                 var le = go.GetComponent<LayoutElement>();
-                le.preferredWidth = 140;
-                le.minWidth = 120;
+                le.preferredWidth = 118;
+                le.minWidth = 62;
 
                 var image = go.GetComponent<Image>();
                 image.color = CardColor(card.Element);
+                var outline = go.GetComponent<Outline>();
+                outline.effectColor = new Color(0.08f, 0.1f, 0.16f, 0.9f);
+                outline.effectDistance = new Vector2(2f, -2f);
 
                 var cardRect = go.GetComponent<RectTransform>();
-                cardRect.localScale = new Vector3(0.85f, 0.85f, 1f);
-                cardRect.anchoredPosition = new Vector2(0f, -22f);
+                cardRect.localScale = _isCompactMobileLayout ? Vector3.one : new Vector3(0.85f, 0.85f, 1f);
+                cardRect.anchoredPosition = _isCompactMobileLayout ? Vector2.zero : new Vector2(0f, -22f);
+                var fan = i - (_hand.Count - 1) * 0.5f;
+                var fanAngle = _isCompactMobileLayout ? 0f : 1.6f;
+                cardRect.localRotation = Quaternion.Euler(0f, 0f, fan * fanAngle);
                 var group = go.GetComponent<CanvasGroup>();
-                group.alpha = 0f;
+                group.alpha = _isCompactMobileLayout ? 1f : 0f;
 
                 var button = go.GetComponent<Button>();
                 button.onClick.AddListener(delegate
@@ -877,20 +1184,26 @@ namespace MnemosyneArcana.Prototype
                 var dragHandler = go.GetComponent<CardDragHandler>();
                 dragHandler.Init(this, index);
 
-                var text = CreateText(go.transform, BuildCardText(card, false), 14, TextAnchor.UpperLeft, FontStyle.Bold);
+                var text = CreateText(go.transform, BuildCardDisplayText(card, false), 14, TextAnchor.UpperLeft, FontStyle.Bold);
                 text.rectTransform.anchorMin = Vector2.zero;
                 text.rectTransform.anchorMax = Vector2.one;
                 text.rectTransform.offsetMin = new Vector2(8, 8);
                 text.rectTransform.offsetMax = new Vector2(-8, -8);
                 text.color = new Color(0.07f, 0.08f, 0.1f, 1f);
+                var textOutline = text.gameObject.AddComponent<Outline>();
+                textOutline.effectColor = new Color(0.03f, 0.05f, 0.12f, 0.72f);
+                textOutline.effectDistance = new Vector2(0.6f, -0.6f);
 
-                _drawAnims.Add(new DrawAnim
+                if (!_isCompactMobileLayout)
                 {
-                    CardRect = cardRect,
-                    CanvasGroup = group,
-                    StartTime = Time.unscaledTime,
-                    Delay = i * 0.05f
-                });
+                    _drawAnims.Add(new DrawAnim
+                    {
+                        CardRect = cardRect,
+                        CanvasGroup = group,
+                        StartTime = Time.unscaledTime,
+                        Delay = i * 0.05f
+                    });
+                }
             }
         }
 
@@ -925,7 +1238,7 @@ namespace MnemosyneArcana.Prototype
                 var txt = child.GetComponentInChildren<Text>();
                 if (txt != null && i < _hand.Count)
                 {
-                    txt.text = BuildCardText(_hand[i], _playZoneCardIndexes.Contains(i));
+                    txt.text = BuildCardDisplayText(_hand[i], _playZoneCardIndexes.Contains(i));
                 }
 
                 var img = child.GetComponent<Image>();
@@ -936,7 +1249,7 @@ namespace MnemosyneArcana.Prototype
                         : CardColor(_hand[i].Element);
                 }
 
-                child.localScale = Vector3.one;
+                child.localScale = _playZoneCardIndexes.Contains(i) ? new Vector3(1.03f, 1.03f, 1f) : Vector3.one;
             }
         }
 
@@ -962,7 +1275,10 @@ namespace MnemosyneArcana.Prototype
 
                 var word = _hand[cardIndex];
                 var token = CreatePanel(_playZoneCardsContainer, BoostColor(CardColor(word.Element), 1.12f));
-                token.gameObject.AddComponent<LayoutElement>().preferredWidth = 118;
+                token.gameObject.AddComponent<LayoutElement>().preferredWidth = 96;
+                var tokenOutline = token.gameObject.AddComponent<Outline>();
+                tokenOutline.effectColor = new Color(0.04f, 0.05f, 0.1f, 0.9f);
+                tokenOutline.effectDistance = new Vector2(2f, -2f);
                 var btn = token.gameObject.AddComponent<Button>();
                 btn.onClick.AddListener(delegate
                 {
@@ -975,7 +1291,12 @@ namespace MnemosyneArcana.Prototype
                 t.rectTransform.offsetMin = new Vector2(4, 4);
                 t.rectTransform.offsetMax = new Vector2(-4, -4);
                 t.color = new Color(0.07f, 0.08f, 0.1f, 1f);
+                var tokenTextOutline = t.gameObject.AddComponent<Outline>();
+                tokenTextOutline.effectColor = new Color(1f, 1f, 1f, 0.16f);
+                tokenTextOutline.effectDistance = new Vector2(1f, -1f);
             }
+
+            UpdateAdaptiveCardSizes();
         }
 
         internal void TryDropCardToPlayZone(int cardIndex, Vector2 screenPoint, Camera cam)
@@ -2541,13 +2862,32 @@ namespace MnemosyneArcana.Prototype
             }
 
             var state = _runManager.CurrentState;
-            _statusText.text =
-                "Mnemosyne Arcana - 真實卡牌 UI 原型\n" +
-                string.Format(
-                    "階段：{0} | 關卡：第 {1} 關 {2} | 目標分：{3} | 目前分：{4} | 出牌：{5} | 金錢：${6} | 上次出牌：{7}",
-                    PhaseZh(state.Phase), state.Ante, BlindZh(state.BlindType), state.TargetScore, state.CurrentScore, state.PlaysLeft, state.Money, _lastScore);
+            if (_isCompactMobileLayout)
+            {
+                _statusText.text =
+                    "Mnemosyne Arcana\n" +
+                    string.Format("第 {0} 關 {1} | {2}\n", state.Ante, BlindZh(state.BlindType), PhaseZh(state.Phase)) +
+                    string.Format("目標 {0} / 目前 {1}\n", state.TargetScore, state.CurrentScore) +
+                    string.Format("出牌 {0}  $ {1}  +{2}", state.PlaysLeft, state.Money, _lastScore);
+            }
+            else
+            {
+                _statusText.text =
+                    "Mnemosyne Arcana\n" +
+                    string.Format("第 {0} 關 {1}  |  {2}\n", state.Ante, BlindZh(state.BlindType), PhaseZh(state.Phase)) +
+                    string.Format("目標分 {0}  /  目前分 {1}\n", state.TargetScore, state.CurrentScore) +
+                    string.Format("出牌 {0}  |  金錢 ${1}  |  上次 +{2}", state.PlaysLeft, state.Money, _lastScore);
+            }
 
-            _selectedText.text = string.Format("已上桌卡牌：{0} 張（拖曳到牌桌區，未上桌則預設全打）", _playZoneCardIndexes.Count);
+            _selectedText.text = _isCompactMobileLayout
+                ? string.Format("已上桌：{0} 張（未選則全打）", _playZoneCardIndexes.Count)
+                : string.Format("已上桌卡牌：{0} 張（拖曳到牌桌區，未上桌則預設全打）", _playZoneCardIndexes.Count);
+            if (_multText != null)
+            {
+                var liveMult = Mathf.Max(1f, (1f + _additiveMult) * Mathf.Max(1f, _factor));
+                _multText.text = string.Format("x{0:0.0} Mult", liveMult);
+                _multText.fontSize = _isCompactMobileLayout ? 42 : 30;
+            }
             if (_quizStatusText != null && !_isQuizRunning && _quizCardIndexes.Count == 0)
             {
                 _quizStatusText.text = "尚未開始答題。";
@@ -2563,11 +2903,20 @@ namespace MnemosyneArcana.Prototype
             }
 
             var contractText = _activeRunContract != null ? _activeRunContract.ContractId : "-";
-            _metaText.text = string.Format("局外：經驗={0} | 學習點={1} | 本局契約={2} | 下一解鎖節點={3}", _metaXp, _metaLp, contractText, _unlockNodeId);
+            _metaText.text = string.Format(
+                "經驗：{0}\n學習點：{1}\n本局契約：{2}\n下一節點：{3}",
+                _metaXp,
+                _metaLp,
+                contractText,
+                _unlockNodeId);
             if (_tuningText != null)
             {
                 _tuningText.text = _playerMode
-                    ? "玩家模式：已隱藏調參與開發驗證按鈕。"
+                    ? string.Format(
+                        "Round score：{0}\nxMult：{1:0.0}\n剩餘出牌：{2}\n玩家模式：已隱藏調參按鈕",
+                        state.CurrentScore,
+                        Mathf.Max(1f, (1f + _additiveMult) * Mathf.Max(1f, _factor)),
+                        state.PlaysLeft)
                     : string.Format(
                         "難度：{0}\n種子：{1}\n基礎籌碼：{2}\n升級層：{3}\n答錯數：{4}\n加法倍率：{5:0.##}\n乘區：{6:0.##}\n模型：M{7}/M{8}\n有效詞彙：{9:0}\n效率增益：x{10:0.00}\n魔王通過：{11}\n掌握率：{12:P0}\n100%穩定天數：{13}\n主線/真結局通關：{14}/{15}\n回補中：{16}\n回補連敗：{17}\n退回倒數：{18}",
                         DifficultyZh(_difficulty), _seed, _baseChips, _upgradeLevel, _wrongCount, _additiveMult, _factor,
@@ -2583,6 +2932,55 @@ namespace MnemosyneArcana.Prototype
                         _inRecoveryGate ? "是" : "否",
                         _consecutiveRecoveryFailures,
                         Mathf.Max(0, 7 - _daysSinceLastDemotion));
+            }
+
+            if (_sidebarRoundScoreText != null)
+            {
+                _sidebarRoundScoreText.text = string.Format("{0}", state.CurrentScore);
+            }
+
+            if (_sidebarPaceText != null)
+            {
+                _sidebarPaceText.text = _isCompactMobileLayout
+                    ? string.Format("手{0} 棄{1}", _hand.Count, _playZoneOrder.Count)
+                    : string.Format("手牌 {0} | 棄牌 {1}", _hand.Count, _playZoneOrder.Count);
+            }
+
+            if (_sidebarResourceText != null)
+            {
+                _sidebarResourceText.text = string.Format("${0}", state.Money);
+            }
+
+            if (_deckStackText != null)
+            {
+                _deckStackText.text = string.Format("{0}", Mathf.Max(0, _deck.Count - _hand.Count));
+            }
+
+            if (_discardStackText != null)
+            {
+                _discardStackText.text = string.Format("{0}", _playZoneOrder.Count);
+            }
+
+            if (_bottomDeckText != null)
+            {
+                _bottomDeckText.text = string.Format("{0}", Mathf.Max(0, _deck.Count - _hand.Count));
+            }
+
+            if (_bottomDiscardText != null)
+            {
+                _bottomDiscardText.text = string.Format("{0}", _playZoneOrder.Count);
+            }
+
+            if (_bottomHintText != null)
+            {
+                var phaseHint = state.Phase switch
+                {
+                    RunPhase.HandSelect => "拖曳手牌到牌桌，選好後可直接按「前往答題頁」。",
+                    RunPhase.BlindResult => "目前是結算階段，可按「結算盲注」或「前往下一關」。",
+                    RunPhase.Shop => "目前是商店階段，切到商店頁購買或刷新後再進下一關。",
+                    _ => "拖曳手牌到牌桌區，切到答題頁完成答題後出牌。"
+                };
+                _bottomHintText.text = phaseHint;
             }
 
             var logLines = "";
@@ -2616,11 +3014,59 @@ namespace MnemosyneArcana.Prototype
             }
 
             var screenW = Screen.width;
+            var shortSide = Mathf.Min(Screen.width, Screen.height);
+            var compactMobile = shortSide <= 430;
+            _isCompactMobileLayout = compactMobile;
+            if (_playFillerLayoutElement != null)
+            {
+                _playFillerLayoutElement.preferredHeight = compactMobile ? 52f : 64f;
+            }
             if (_playerMode)
             {
-                _rightColLayout.minWidth = screenW < 980 ? 190 : 220;
-                _rightColLayout.preferredWidth = screenW < 980 ? 200 : 240;
-                _leftColLayout.minWidth = screenW < 980 ? 360 : 460;
+                if (compactMobile)
+                {
+                    _rightColLayout.minWidth = 84;
+                    _rightColLayout.preferredWidth = 96;
+                    _rightColLayout.flexibleWidth = 0.38f;
+                    _leftColLayout.minWidth = 420;
+                    if (_sidebarLogPanel != null) _sidebarLogPanel.gameObject.SetActive(false);
+                    if (_sidebarRunInfoPanel != null) _sidebarRunInfoPanel.gameObject.SetActive(false);
+                    if (_sidebarMetaPanel != null) _sidebarMetaPanel.gameObject.SetActive(false);
+                    if (_sidebarStackPanel != null) _sidebarStackPanel.gameObject.SetActive(true);
+                }
+                else if (screenW < 900)
+                {
+                    _rightColLayout.minWidth = 126;
+                    _rightColLayout.preferredWidth = 136;
+                    _rightColLayout.flexibleWidth = 0.72f;
+                    _leftColLayout.minWidth = 460;
+                    if (_sidebarLogPanel != null) _sidebarLogPanel.gameObject.SetActive(true);
+                    if (_sidebarRunInfoPanel != null) _sidebarRunInfoPanel.gameObject.SetActive(true);
+                    if (_sidebarMetaPanel != null) _sidebarMetaPanel.gameObject.SetActive(true);
+                    if (_sidebarStackPanel != null) _sidebarStackPanel.gameObject.SetActive(true);
+                }
+                else if (screenW < 1200)
+                {
+                    _rightColLayout.minWidth = 145;
+                    _rightColLayout.preferredWidth = 160;
+                    _rightColLayout.flexibleWidth = 0.82f;
+                    _leftColLayout.minWidth = 560;
+                    if (_sidebarLogPanel != null) _sidebarLogPanel.gameObject.SetActive(true);
+                    if (_sidebarRunInfoPanel != null) _sidebarRunInfoPanel.gameObject.SetActive(true);
+                    if (_sidebarMetaPanel != null) _sidebarMetaPanel.gameObject.SetActive(true);
+                    if (_sidebarStackPanel != null) _sidebarStackPanel.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _rightColLayout.minWidth = 210;
+                    _rightColLayout.preferredWidth = 230;
+                    _rightColLayout.flexibleWidth = 0.9f;
+                    _leftColLayout.minWidth = 840;
+                    if (_sidebarLogPanel != null) _sidebarLogPanel.gameObject.SetActive(true);
+                    if (_sidebarRunInfoPanel != null) _sidebarRunInfoPanel.gameObject.SetActive(true);
+                    if (_sidebarMetaPanel != null) _sidebarMetaPanel.gameObject.SetActive(true);
+                    if (_sidebarStackPanel != null) _sidebarStackPanel.gameObject.SetActive(true);
+                }
             }
             else
             {
@@ -2631,10 +3077,18 @@ namespace MnemosyneArcana.Prototype
                 }
                 else
                 {
-                    _rightColLayout.minWidth = screenW < 980 ? 220 : 250;
+                    _rightColLayout.minWidth = screenW < 1200 ? 210 : 250;
                     _rightColLayout.preferredWidth = -1;
                 }
-                _leftColLayout.minWidth = screenW < 980 ? 360 : 420;
+                _leftColLayout.minWidth = screenW < 900 ? 460 : (screenW < 1200 ? 560 : 780);
+            }
+
+            var targetColHeight = Mathf.Max(700f, Screen.height - 28f);
+            _leftColLayout.minHeight = targetColHeight;
+            _rightColLayout.minHeight = targetColHeight;
+            if (_playPageLayoutElement != null)
+            {
+                _playPageLayoutElement.preferredHeight = -1f;
             }
 
             var width = _shopGridContainer.rect.width;
@@ -2652,6 +3106,88 @@ namespace MnemosyneArcana.Prototype
             var cellW = Mathf.Floor((width - padding - spacing) / targetColumns);
             cellW = Mathf.Clamp(cellW, 96f, 185f);
             _shopGridLayout.cellSize = new Vector2(cellW, 72f);
+            UpdateAdaptiveCardSizes();
+            UpdateButtonTypography();
+        }
+
+        private void UpdateAdaptiveCardSizes()
+        {
+            if (_handContainer != null && _handLayoutGroup != null && _handContainer.childCount > 0)
+            {
+                _handLayoutGroup.spacing = _isCompactMobileLayout ? 4f : 10f;
+                var count = _handContainer.childCount;
+                var innerWidth = _handContainer.rect.width
+                                 - _handLayoutGroup.padding.left
+                                 - _handLayoutGroup.padding.right
+                                 - _handLayoutGroup.spacing * Mathf.Max(0, count - 1);
+                var perCard = Mathf.Clamp(Mathf.Floor(innerWidth / Mathf.Max(1, count)), 64f, 112f);
+
+                for (var i = 0; i < count; i++)
+                {
+                    var child = _handContainer.GetChild(i);
+                    var le = child.GetComponent<LayoutElement>();
+                    if (le != null)
+                    {
+                        le.minWidth = perCard;
+                        le.preferredWidth = perCard;
+                    }
+
+                    var txt = child.GetComponentInChildren<Text>();
+                    if (txt != null)
+                    {
+                        txt.fontSize = perCard < 76f ? 13 : (perCard < 92f ? 14 : 15);
+                    }
+                }
+            }
+
+            if (_playZoneCardsContainer != null && _playZoneCardsLayoutGroup != null && _playZoneCardsContainer.childCount > 0)
+            {
+                _playZoneCardsLayoutGroup.spacing = _isCompactMobileLayout ? 3f : 6f;
+                var count = _playZoneCardsContainer.childCount;
+                var innerWidth = _playZoneCardsContainer.rect.width
+                                 - _playZoneCardsLayoutGroup.padding.left
+                                 - _playZoneCardsLayoutGroup.padding.right
+                                 - _playZoneCardsLayoutGroup.spacing * Mathf.Max(0, count - 1);
+                var perToken = Mathf.Clamp(Mathf.Floor(innerWidth / Mathf.Max(1, count)), 50f, 98f);
+                for (var i = 0; i < count; i++)
+                {
+                    var child = _playZoneCardsContainer.GetChild(i);
+                    var le = child.GetComponent<LayoutElement>();
+                    if (le != null)
+                    {
+                        le.preferredWidth = perToken;
+                        le.minWidth = perToken;
+                    }
+                }
+            }
+        }
+
+        private void UpdateButtonTypography()
+        {
+            var allButtons = GetComponentsInChildren<Button>(true);
+            for (var i = 0; i < allButtons.Length; i++)
+            {
+                var btn = allButtons[i];
+                if (btn == null)
+                {
+                    continue;
+                }
+
+                var txt = btn.GetComponentInChildren<Text>();
+                if (txt == null)
+                {
+                    continue;
+                }
+
+                var label = txt.text ?? string.Empty;
+                var isPrimary =
+                    label == "開始答題並出牌" ||
+                    label == "結算盲注" ||
+                    label == "前往下一關";
+                txt.fontSize = _isCompactMobileLayout
+                    ? (isPrimary ? 18 : 16)
+                    : (isPrimary ? 14 : 13);
+            }
         }
 
         private void ToggleTuningPanel()
@@ -2665,6 +3201,63 @@ namespace MnemosyneArcana.Prototype
             ApplyTuningPanelState();
             UpdateResponsiveLayout();
             RefreshView();
+        }
+
+        private void SetMainPage(int pageIndex)
+        {
+            _activeMainPageIndex = Mathf.Clamp(pageIndex, 0, 2);
+            if (_playPageContainer != null)
+            {
+                _playPageContainer.gameObject.SetActive(_activeMainPageIndex == 0);
+            }
+
+            if (_shopPageContainer != null)
+            {
+                _shopPageContainer.gameObject.SetActive(_activeMainPageIndex == 1);
+            }
+
+            if (_quizPageContainer != null)
+            {
+                _quizPageContainer.gameObject.SetActive(_activeMainPageIndex == 2);
+            }
+
+            UpdateMainPageTabs();
+        }
+
+        private void UpdateMainPageTabs()
+        {
+            if (_playTabButton != null)
+            {
+                var img = _playTabButton.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = _activeMainPageIndex == 0
+                        ? new Color(0.56f, 0.36f, 0.12f, 0.98f)
+                        : new Color(0.17f, 0.22f, 0.34f, 0.9f);
+                }
+            }
+
+            if (_shopTabButton != null)
+            {
+                var img = _shopTabButton.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = _activeMainPageIndex == 1
+                        ? new Color(0.56f, 0.36f, 0.12f, 0.98f)
+                        : new Color(0.17f, 0.22f, 0.34f, 0.9f);
+                }
+            }
+
+            if (_quizTabButton != null)
+            {
+                var img = _quizTabButton.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = _activeMainPageIndex == 2
+                        ? new Color(0.56f, 0.36f, 0.12f, 0.98f)
+                        : new Color(0.17f, 0.22f, 0.34f, 0.9f);
+                }
+            }
         }
 
         private void ApplyTuningPanelState()
@@ -2850,6 +3443,18 @@ namespace MnemosyneArcana.Prototype
                 selectedText +
                 word.Text + "\n" +
                 string.Format("元素：{0}\n詞性：{1}\n等級：{2}", ElementZh(word.Element), PosZh(word.Pos), word.Level);
+        }
+
+        private string BuildCardDisplayText(DemoWord word, bool selected)
+        {
+            if (_isCompactMobileLayout)
+            {
+                var selectedText = selected ? "【上桌】\n" : string.Empty;
+                var levelToken = word.Level.ToString().Replace("Lv", string.Empty);
+                return selectedText + string.Format("{0}\nLv{1}", word.Text, levelToken);
+            }
+
+            return BuildCardText(word, selected);
         }
 
         private static string DifficultyZh(RunDifficultyProfile profile)

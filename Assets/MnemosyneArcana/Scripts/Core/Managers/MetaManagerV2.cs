@@ -267,11 +267,18 @@ namespace MnemosyneArcana.Core.Managers
                 {
                     case "FLU_01": snapshot.Lv1Lv2TimeBonusSec += 0.2f; break;
                     case "FLU_02": snapshot.WrongPenaltyReductionRate += 0.10f; break;
+                    case "FLU_03A": snapshot.Lv1Lv2EasyQuestionRateBonus += 0.08f; break;
+                    case "FLU_03B": snapshot.Lv3CorrectRewardBonusRate += 0.12f; break;
                     case "FLU_06A": snapshot.ListeningTimeBonusSec += 0.2f; break;
+                    case "FLU_06B":
+                        snapshot.SpellingToleranceExtraLetters += 1;
+                        snapshot.SpellingTolerancePerRunLimit += 3;
+                        break;
                     case "FLU_08": snapshot.RetryCostDiscount += 1; break;
                     case "FLU_10B": snapshot.WrongPenaltyReductionRate += 0.15f; break;
                     case "FLU_10A": snapshot.BossTimeBonusRate += 0.10f; break;
                     case "FLU_11": snapshot.LearningContractLpBonusRate += 0.10f; break;
+                    case "FLU_12": snapshot.IgnoreFirstLv4DemotionPerRun = true; break;
                     case "FLU_04": snapshot.FreeRetryOnFirstWrongOption = true; break;
                     case "FLU_05": snapshot.ConsecutiveWrongReliefThresholdDelta += 1; break;
                     case "FLU_07": snapshot.PerfectRunLpBonus += 1; break;
@@ -279,10 +286,20 @@ namespace MnemosyneArcana.Core.Managers
 
                     case "LEX_01": snapshot.DecayedPoolWeightBonusRate += 0.10f; break;
                     case "LEX_02": snapshot.StaleWordWeightBonusRate += 0.20f; break;
+                    case "LEX_04": snapshot.WeakWordWeightBonusRate += 0.15f; break;
+                    case "LEX_05": snapshot.DecayTimerExtendDaysOnDecayedHit += 1; break;
+                    case "LEX_06A": snapshot.ElementGapWeightBonusRate += 0.20f; break;
+                    case "LEX_06B": snapshot.PosGapWeightBonusRate += 0.20f; break;
+                    case "LEX_07": snapshot.GuaranteedLv4LexiconCountPerRun += 1; break;
+                    case "LEX_08": snapshot.PreferRecentDecayedWhenOverflow = true; break;
                     case "LEX_09": snapshot.LexiconUnlockLpCostDiscountRate += 0.08f; break;
                     case "LEX_10A": snapshot.LexiconUnlockRunRequirementDiscountRate += 0.10f; break;
                     case "LEX_10B": snapshot.LexiconUnlockCoverageDiscountRate += 0.05f; break;
                     case "LEX_11": snapshot.LearningContractQualityBonusRate += 0.20f; break;
+                    case "LEX_12":
+                        snapshot.FirstDecayedPlayLpBonus += 1;
+                        snapshot.FirstDecayedPlayLpBonusCap = Math.Max(snapshot.FirstDecayedPlayLpBonusCap, 2);
+                        break;
                     case "LEX_03A": snapshot.ShortWordDropBiasRate += 0.08f; break;
                     case "LEX_03B": snapshot.LongWordDropBiasRate += 0.12f; break;
 
@@ -305,6 +322,12 @@ namespace MnemosyneArcana.Core.Managers
                     case "MAS_01": snapshot.Lv4CardFlatChipBonus += 2; break;
                     case "MAS_02": snapshot.FirstTwoLv4CardsAdditiveMultBonus += 1; break;
                     case "MAS_03A": snapshot.Lv4DecayProtectionLayers += 1; break;
+                    case "MAS_03B": snapshot.Lv4NegativeAffixResistanceRate += 0.10f; break;
+                    case "MAS_04": snapshot.MasteryRunLpBonusOnFiveLv4 += 2; break;
+                    case "MAS_05":
+                        snapshot.Lv3To4RequirementReduction += 2;
+                        snapshot.Lv3To4RequirementMinimum = 12;
+                        break;
                     case "MAS_06A": snapshot.Lv4ConcentratedBuildMultiplierBonusRate += 0.08f; break;
                     case "MAS_06B": snapshot.Lv4BalancedBuildMultiplierBonusRate += 0.08f; break;
                     case "MAS_10A": snapshot.MasteryContractLpBonusRate += 0.15f; break;
@@ -353,6 +376,16 @@ namespace MnemosyneArcana.Core.Managers
             return Math.Max(0, effects.MasteryRunLpBonusOnEightLv4);
         }
 
+        public int GetMasteryRunLpBonusOnFiveLv4(int lv4PlaysInRun, bool alreadyGrantedThisRun, CurriculumEffectSnapshot effects)
+        {
+            if (effects == null || alreadyGrantedThisRun || lv4PlaysInRun < 5)
+            {
+                return 0;
+            }
+
+            return Math.Max(0, effects.MasteryRunLpBonusOnFiveLv4);
+        }
+
         public int GetMasterySettlementLpBonus(int lv4PlayedCount, CurriculumEffectSnapshot effects)
         {
             if (effects == null || lv4PlayedCount <= 0 || effects.MasterySettlementLpPerThreeLv4 <= 0)
@@ -364,6 +397,55 @@ namespace MnemosyneArcana.Core.Managers
             var bonus = blocks * effects.MasterySettlementLpPerThreeLv4;
             var cap = effects.MasterySettlementLpBonusCap > 0 ? effects.MasterySettlementLpBonusCap : int.MaxValue;
             return Math.Max(0, Math.Min(bonus, cap));
+        }
+
+        public int GetLv3To4RequirementAfterCurriculum(int baseRequirement, CurriculumEffectSnapshot effects)
+        {
+            if (baseRequirement < 0)
+            {
+                return 0;
+            }
+
+            if (effects == null)
+            {
+                return baseRequirement;
+            }
+
+            var reduced = Math.Max(0, baseRequirement - effects.Lv3To4RequirementReduction);
+            var min = effects.Lv3To4RequirementMinimum > 0 ? effects.Lv3To4RequirementMinimum : 0;
+            return Math.Max(min, reduced);
+        }
+
+        public int GetFirstDecayedPlayLpBonus(bool isFirstDecayedPlayInRun, int alreadyGrantedInRun, CurriculumEffectSnapshot effects)
+        {
+            if (!isFirstDecayedPlayInRun || effects == null || alreadyGrantedInRun < 0)
+            {
+                return 0;
+            }
+
+            var cap = effects.FirstDecayedPlayLpBonusCap > 0 ? effects.FirstDecayedPlayLpBonusCap : int.MaxValue;
+            if (alreadyGrantedInRun >= cap)
+            {
+                return 0;
+            }
+
+            var bonus = Math.Max(0, effects.FirstDecayedPlayLpBonus);
+            return Math.Min(bonus, cap - alreadyGrantedInRun);
+        }
+
+        public int GetGuaranteedLv4LexiconCountPerRun(CurriculumEffectSnapshot effects)
+        {
+            return Math.Max(0, effects?.GuaranteedLv4LexiconCountPerRun ?? 0);
+        }
+
+        public int GetDecayTimerExtensionDaysOnDecayedHit(CurriculumEffectSnapshot effects)
+        {
+            return Math.Max(0, effects?.DecayTimerExtendDaysOnDecayedHit ?? 0);
+        }
+
+        public bool ShouldPrioritizeRecentDecayedWordsOnOverflow(CurriculumEffectSnapshot effects)
+        {
+            return effects?.PreferRecentDecayedWhenOverflow ?? false;
         }
 
         public ServiceResult<LexiconUnlockRequirement> GetLexiconUnlockRequirement(
@@ -413,6 +495,20 @@ namespace MnemosyneArcana.Core.Managers
             IReadOnlyDictionary<string, int> wordLengths,
             CurriculumEffectSnapshot effects)
         {
+            return BuildLexiconDropWeights(words, staleRunCounts, wordLengths, null, null, null, null, false, effects);
+        }
+
+        public ServiceResult<IReadOnlyList<WeightedWordCandidate>> BuildLexiconDropWeights(
+            IReadOnlyList<WordProgress> words,
+            IReadOnlyDictionary<string, int> staleRunCounts,
+            IReadOnlyDictionary<string, int> wordLengths,
+            ISet<string> weakWordIds,
+            ISet<string> elementGapWordIds,
+            ISet<string> posGapWordIds,
+            ISet<string> recentDecayedWordIds,
+            bool isDecayedPoolOverflowed,
+            CurriculumEffectSnapshot effects)
+        {
             if (words == null)
             {
                 return ServiceResult<IReadOnlyList<WeightedWordCandidate>>.Fail(ErrorCode.InvalidInput);
@@ -447,6 +543,29 @@ namespace MnemosyneArcana.Core.Managers
                         {
                             weight *= (1f + effects.LongWordDropBiasRate);
                         }
+                    }
+
+                    if (weakWordIds != null && weakWordIds.Contains(word.WordId))
+                    {
+                        weight *= (1f + effects.WeakWordWeightBonusRate);
+                    }
+
+                    if (elementGapWordIds != null && elementGapWordIds.Contains(word.WordId))
+                    {
+                        weight *= (1f + effects.ElementGapWeightBonusRate);
+                    }
+
+                    if (posGapWordIds != null && posGapWordIds.Contains(word.WordId))
+                    {
+                        weight *= (1f + effects.PosGapWeightBonusRate);
+                    }
+
+                    if (isDecayedPoolOverflowed &&
+                        effects.PreferRecentDecayedWhenOverflow &&
+                        recentDecayedWordIds != null &&
+                        recentDecayedWordIds.Contains(word.WordId))
+                    {
+                        weight *= 1.20f;
                     }
                 }
 

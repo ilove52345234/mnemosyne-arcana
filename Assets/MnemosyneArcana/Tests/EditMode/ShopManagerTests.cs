@@ -289,6 +289,16 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
+        public void GetFirstAnteShopCouponAmount_WithBld08_OnlyAppliesOnFirstShop()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot { FirstAnteShopCoupon = 2 };
+
+            Assert.AreEqual(2, manager.GetFirstAnteShopCouponAmount(true, effects));
+            Assert.AreEqual(0, manager.GetFirstAnteShopCouponAmount(false, effects));
+        }
+
+        [Test]
         public void GetFirstPackGuaranteeMode_WithBld10_ReturnsConfiguredGuarantee()
         {
             var manager = new ShopManagerV2();

@@ -317,15 +317,15 @@ namespace MnemosyneArcana.Tests.EditMode
             {
                 CurriculumNodes = new[]
                 {
-                    "FLU_01", "FLU_04", "FLU_05", "FLU_07", "FLU_08", "FLU_09",
+                    "FLU_01", "FLU_03A", "FLU_03B", "FLU_04", "FLU_05", "FLU_06B", "FLU_07", "FLU_08", "FLU_09", "FLU_12",
                     "BLD_01", "BLD_02", "BLD_03A", "BLD_04", "BLD_06A", "BLD_06B", "BLD_07", "BLD_09", "BLD_10A",
-                    "MAS_01", "MAS_03A", "MAS_07", "MAS_08", "MAS_09", "MAS_11", "MAS_12",
-                    "LEX_09", "LEX_03A"
+                    "MAS_01", "MAS_03A", "MAS_03B", "MAS_04", "MAS_05", "MAS_07", "MAS_08", "MAS_09", "MAS_11", "MAS_12",
+                    "LEX_03A", "LEX_04", "LEX_05", "LEX_06A", "LEX_06B", "LEX_07", "LEX_08", "LEX_09", "LEX_12"
                 }
             });
 
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(24, result.Value.UnlockedNodeCount);
+            Assert.AreEqual(38, result.Value.UnlockedNodeCount);
             Assert.AreEqual(0.2f, result.Value.Lv1Lv2TimeBonusSec, 0.0001f);
             Assert.AreEqual(1, result.Value.RetryCostDiscount);
             Assert.AreEqual(2, result.Value.FirstShopRerollDiscount);
@@ -351,6 +351,49 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(2, result.Value.MasteryRunLpBonusOnEightLv4);
             Assert.AreEqual(1, result.Value.MasterySettlementLpPerThreeLv4);
             Assert.AreEqual(4, result.Value.MasterySettlementLpBonusCap);
+            Assert.AreEqual(0.08f, result.Value.Lv1Lv2EasyQuestionRateBonus, 0.0001f);
+            Assert.AreEqual(0.12f, result.Value.Lv3CorrectRewardBonusRate, 0.0001f);
+            Assert.AreEqual(1, result.Value.SpellingToleranceExtraLetters);
+            Assert.AreEqual(3, result.Value.SpellingTolerancePerRunLimit);
+            Assert.IsTrue(result.Value.IgnoreFirstLv4DemotionPerRun);
+            Assert.AreEqual(0.15f, result.Value.WeakWordWeightBonusRate, 0.0001f);
+            Assert.AreEqual(1, result.Value.DecayTimerExtendDaysOnDecayedHit);
+            Assert.AreEqual(0.20f, result.Value.ElementGapWeightBonusRate, 0.0001f);
+            Assert.AreEqual(0.20f, result.Value.PosGapWeightBonusRate, 0.0001f);
+            Assert.AreEqual(1, result.Value.GuaranteedLv4LexiconCountPerRun);
+            Assert.IsTrue(result.Value.PreferRecentDecayedWhenOverflow);
+            Assert.AreEqual(1, result.Value.FirstDecayedPlayLpBonus);
+            Assert.AreEqual(2, result.Value.FirstDecayedPlayLpBonusCap);
+            Assert.AreEqual(0.10f, result.Value.Lv4NegativeAffixResistanceRate, 0.0001f);
+            Assert.AreEqual(2, result.Value.MasteryRunLpBonusOnFiveLv4);
+            Assert.AreEqual(2, result.Value.Lv3To4RequirementReduction);
+            Assert.AreEqual(12, result.Value.Lv3To4RequirementMinimum);
+        }
+
+        [Test]
+        public void Curriculum_AllDefinedNodes_MapToAtLeastOneRuntimeEffect()
+        {
+            var defaultSnapshot = new CurriculumEffectSnapshot();
+            var effectProps = typeof(CurriculumEffectSnapshot)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.Name != nameof(CurriculumEffectSnapshot.UnlockedNodeCount))
+                .ToArray();
+
+            foreach (var node in GetCurriculumNodeDefs())
+            {
+                var result = _meta.GetCurriculumEffects(new MetaProgress { CurriculumNodes = new[] { node.NodeId } });
+                Assert.IsTrue(result.IsSuccess, $"GetCurriculumEffects should succeed for {node.NodeId}");
+                Assert.AreEqual(1, result.Value.UnlockedNodeCount, $"{node.NodeId} should count as one unlocked effect source.");
+
+                var hasDelta = effectProps.Any(prop =>
+                {
+                    var current = prop.GetValue(result.Value);
+                    var baseline = prop.GetValue(defaultSnapshot);
+                    return !Equals(current, baseline);
+                });
+
+                Assert.IsTrue(hasDelta, $"{node.NodeId} should map to at least one runtime effect field.");
+            }
         }
 
         [Test]
@@ -427,6 +470,39 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
+        public void BuildLexiconDropWeights_WithLex0406And08_AppliesWeakGapAndRecentDecayPriority()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                WeakWordWeightBonusRate = 0.15f,
+                ElementGapWeightBonusRate = 0.20f,
+                PosGapWeightBonusRate = 0.20f,
+                PreferRecentDecayedWhenOverflow = true
+            };
+
+            var words = new[]
+            {
+                new WordProgress { WordId = "w_target", Pool = WordPool.Decayed, Level = LearningLevel.Lv2 },
+                new WordProgress { WordId = "w_normal", Pool = WordPool.Learning, Level = LearningLevel.Lv2 }
+            };
+
+            var result = _meta.BuildLexiconDropWeights(
+                words,
+                staleRunCounts: null,
+                wordLengths: null,
+                weakWordIds: new HashSet<string> { "w_target" },
+                elementGapWordIds: new HashSet<string> { "w_target" },
+                posGapWordIds: new HashSet<string> { "w_target" },
+                recentDecayedWordIds: new HashSet<string> { "w_target" },
+                isDecayedPoolOverflowed: true,
+                effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(198, result.Value.First(x => x.WordId == "w_target").Weight);
+            Assert.AreEqual(100, result.Value.First(x => x.WordId == "w_normal").Weight);
+        }
+
+        [Test]
         public void GetContractRequirementAfterCurriculum_MasteryRequirementReducedButNotBelowOne()
         {
             var contract = new Contract { ContractId = "CT_MAS_001", ContractType = "Mastery", Tier = 2, LpReward = 10 };
@@ -480,6 +556,20 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
+        public void GetMasteryRunLpBonusOnFiveLv4_WithMas04_RequiresFiveLv4AndSingleGrant()
+        {
+            var effects = new CurriculumEffectSnapshot { MasteryRunLpBonusOnFiveLv4 = 2 };
+
+            var under = _meta.GetMasteryRunLpBonusOnFiveLv4(lv4PlaysInRun: 4, alreadyGrantedThisRun: false, effects);
+            var granted = _meta.GetMasteryRunLpBonusOnFiveLv4(lv4PlaysInRun: 5, alreadyGrantedThisRun: false, effects);
+            var blocked = _meta.GetMasteryRunLpBonusOnFiveLv4(lv4PlaysInRun: 8, alreadyGrantedThisRun: true, effects);
+
+            Assert.AreEqual(0, under);
+            Assert.AreEqual(2, granted);
+            Assert.AreEqual(0, blocked);
+        }
+
+        [Test]
         public void GetMasterySettlementLpBonus_WithMas12_AppliesPerThreeAndCap()
         {
             var effects = new CurriculumEffectSnapshot
@@ -495,6 +585,40 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(0, noBlock);
             Assert.AreEqual(2, twoBlocks);
             Assert.AreEqual(4, capped);
+        }
+
+        [Test]
+        public void GetLv3To4RequirementAfterCurriculum_WithMas05_AppliesReductionAndFloor()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                Lv3To4RequirementReduction = 2,
+                Lv3To4RequirementMinimum = 12
+            };
+
+            Assert.AreEqual(13, _meta.GetLv3To4RequirementAfterCurriculum(15, effects));
+            Assert.AreEqual(12, _meta.GetLv3To4RequirementAfterCurriculum(12, effects));
+            Assert.AreEqual(0, _meta.GetLv3To4RequirementAfterCurriculum(-1, effects));
+        }
+
+        [Test]
+        public void LexiconRuntimeHelpers_WithLex0512And07And08_ExposeExpectedBehavior()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                DecayTimerExtendDaysOnDecayedHit = 1,
+                FirstDecayedPlayLpBonus = 1,
+                FirstDecayedPlayLpBonusCap = 2,
+                GuaranteedLv4LexiconCountPerRun = 1,
+                PreferRecentDecayedWhenOverflow = true
+            };
+
+            Assert.AreEqual(1, _meta.GetDecayTimerExtensionDaysOnDecayedHit(effects));
+            Assert.AreEqual(1, _meta.GetGuaranteedLv4LexiconCountPerRun(effects));
+            Assert.IsTrue(_meta.ShouldPrioritizeRecentDecayedWordsOnOverflow(effects));
+            Assert.AreEqual(1, _meta.GetFirstDecayedPlayLpBonus(isFirstDecayedPlayInRun: true, alreadyGrantedInRun: 0, effects));
+            Assert.AreEqual(0, _meta.GetFirstDecayedPlayLpBonus(isFirstDecayedPlayInRun: false, alreadyGrantedInRun: 0, effects));
+            Assert.AreEqual(0, _meta.GetFirstDecayedPlayLpBonus(isFirstDecayedPlayInRun: true, alreadyGrantedInRun: 2, effects));
         }
 
         private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()

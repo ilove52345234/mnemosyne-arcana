@@ -232,5 +232,67 @@ namespace MnemosyneArcana.Tests.EditMode
 
             Assert.AreEqual(1, count);
         }
+
+        [Test]
+        public void ApplyAnswer_Lv3Correct_WithFlu03B_IncreasesChipMultiplier()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { Lv3CorrectRewardBonusRate = 0.12f };
+
+            var result = manager.ApplyAnswer("word_lv3", AnswerResult.Correct, new RunContext
+            {
+                BlindType = BlindType.Small,
+                CurrentLevel = LearningLevel.Lv3
+            }, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(1.68f, result.Value.ChipMultiplier, 0.0001f);
+        }
+
+        [Test]
+        public void ApplyAnswer_Lv4Wrong_WithMas03B_ReducesWrongPenalty()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { Lv4NegativeAffixResistanceRate = 0.10f };
+
+            var result = manager.ApplyAnswer("word_lv4", AnswerResult.Wrong, new RunContext
+            {
+                BlindType = BlindType.Small,
+                CurrentLevel = LearningLevel.Lv4
+            }, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(0.55f, result.Value.ChipMultiplier, 0.0001f);
+        }
+
+        [Test]
+        public void FluAndBldRuntimeHelpers_ExposeExpectedValues()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                Lv1Lv2EasyQuestionRateBonus = 0.08f,
+                SpellingToleranceExtraLetters = 1,
+                SpellingTolerancePerRunLimit = 3,
+                IgnoreFirstLv4DemotionPerRun = true,
+                FirstLv4UpgradeMoneyRefund = 2
+            };
+
+            Assert.AreEqual(0.08f, manager.GetEasyQuestionRateBonusForLv1Lv2(effects), 0.0001f);
+            Assert.AreEqual(1, manager.GetSpellingToleranceExtraLetters(effects));
+            Assert.AreEqual(3, manager.GetSpellingTolerancePerRunLimit(effects));
+            Assert.IsTrue(manager.ShouldIgnoreFirstLv4Demotion(true, effects));
+            Assert.AreEqual(2, manager.GetFirstLv4UpgradeMoneyRefund(true, effects));
+            Assert.AreEqual(0, manager.GetFirstLv4UpgradeMoneyRefund(false, effects));
+        }
+
+        [Test]
+        public void GetLv4NegativeAffixResistanceRate_WithMas03B_ReturnsConfiguredRate()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { Lv4NegativeAffixResistanceRate = 0.10f };
+
+            Assert.AreEqual(0.10f, manager.GetLv4NegativeAffixResistanceRate(effects), 0.0001f);
+        }
     }
 }

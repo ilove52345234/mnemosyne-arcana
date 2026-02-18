@@ -58,9 +58,21 @@ namespace MnemosyneArcana.Core.Managers
             if (effects != null)
             {
                 wrongChipMultiplier = System.Math.Max(0f, wrongChipMultiplier * (1f - effects.WrongPenaltyReductionRate));
+                if (runContext.CurrentLevel == LearningLevel.Lv4 && effects.Lv4NegativeAffixResistanceRate > 0f)
+                {
+                    wrongChipMultiplier = System.Math.Min(1f, wrongChipMultiplier * (1f + effects.Lv4NegativeAffixResistanceRate));
+                }
             }
 
             var chipMultiplier = isWrong ? wrongChipMultiplier : baseChipMultiplier;
+            if (isCorrect &&
+                effects != null &&
+                effectiveLevel == LearningLevel.Lv3 &&
+                effects.Lv3CorrectRewardBonusRate > 0f)
+            {
+                chipMultiplier *= (1f + effects.Lv3CorrectRewardBonusRate);
+            }
+
             var nextLevel = isCorrect ? LevelUp(runContext.CurrentLevel) : runContext.CurrentLevel;
             var handMultDelta = isWrong ? -1 : 0;
             if (isWrong &&
@@ -193,6 +205,41 @@ namespace MnemosyneArcana.Core.Managers
         public int GetBossAllCorrectExtraLv4UpgradeCount(CurriculumEffectSnapshot effects)
         {
             return System.Math.Max(0, effects?.BossAllCorrectExtraLv4UpgradeCount ?? 0);
+        }
+
+        public float GetEasyQuestionRateBonusForLv1Lv2(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0f, effects?.Lv1Lv2EasyQuestionRateBonus ?? 0f);
+        }
+
+        public int GetSpellingToleranceExtraLetters(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0, effects?.SpellingToleranceExtraLetters ?? 0);
+        }
+
+        public int GetSpellingTolerancePerRunLimit(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0, effects?.SpellingTolerancePerRunLimit ?? 0);
+        }
+
+        public bool ShouldIgnoreFirstLv4Demotion(bool isFirstLv4DemotionInRun, CurriculumEffectSnapshot effects)
+        {
+            return isFirstLv4DemotionInRun && (effects?.IgnoreFirstLv4DemotionPerRun ?? false);
+        }
+
+        public int GetFirstLv4UpgradeMoneyRefund(bool isFirstLv4UpgradeThisRun, CurriculumEffectSnapshot effects)
+        {
+            if (!isFirstLv4UpgradeThisRun || effects == null)
+            {
+                return 0;
+            }
+
+            return System.Math.Max(0, effects.FirstLv4UpgradeMoneyRefund);
+        }
+
+        public float GetLv4NegativeAffixResistanceRate(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0f, effects?.Lv4NegativeAffixResistanceRate ?? 0f);
         }
 
         public BossStreakBonus GetBossStreakBonus(int consecutiveCorrect)

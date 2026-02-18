@@ -145,6 +145,16 @@ namespace MnemosyneArcana.Core.Managers
             return System.Math.Max(0, effects?.NurtureLockCarrySlots ?? 0);
         }
 
+        public int GetFirstAnteShopCouponAmount(bool isFirstShopInAnte, CurriculumEffectSnapshot effects)
+        {
+            if (!isFirstShopInAnte || effects == null)
+            {
+                return 0;
+            }
+
+            return System.Math.Max(0, effects.FirstAnteShopCoupon);
+        }
+
         public PackGuaranteeMode GetFirstPackGuaranteeMode(CurriculumEffectSnapshot effects)
         {
             return effects?.FirstPackGuaranteeMode ?? PackGuaranteeMode.None;

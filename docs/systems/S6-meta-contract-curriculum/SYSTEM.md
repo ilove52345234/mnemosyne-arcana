@@ -37,9 +37,15 @@
 - 已完成 Batch-5：
   - BLD 進階商店效果：語感權重加成（BLD_06A）、指定機制詞條權重加成（BLD_06B）、養成鎖定帶出槽（BLD_07）、首包保底型別（BLD_10A/10B）已接入商店/Meta API。
   - MAS 進階成長效果：Boss 全對額外 Lv4 升級次數（MAS_07）、首張 Lv4 契約進度加成（MAS_09）、單局 Lv4 次數里程 LP（MAS_11）、結算 Lv4 次數區段 LP（MAS_12）已接入 Learning/Meta API。
+- 已完成 Batch-6（全節點補完）：
+  - FLU 補完：FLU_03A/03B/06B/12 已接入 runtime API（簡易題率、Lv3 答對獎勵、拼字容錯、首次 Lv4 降級免疫）。
+  - LEX 補完：LEX_04/05/06A/06B/07/08/12 已接入 runtime API（弱項詞、缺口補齊、保底 Lv4、退化池優先回補、首次退化詞 LP）。
+  - MAS 補完：MAS_03B/04/05 已接入 runtime API（Lv4 負面抗性、5 張 Lv4 里程 LP、Lv3->4 需求下修）。
+  - 補齊 BLD runtime API：BLD_08（Ante 首商店券）、BLD_12（首次 Lv4 升級返還）事件入口。
+  - 新增「全節點 effect 映射檢查」驗測，要求 60 節點每個至少映射一個 runtime effect 欄位。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18，重啟 S6）：Batch-5 已驗測通過，S6 仍為 `In Progress`（尚有未入場節點效果）。
+- 驗測結論（2026-02-18，重啟 S6）：全節點實作已補完；目前驗測 runner 卡於 `tests_running`，已完成腳本級語法驗證，等待 runner 恢復後補跑完整 MCP job 證據。
 - 三模型對應：
   - `M-Low`：`MetaManagerTests`（含 invalid input、mutex/prereq fail 等邊界；18/18）。
   - `M-Mid`：`UserStoryAcceptanceTests.US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh`（契約生成與刷新可預測）。
@@ -88,12 +94,11 @@
   - `a4a067ee6ac8407d8b7269c537c8242d`（US11：1/1）
   - `42eb6672a03a46108357fc9778bedcb9`（PlayableLoop Meta 結算：1/1）
 - 本輪設計問題：
-1. 雖已完成 Batch-5，仍有部分節點效果未入場（例：FLU_12、LEX_04/05/06A/06B/07/08/12、BLD_11/12、MAS_04/05/10A）。
-2. MAS_11/MAS_12 目前只提供計算 API，尚未綁定實際 run 結算狀態機事件點，存在「規格有、流程未觸發」風險。
+1. 節點入場覆蓋已完成，當前主要風險改為測試基礎設施：MCP `run_tests` 長時間回傳 `tests_running`，使自動 job 證據暫時中斷。
 - 調整建議：
-1. 進入 S6-Effect 第六批：優先補 MAS_11/MAS_12 的實際結算掛點與 BLD_11/12 的回合內觸發鏈路。
-2. 新增「節點效果覆蓋率」指標（已聚合/已入場/已驗測）作為 S6 Done 必要條件。
-3. 契約 LP cap（45%）持續維持不變，先完成入場覆蓋再做數值微調。
+1. 先恢復/重啟 Unity MCP test runner，補跑 `Meta/Shop/Learning + US10/US11 + PlayableLoop cap` 的 MCP job 證據。
+2. 維持「節點效果覆蓋率」為 S6 Done 必要條件，runner 恢復後一次收口驗證。
+3. 契約 LP cap（45%）持續維持不變，先驗證穩定再做數值微調。
 
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
@@ -105,3 +110,4 @@
 - 2026-02-18：完成 Batch-3（滴詞品質偏向、課程卡 LP 返還、MAS_08 Boss 特化）與對應測試，`MetaManagerTests` 擴充為 26/26。
 - 2026-02-18：完成 Batch-4（FLU_04/05/07/09、BLD_01/02/03A/03B）效果入場與測試，`MetaManagerTests` 擴充為 27/27。
 - 2026-02-18：完成 Batch-5（BLD_06A/06B/07/10A/10B、MAS_07/09/11/12）效果入場與測試，`MetaManagerTests` 擴充為 30/30，`ShopManagerTests` 擴充為 17/17，`LearningManagerTests` 擴充為 16/16。
+- 2026-02-18：完成 Batch-6（全節點補完：FLU/LEX/MAS 剩餘節點 + BLD 補充事件 API），新增全節點 effect 映射驗測；目前 `run_tests` 受 runner busy 影響，待恢復後補 MCP job 證據。

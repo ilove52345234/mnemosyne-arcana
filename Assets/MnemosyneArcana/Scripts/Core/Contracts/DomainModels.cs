@@ -185,7 +185,11 @@ namespace MnemosyneArcana.Core.Contracts
         // FLU
         public float Lv1Lv2TimeBonusSec { get; set; }
         public float WrongPenaltyReductionRate { get; set; }
+        public float Lv1Lv2EasyQuestionRateBonus { get; set; }
+        public float Lv3CorrectRewardBonusRate { get; set; }
         public float ListeningTimeBonusSec { get; set; }
+        public int SpellingToleranceExtraLetters { get; set; }
+        public int SpellingTolerancePerRunLimit { get; set; }
         public int RetryCostDiscount { get; set; }
         public float BossTimeBonusRate { get; set; }
         public float LearningContractLpBonusRate { get; set; }
@@ -193,16 +197,25 @@ namespace MnemosyneArcana.Core.Contracts
         public int ConsecutiveWrongReliefThresholdDelta { get; set; }
         public int PerfectRunLpBonus { get; set; }
         public int StreakBonusDurationExtraTurns { get; set; }
+        public bool IgnoreFirstLv4DemotionPerRun { get; set; }
 
         // LEX
         public float DecayedPoolWeightBonusRate { get; set; }
         public float StaleWordWeightBonusRate { get; set; }
+        public float WeakWordWeightBonusRate { get; set; }
+        public int DecayTimerExtendDaysOnDecayedHit { get; set; }
+        public float ElementGapWeightBonusRate { get; set; }
+        public float PosGapWeightBonusRate { get; set; }
+        public int GuaranteedLv4LexiconCountPerRun { get; set; }
+        public bool PreferRecentDecayedWhenOverflow { get; set; }
         public float LexiconUnlockLpCostDiscountRate { get; set; }
         public float LexiconUnlockRunRequirementDiscountRate { get; set; }
         public float LexiconUnlockCoverageDiscountRate { get; set; }
         public float LearningContractQualityBonusRate { get; set; }
         public float ShortWordDropBiasRate { get; set; }
         public float LongWordDropBiasRate { get; set; }
+        public int FirstDecayedPlayLpBonus { get; set; }
+        public int FirstDecayedPlayLpBonusCap { get; set; }
 
         // BLD
         public int FirstShopRerollDiscount { get; set; }
@@ -228,6 +241,10 @@ namespace MnemosyneArcana.Core.Contracts
         public float Lv4BalancedBuildMultiplierBonusRate { get; set; }
         public float MasteryContractLpBonusRate { get; set; }
         public int MasteryContractRequirementReduction { get; set; }
+        public float Lv4NegativeAffixResistanceRate { get; set; }
+        public int MasteryRunLpBonusOnFiveLv4 { get; set; }
+        public int Lv3To4RequirementReduction { get; set; }
+        public int Lv3To4RequirementMinimum { get; set; }
         public bool IgnoreFirstLv4WrongHandMultPenalty { get; set; }
         public int BossAllCorrectExtraLv4UpgradeCount { get; set; }
         public int FirstLv4PlayContractProgressBonus { get; set; }

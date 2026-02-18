@@ -216,6 +216,55 @@ namespace MnemosyneArcana.Core.Contracts
         public int SkippedAtMax { get; set; }
     }
 
+    public sealed class GateProgressionEvaluation
+    {
+        public int CurrentModelIndex { get; set; }
+        public int CurrentRequiredVocab { get; set; }
+        public float EffectiveVocab { get; set; }
+        public bool CanPassCurrentGate { get; set; }
+        public int HighestUnlockedModelIndex { get; set; }
+        public int HighestUnlockedRequiredVocab { get; set; }
+    }
+
+    public sealed class RecoveryGateEvaluation
+    {
+        public bool NeedsRecoveryGate { get; set; }
+        public bool ShouldDemote { get; set; }
+        public bool DemotionBlockedByProtection { get; set; }
+        public int ProtectionDaysRemaining { get; set; }
+    }
+
+    public sealed class BossRecallGateEvaluation
+    {
+        public bool MeetsRecallRatio { get; set; }
+        public bool MeetsRecallAccuracy { get; set; }
+        public bool CanPassBossGate { get; set; }
+    }
+
+    public sealed class FinalMasteryGateEvaluation
+    {
+        public bool IsMainClearEligible { get; set; }
+        public bool IsTrueClearEligible { get; set; }
+        public float RequiredMainClearCoverageRate { get; set; }
+        public float RequiredTrueClearCoverageRate { get; set; }
+        public int RequiredStableDaysAtHundredPercent { get; set; }
+    }
+
+    public sealed class LearningTelemetrySnapshot
+    {
+        public float PassRateByGate { get; set; }
+        public float RecoverySuccessRate { get; set; }
+        public float ActiveRecallAccuracy { get; set; }
+        public float DecayRegressionRate { get; set; }
+        public float GateStallDays { get; set; }
+    }
+
+    public sealed class TelemetryAlert
+    {
+        public string Code { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+    }
+
     public sealed class ServiceResult<T>
     {
         private ServiceResult(bool isSuccess, T value, ErrorCode error)

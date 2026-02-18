@@ -121,3 +121,40 @@
 結論：
 1. 目前模型曲線在 M0~M8 呈現高度穩定，卡點與預期完全一致。
 2. 經回調後，M9 在 30 輪中為 `12/30`（40%），已落在目標通關率帶（30%~60%）。
+
+## 9. S7 Final/Endless 驗測補齊（Unity MCP, 2026-02-18）
+
+驗測範圍：
+- S7-M1（Low）：`mastery=0.92` 不可 Main Clear
+- S7-M2（Mid）：`mastery=0.96` 可 Main Clear，不可 True Clear
+- S7-M3（High）：`mastery=1.00` 且 `stableDays=7` 可 True Clear
+- S7-M4（Edge）：30 seeds、180 天長局模擬，檢查 Final/True 狀態轉移穩定性
+
+測試資產：
+- `Assets/MnemosyneArcana/Tests/EditMode/S7FinalGateValidationTests.cs`
+
+執行證據：
+- Unity MCP EditMode job `60e62f78000a4cc9b9b1bb65675e8a74`：`125/125 passed`
+- Unity MCP EditMode job `e457988c0f9b439a88df1b52a0fc2bbc`（調參後回歸）：`125/125 passed`
+
+調參紀錄（S7）：
+- 檔案：`Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+- 調整：`GetTenModelProfiles()` 中 `M9 Mastery: 0.98 -> 1.00`
+- 目的：讓高端模型可在原型流程中覆蓋 `100%+7天` 的 True Clear 驗證情境
+
+S7 結論：
+1. Final 雙門檻（95%/100%+7天）規則已由單元與模型測試覆蓋。
+2. 無盡長局模擬在 30 seeds 下未出現非法狀態轉移。
+3. S7 驗測缺口可判定為已關閉，後續優先轉向 S4 分佈補報與 S9 NFR 壓測。
+
+## 10. S4 長週期分佈補報（Unity MCP, 2026-02-18）
+
+測試資產：
+- `Assets/MnemosyneArcana/Tests/EditMode/S4LongCycleDistributionTests.cs`
+
+分佈驗證：
+1. Recovery Gate 30 seeds：Low/Mid/High 在 `NeedsRecovery` 與 `ShouldDemote` 上呈現預期難度排序。
+2. Decay 7/14/30 天：從 Lv4 起算，平均等級隨 checkpoint 單調下降（Day7 > Day14 > Day30）。
+
+執行證據：
+- Unity MCP EditMode job `7077ee7ea9df451887a88308342a0093`：`133/133 passed`

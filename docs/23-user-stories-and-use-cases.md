@@ -67,3 +67,14 @@
 
 ### US-09 答錯三選一可用且守門正確
 - 驗收：`US09_WrongAnswerThreeChoicesWorkAsDesigned`
+
+## 6. 第三批故事（2026-02-17）
+
+### US-10 契約生成可重現，且支援一次刷新
+- 驗收：`US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh`
+
+### US-11 課程樹前置與互斥守門有效
+- 驗收：`US11_CurriculumNodeMutexAndPrereqAreEnforced`
+
+### US-12 Boss 學習加成與全對獎勵有效
+- 驗收：`US12_BossLearningBoostAndAllCorrectRewardWork`

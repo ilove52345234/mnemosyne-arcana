@@ -767,3 +767,106 @@
 - 下一步：
   - 新 session 先跑 MCP smoke test（15 秒內）
   - 立即執行 EditMode 測試，確認 `S4PriorityValidationTests` 通過
+
+## 交接記錄（2026-02-18）- S4 優先驗測修復與回歸完成
+
+- 目標：
+  - 在新 session 完成 MCP smoke test 後，落地 S4 優先驗測
+  - 修復 `S4PriorityValidationTests` 長週期退化案例失敗
+- 完成內容：
+  - 確認 Unity MCP 連線正常（`list_mcp_resources` 可回應）
+  - 執行 EditMode 測試時，定位失敗：
+    - `S4PriorityValidationTests.Decay_LongCycle_SevenFourteenThirtyDays_DegradesStepwise`
+    - 失敗訊息：預期 `Lv3`，實際 `Lv0`
+  - 修正 `ApplyDecayAt` 測試 helper：
+    - 將同一 checkpoint 的退化改為「逐級消耗門檻天數」模擬
+    - 避免 7 天檢查被連續退化到 Lv0
+    - 保留 30 天長週期可多級退化行為
+  - 重新驗證：
+    - 單測：`S4PriorityValidationTests.Decay_LongCycle_SevenFourteenThirtyDays_DegradesStepwise` `1/1` pass
+    - 全量 EditMode：`121/121` pass
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Tests/EditMode/S4PriorityValidationTests.cs`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity MCP EditMode 測試全綠（`121 passed, 0 failed`）
+- 風險/阻塞：
+  - 無新增阻塞
+- 下一步：
+  - 依 `docs/verification/02-design-doc-coverage-matrix.md` 執行下一優先序：`S7 Final Gate + Endless`
+  - 其後進入 `A-02` 存檔/migration 壓測
+
+## 交接記錄（2026-02-18）- S7 Final/Endless 驗測補齊與調參完成
+
+- 目標：
+  - 優先完成 S7（Final Gate + Endless）驗測證據
+  - 以最小調參確保高端模型可覆蓋 True Clear 驗證情境
+- 完成內容：
+  - 新增 S7 驗測檔：
+    - `Assets/MnemosyneArcana/Tests/EditMode/S7FinalGateValidationTests.cs`
+    - 覆蓋 `S7-M1/M2/M3/M4`
+  - S7-M4 採 30 seeds、180 天長局模擬，驗證無非法狀態轉移
+  - Prototype 調參（最小變更）：
+    - `GetTenModelProfiles()` 中 `M9 Mastery: 0.98 -> 1.00`
+    - 目的：讓高端模型可在流程層覆蓋 `100%+7天` True Clear
+  - 文件回填：
+    - `docs/17-test-matrix.md` 新增 `TC-S7-001~004`
+    - `docs/25-gate-model-sweep-report-2026-02-17.md` 新增 S7 補齊章節
+    - `docs/verification/02-design-doc-coverage-matrix.md` 移除 S7 缺口、更新優先序
+    - `docs/verification/03-final-verification-report-template.md` 新增 S7 snapshot
+- 驗證結果：
+  - Unity MCP EditMode job `60e62f78000a4cc9b9b1bb65675e8a74`：`125/125 passed`
+  - Unity MCP EditMode job `e457988c0f9b439a88df1b52a0fc2bbc`：`125/125 passed`
+- 風險/阻塞：
+  - 尚待補齊：`S4 長週期分佈報告`、`S8 Telemetry`、`S9 NFR` 三模型壓測
+- 下一步：
+  - 先補 S4 長週期分佈報告，再進 S8/S9 驗測，完成 verification 關門條件
+
+## 交接記錄（2026-02-18）- Verification 缺口收斂（S4/S8/S9）
+
+- 目標：
+  - 完成 verification 中剩餘高優先驗測缺口（S4 分佈、S8 告警三模型、S9 NFR 三模型）
+- 完成內容：
+  - 新增測試：
+    - `Assets/MnemosyneArcana/Tests/EditMode/S4LongCycleDistributionTests.cs`
+    - `Assets/MnemosyneArcana/Tests/EditMode/S8TelemetryModelCoverageTests.cs`
+    - `Assets/MnemosyneArcana/Tests/EditMode/S9NfrValidationTests.cs`
+  - 修正測試編譯錯誤：
+    - `S9NfrValidationTests` 新增 `using MnemosyneArcana.Core.Runtime;`（`RunPhase` namespace）
+  - 全量回歸：
+    - Unity MCP EditMode job `7077ee7ea9df451887a88308342a0093`：`133/133 passed`
+  - 文件回填：
+    - `docs/17-test-matrix.md` 補 `TC-S4-008/009`、`TC-S8-001~003`、`TC-S9-001~003`
+    - `docs/25-gate-model-sweep-report-2026-02-17.md` 補 S4 長週期分佈章節
+    - `docs/verification/02-design-doc-coverage-matrix.md` 將 `docs/09`、`docs/24` 更新為 `Covered`
+    - `docs/verification/03-final-verification-report-template.md` 補 S8/S9 snapshot
+- 驗證結果：
+  - S4/S7/S8/S9 相關新增案例全部通過，且可由同一 test job 追溯
+- 風險/阻塞：
+  - 仍待整體 sign-off：多份設計文件於 coverage matrix 為 `In Progress`，需最終彙總報告收斂
+- 下一步：
+  - 進行 verification 最終報告彙整（`docs/verification/03`）
+  - 確認是否滿足進入 `A-02` 的 gate 條件
+
+## 交接記錄（2026-02-18）- Final Sign-off 報告完成（可進 A-02）
+
+- 目標：
+  - 完成 verification 最終收斂，提供明確 Go/No-Go 判定
+- 完成內容：
+  - 更新覆蓋矩陣：
+    - `docs/verification/02-design-doc-coverage-matrix.md`
+    - 將剩餘 `In Progress` 條目收斂為 `Covered`
+  - 新增最終報告：
+    - `docs/verification/03-final-verification-report-2026-02-18.md`
+    - 結論：`Go`（允許進入 A-02）
+  - 追溯證據納入報告：
+    - `7077ee7ea9df451887a88308342a0093`（`133/133`）
+    - `272f745e9e1a4955b4988969cd75308a`（`130/130`）
+    - `e457988c0f9b439a88df1b52a0fc2bbc`（`125/125`）
+    - `60e62f78000a4cc9b9b1bb65675e8a74`（`125/125`）
+- 驗證結果：
+  - 目前 verification 文件已具備 A-02 進場證據鏈
+- 風險/阻塞：
+  - 無 Critical 阻塞
+- 下一步：
+  - 進入 `A-02`：存檔/migration 壓測與失敗回退驗證

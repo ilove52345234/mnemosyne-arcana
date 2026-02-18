@@ -50,5 +50,5 @@
 | A-DATA-01 | 學習 telemetry 與告警 | Alpha | Codex | In Progress | `GATE_TOO_EASY/HARD`、`RECOVERY_FAILING` 告警已落地 |
 | A-END-01 | Final 雙門檻（95/100） | Alpha | Codex | In Progress | Main Clear 95%、True Clear 100%+7 天已接入原型流程 |
 | A-02 | 存檔/migration 壓測 | Alpha | TBD | Todo | |
-| A-03 | 效能與穩定性驗收 | Alpha | TBD | Todo | |
+| A-03 | 效能與穩定性驗收 | Alpha | Codex | In Progress | 已新增 `S9NfrValidationTests`（低/中/高負載）並於 Unity MCP EditMode `133/133` 通過 |
 | A-04 | 發版決策 | Alpha | TBD | Todo | |

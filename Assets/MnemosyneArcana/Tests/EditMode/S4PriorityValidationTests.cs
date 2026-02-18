@@ -102,7 +102,8 @@ namespace MnemosyneArcana.Tests.EditMode
 
         private void ApplyDecayAt(WordProgress word, DateTime checkpoint)
         {
-            // Apply repeatedly at the same checkpoint until the current level no longer decays.
+            // Simulate a long idle window by consuming each level's decay interval stepwise.
+            var simulatedLastPracticed = word.LastPracticed;
             for (var i = 0; i < 8; i++)
             {
                 var result = _decay.EvaluateDecay(word, checkpoint);
@@ -113,7 +114,33 @@ namespace MnemosyneArcana.Tests.EditMode
 
                 word.Level = result.NewLevel;
                 word.Pool = result.NewPool;
+
+                var consumedDays = GetDecayDays(result.PreviousLevel);
+                if (consumedDays <= 0)
+                {
+                    return;
+                }
+
+                simulatedLastPracticed = simulatedLastPracticed.AddDays(consumedDays);
+                if (simulatedLastPracticed > checkpoint)
+                {
+                    simulatedLastPracticed = checkpoint;
+                }
+
+                word.LastPracticed = simulatedLastPracticed;
             }
+        }
+
+        private static int GetDecayDays(LearningLevel level)
+        {
+            return level switch
+            {
+                LearningLevel.Lv1 => 1,
+                LearningLevel.Lv2 => 3,
+                LearningLevel.Lv3 => 7,
+                LearningLevel.Lv4 => 7,
+                _ => -1
+            };
         }
     }
 }

@@ -35,4 +35,34 @@ namespace MnemosyneArcana.Core.Contracts
         IReadOnlyList<DecayResult> EvaluateBatch(IReadOnlyList<WordProgress> words, DateTime now);
         void ResetDecayTimer(WordProgress word, DateTime now);
     }
+
+    public interface IGateProgressionService
+    {
+        ServiceResult<GateProgressionEvaluation> EvaluateProgress(
+            int learnedCount,
+            float retentionRate,
+            float retrievalRate,
+            int currentModelIndex);
+
+        ServiceResult<RecoveryGateEvaluation> EvaluateRecoveryGate(
+            float coreCoverageRate,
+            float requiredCoverageRate,
+            int consecutiveRecoveryCycleFailures,
+            int daysSinceLastDemotion);
+
+        ServiceResult<BossRecallGateEvaluation> EvaluateBossRecallGate(
+            float activeRecallQuestionRatio,
+            float activeRecallAccuracy,
+            float requiredRecallRatio,
+            float requiredRecallAccuracy);
+
+        ServiceResult<FinalMasteryGateEvaluation> EvaluateFinalMasteryGate(
+            float masteryCoverageRate,
+            int stableDaysAtHundredPercent);
+    }
+
+    public interface ILearningTelemetryService
+    {
+        ServiceResult<IReadOnlyList<TelemetryAlert>> EvaluateAlerts(LearningTelemetrySnapshot snapshot);
+    }
 }

@@ -39,7 +39,7 @@
 - 最終報告：`docs/verification/03-final-verification-report-template.md`
 
 ## 7. MCP 連線作業規範
-- MCP endpoint 統一使用：`http://127.0.0.1:8080`。
+- MCP endpoint 統一使用：`http://127.0.0.1:8080/mcp`。
 - 任一 MCP 呼叫超過 `15 秒` 即判定失敗，進入恢復流程，不做無限等待。
 - 失敗恢復順序：
 1. 停止 Play Mode

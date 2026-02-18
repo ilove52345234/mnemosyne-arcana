@@ -1165,7 +1165,7 @@ namespace MnemosyneArcana.Prototype
                 (Label: "M6", Learned: 7000, Retention: 0.90f, Retrieval: 0.86f, Mastery: 0.88f, ExpectedChokeAnte: 5),
                 (Label: "M7", Learned: 8000, Retention: 0.92f, Retrieval: 0.88f, Mastery: 0.93f, ExpectedChokeAnte: 6),
                 (Label: "M8", Learned: 9000, Retention: 0.94f, Retrieval: 0.90f, Mastery: 0.96f, ExpectedChokeAnte: 7),
-                (Label: "M9", Learned: 10000, Retention: 0.97f, Retrieval: 0.93f, Mastery: 0.98f, ExpectedChokeAnte: 9)
+                (Label: "M9", Learned: 10000, Retention: 0.97f, Retrieval: 0.93f, Mastery: 1.00f, ExpectedChokeAnte: 9)
             };
         }
 

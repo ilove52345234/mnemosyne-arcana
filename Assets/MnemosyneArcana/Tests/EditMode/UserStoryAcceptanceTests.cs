@@ -211,5 +211,93 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsFalse(retryAgain.IsSuccess);
             Assert.AreEqual(ErrorCode.StateConflict, retryAgain.Error);
         }
+
+        [Test]
+        public void US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh()
+        {
+            var meta = new MetaManagerV2();
+            var first = meta.GenerateContracts(new MetaProgress(), seed: 3001);
+            var firstAgain = meta.GenerateContracts(new MetaProgress(), seed: 3001);
+            var refreshed = meta.GenerateContracts(new MetaProgress(), seed: 3002);
+
+            Assert.IsTrue(first.IsSuccess);
+            Assert.IsTrue(firstAgain.IsSuccess);
+            Assert.IsTrue(refreshed.IsSuccess);
+            Assert.AreEqual(3, first.Value.Count);
+            Assert.AreEqual(first.Value[0].ContractId, firstAgain.Value[0].ContractId);
+            Assert.AreEqual(first.Value[1].ContractId, firstAgain.Value[1].ContractId);
+            Assert.AreEqual(first.Value[2].ContractId, firstAgain.Value[2].ContractId);
+
+            var isDifferent =
+                first.Value[0].ContractId != refreshed.Value[0].ContractId ||
+                first.Value[1].ContractId != refreshed.Value[1].ContractId ||
+                first.Value[2].ContractId != refreshed.Value[2].ContractId;
+            Assert.IsTrue(isDifferent, "Refresh should provide a different contract set with another seed.");
+        }
+
+        [Test]
+        public void US11_CurriculumNodeMutexAndPrereqAreEnforced()
+        {
+            var meta = new MetaManagerV2();
+
+            var unlockFlu01 = meta.TryUnlockNode("FLU_01", new MetaProgress
+            {
+                Lp = 60,
+                CurriculumNodes = Array.Empty<string>()
+            });
+            Assert.IsTrue(unlockFlu01.IsSuccess);
+
+            var unlockFlu03AWithoutPrereq = meta.TryUnlockNode("FLU_03A", new MetaProgress
+            {
+                Lp = 80,
+                CurriculumNodes = new[] { "FLU_01" }
+            });
+            Assert.IsFalse(unlockFlu03AWithoutPrereq.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, unlockFlu03AWithoutPrereq.Error);
+
+            var unlockFlu03AWithPrereq = meta.TryUnlockNode("FLU_03A", new MetaProgress
+            {
+                Lp = 80,
+                CurriculumNodes = new[] { "FLU_01", "FLU_02" }
+            });
+            Assert.IsTrue(unlockFlu03AWithPrereq.IsSuccess);
+
+            var unlockFlu03BWhenAAlreadyUnlocked = meta.TryUnlockNode("FLU_03B", new MetaProgress
+            {
+                Lp = 80,
+                CurriculumNodes = new[] { "FLU_01", "FLU_02", "FLU_03A" }
+            });
+            Assert.IsFalse(unlockFlu03BWhenAAlreadyUnlocked.IsSuccess);
+            Assert.AreEqual(ErrorCode.StateConflict, unlockFlu03BWhenAAlreadyUnlocked.Error);
+        }
+
+        [Test]
+        public void US12_BossLearningBoostAndAllCorrectRewardWork()
+        {
+            var learning = new LearningManagerV2();
+
+            var levelShift = learning.ApplyAnswer("word_a", AnswerResult.Correct, new RunContext
+            {
+                Ante = 3,
+                BlindType = BlindType.Boss,
+                CurrentLevel = LearningLevel.Lv2,
+                PlaysLeft = 4,
+                DiscardsLeft = 3
+            });
+            Assert.IsTrue(levelShift.IsSuccess);
+            Assert.AreEqual(LearningLevel.Lv3, levelShift.Value.EffectiveLevel);
+
+            var bonus = learning.GetBossStreakBonus(3);
+            Assert.AreEqual(2.0f, bonus.ChipMultiplier, 0.0001f);
+
+            var reward = learning.ApplyBossAllCorrectReward(new[]
+            {
+                new WordProgress { WordId = "w1", Level = LearningLevel.Lv2, Pool = WordPool.Learning },
+                new WordProgress { WordId = "w2", Level = LearningLevel.Lv4, Pool = WordPool.Mastered }
+            });
+            Assert.IsTrue(reward.IsSuccess);
+            Assert.AreEqual(1, reward.Value.UpgradedWords.Count);
+            Assert.AreEqual(1, reward.Value.SkippedAtMax);
+        }
     }
 }

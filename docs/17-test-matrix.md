@@ -96,3 +96,15 @@
 | TC-BOSS-007 | Boss 全對 | 打出卡各 +1 等級 |
 | TC-BOSS-008 | Boss 全對含 Lv4 | Lv4 不升，skippedAtMax = 1 |
 | TC-BOSS-009 | 非 Boss 盲注 | 無等級偏移 |
+| TC-S7-001 | S7-M1 低模型 Final Gate | `mastery < 95%` 不可 Main Clear |
+| TC-S7-002 | S7-M2 中模型 Final Gate | `95% <= mastery < 100%` 可 Main Clear、不可 True Clear |
+| TC-S7-003 | S7-M3 高模型 Final Gate | `mastery = 100%` 且 `stableDays >= 7` 可 True Clear |
+| TC-S7-004 | S7-M4 無盡長局穩定 | 30 seeds 長局模擬下狀態轉移無非法組合 |
+| TC-S4-008 | S4 Recovery 分佈（30 seeds） | 低/中/高模型 recovery 與 demotion 呈期望排序 |
+| TC-S4-009 | S4 長週期退化分佈（7/14/30 天） | 平均等級隨天數單調下降 |
+| TC-S8-001 | S8-M1 告警 | 低通關率觸發 `GATE_TOO_HARD` |
+| TC-S8-002 | S8-M2 告警 | 中模型落在目標帶，無告警 |
+| TC-S8-003 | S8-M3 告警 | 高通關率觸發 `GATE_TOO_EASY` |
+| TC-S9-001 | S9-M1 低規基線 | Core loops 在時間預算內完成 |
+| TC-S9-002 | S9-M2 中規負載 | Run+Shop 流程無錯誤且記憶體成長受控 |
+| TC-S9-003 | S9-M3 高負載壓測 | Composite manager soak 無 service failure |

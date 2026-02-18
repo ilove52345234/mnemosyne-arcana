@@ -4,10 +4,10 @@
 - Unity MCP server 啟動參數（HTTP mode）：
   - `--http-url http://127.0.0.1:8080`
 - Codex MCP URL：
-  - `unityMCP -> http://127.0.0.1:8080`
+  - `unityMCP -> http://127.0.0.1:8080/mcp`
 
 ## 2. 快速驗證
-1. `codex mcp list` 確認 URL 為 `http://127.0.0.1:8080`
+1. `codex mcp list` 確認 URL 為 `http://127.0.0.1:8080/mcp`
 2. Unity Console 應看到 plugin registered 與 tools registered
 3. 進入新 session 後先做一次最小呼叫（例如 `manage_editor telemetry_status`）
 
@@ -25,6 +25,8 @@
 ## 5. 常見症狀與判讀
 - 症狀：`POST /mcp 404`
   - 判讀：client 仍使用舊 endpoint 或 transport cache
+- 症狀：`Unexpected content type: text/plain; charset=utf-8`
+  - 判讀：client 打到 root (`/`) 而非 `/mcp`，請改為 `http://127.0.0.1:8080/mcp`
 - 症狀：MCP call 60s timeout
   - 判讀：session transport 卡死，應重開 session
 - 症狀：Cannot start tests while in Play Mode

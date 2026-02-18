@@ -17,6 +17,30 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 M1 狀態機骨架實作
+
+- 目標：開始落地 P0「選牌答題後出卡」流程的第一階段（M1）
+- 完成內容：
+  - `PrototypeCardGameUiController` 新增 `CardQuizCastPhase` 狀態機骨架
+  - 新增出牌流程輸入鎖（答題/動畫期間禁止誤觸）
+  - `StartQuizAndPlay`、`OnQuizOptionSelected`、`CompleteQuizAndPlay` 串接新階段
+  - 出卡動畫流程加入 `CastAnimationQueue -> CardFlipReveal -> ResolveScore -> RoundPostState` 時序節點
+  - 移除卡牌「上桌」字樣（保留英語、詞性、元素、等級）
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity 重新編譯後 Console `error` 為 0
+  - 可進入 PlayMode，截圖：`Assets/Screenshots/S10-auto-loop-r10-m1-1.png`
+- 風險/阻塞：
+  - 中央單卡放大題目舞台尚未完成（M2）
+- 下一步：
+  - M2：題目舞台改版（單卡放大 + 題型切換容器）
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 選牌答題後出卡規格落地
 
 - 目標：把「選牌 -> 答題 -> 出卡翻牌」定義為 S10 優先落地流程

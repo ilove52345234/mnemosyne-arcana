@@ -31,6 +31,21 @@ namespace MnemosyneArcana.Prototype
             public bool Completed;
         }
 
+        private enum CardQuizCastPhase
+        {
+            HandSelect = 0,
+            CastIntentLocked = 1,
+            QuizFocusIn = 2,
+            QuizQuestionActive = 3,
+            QuizAnswerFeedback = 4,
+            QuizAdvanceNextCard = 5,
+            QuizCompleted = 6,
+            CastAnimationQueue = 7,
+            CardFlipReveal = 8,
+            ResolveScore = 9,
+            RoundPostState = 10
+        }
+
         private sealed class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
         {
             private PrototypeCardGameUiController _owner;
@@ -218,6 +233,8 @@ namespace MnemosyneArcana.Prototype
         private readonly List<DrawAnim> _drawAnims = new List<DrawAnim>();
         private bool _isPlayingCardAnim;
         private bool _isQuizRunning;
+        private bool _isCastFlowInputLocked;
+        private CardQuizCastPhase _cardQuizCastPhase = CardQuizCastPhase.HandSelect;
         private readonly List<int> _quizCardIndexes = new List<int>();
         private readonly List<bool> _quizCardCorrectness = new List<bool>();
         private int _quizCursor;
@@ -239,8 +256,22 @@ namespace MnemosyneArcana.Prototype
         private Coroutine _modelValidationCoroutine;
         private Coroutine _modelBatchValidationCoroutine;
 
-        internal bool IsCardInteractionLocked => _isPlayingCardAnim;
+        internal bool IsCardInteractionLocked => _isPlayingCardAnim || _isCastFlowInputLocked || _isQuizRunning;
         internal RectTransform DragLayer => _dragLayer;
+
+        private bool IsCastFlowBusy()
+        {
+            return _cardQuizCastPhase != CardQuizCastPhase.HandSelect &&
+                   _cardQuizCastPhase != CardQuizCastPhase.RoundPostState;
+        }
+
+        private void SetCardQuizCastPhase(CardQuizCastPhase nextPhase)
+        {
+            _cardQuizCastPhase = nextPhase;
+            _isCastFlowInputLocked =
+                nextPhase != CardQuizCastPhase.HandSelect &&
+                nextPhase != CardQuizCastPhase.RoundPostState;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -1128,6 +1159,12 @@ namespace MnemosyneArcana.Prototype
 
         private void DrawHand()
         {
+            if (_isCastFlowInputLocked || _isPlayingCardAnim)
+            {
+                AddLog("目前正在出牌流程中，暫時不可重抽手牌。");
+                return;
+            }
+
             _hand.Clear();
             var random = new System.Random(_seed + _runManager.CurrentState.Ante * 31 + _runManager.CurrentState.CurrentScore);
             for (var i = 0; i < 5; i++)
@@ -1139,6 +1176,7 @@ namespace MnemosyneArcana.Prototype
             _playZoneCardIndexes.Clear();
             _playZoneOrder.Clear();
             ResetQuizState("手牌已重抽，請重新開始答題。");
+            SetCardQuizCastPhase(CardQuizCastPhase.HandSelect);
             RebuildHandCards();
             RebuildPlayZoneCards();
             RefreshView();
@@ -1211,7 +1249,7 @@ namespace MnemosyneArcana.Prototype
 
         private void ToggleCardPlayZone(int index)
         {
-            if (_isPlayingCardAnim)
+            if (_isPlayingCardAnim || _isCastFlowInputLocked)
             {
                 return;
             }
@@ -1303,7 +1341,7 @@ namespace MnemosyneArcana.Prototype
 
         internal void TryDropCardToPlayZone(int cardIndex, Vector2 screenPoint, Camera cam)
         {
-            if (_playZoneContainer == null || cardIndex < 0 || cardIndex >= _hand.Count)
+            if (_isCastFlowInputLocked || _playZoneContainer == null || cardIndex < 0 || cardIndex >= _hand.Count)
             {
                 return;
             }
@@ -1326,6 +1364,12 @@ namespace MnemosyneArcana.Prototype
 
         private void ClearPlayZone()
         {
+            if (_isCastFlowInputLocked)
+            {
+                AddLog("答題/出卡流程進行中，無法清空上桌。");
+                return;
+            }
+
             _playZoneCardIndexes.Clear();
             _playZoneOrder.Clear();
             RebuildPlayZoneCards();
@@ -1336,6 +1380,8 @@ namespace MnemosyneArcana.Prototype
         private void ResetQuizState(string statusText)
         {
             _isQuizRunning = false;
+            _isCastFlowInputLocked = false;
+            _cardQuizCastPhase = CardQuizCastPhase.HandSelect;
             _quizCardIndexes.Clear();
             _quizCardCorrectness.Clear();
             _quizCursor = 0;
@@ -2268,7 +2314,7 @@ namespace MnemosyneArcana.Prototype
 
         private void StartQuizAndPlay()
         {
-            if (_isPlayingCardAnim || _isQuizRunning)
+            if (_isPlayingCardAnim || _isQuizRunning || IsCastFlowBusy())
             {
                 return;
             }
@@ -2302,7 +2348,10 @@ namespace MnemosyneArcana.Prototype
             _quizCursor = 0;
             _quizCorrectCount = 0;
             _isQuizRunning = true;
+            SetCardQuizCastPhase(CardQuizCastPhase.CastIntentLocked);
+            SetCardQuizCastPhase(CardQuizCastPhase.QuizFocusIn);
             AddLog(string.Format("開始答題，共 {0} 題。", _quizCardIndexes.Count));
+            SetMainPage(2);
             PresentNextQuizQuestion();
         }
 
@@ -2361,6 +2410,7 @@ namespace MnemosyneArcana.Prototype
             }
 
             _quizCurrentCorrectOptionIndex = options.FindIndex(x => string.Equals(x, word.MeaningZh, StringComparison.Ordinal));
+            SetCardQuizCastPhase(CardQuizCastPhase.QuizQuestionActive);
             _quizStatusText.text = string.Format("第 {0}/{1} 題", _quizCursor + 1, _quizCardIndexes.Count);
             _quizPromptText.text = string.Format("請選出英文「{0}」對應的中文詞義：", word.Text);
             for (var i = 0; i < _quizOptionButtons.Count; i++)
@@ -2397,6 +2447,7 @@ namespace MnemosyneArcana.Prototype
             var cardIdx = _quizCardIndexes[_quizCursor];
             var word = (cardIdx >= 0 && cardIdx < _hand.Count) ? _hand[cardIdx] : null;
             var correct = optionIndex == _quizCurrentCorrectOptionIndex;
+            SetCardQuizCastPhase(CardQuizCastPhase.QuizAnswerFeedback);
             _quizCardCorrectness.Add(correct);
             if (correct)
             {
@@ -2412,12 +2463,17 @@ namespace MnemosyneArcana.Prototype
             }
 
             _quizCursor++;
+            if (_quizCursor < _quizCardIndexes.Count)
+            {
+                SetCardQuizCastPhase(CardQuizCastPhase.QuizAdvanceNextCard);
+            }
             PresentNextQuizQuestion();
         }
 
         private void CompleteQuizAndPlay()
         {
             _isQuizRunning = false;
+            SetCardQuizCastPhase(CardQuizCastPhase.QuizCompleted);
             if (_quizStatusText != null)
             {
                 _quizStatusText.text = string.Format("本回合答題完成：{0}/{1} 正確", _quizCorrectCount, _quizCardIndexes.Count);
@@ -2450,6 +2506,7 @@ namespace MnemosyneArcana.Prototype
             if (selected.Count == 0)
             {
                 AddLog("答題後無可結算卡牌。");
+                SetCardQuizCastPhase(CardQuizCastPhase.RoundPostState);
                 ClearPlayZone();
                 return;
             }
@@ -2480,9 +2537,11 @@ namespace MnemosyneArcana.Prototype
             if (!score.IsSuccess)
             {
                 AddLog("答題後計分失敗。");
+                SetCardQuizCastPhase(CardQuizCastPhase.RoundPostState);
                 return;
             }
 
+            SetCardQuizCastPhase(CardQuizCastPhase.CastAnimationQueue);
             StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, score.Value.FinalScore));
         }
 
@@ -2549,6 +2608,12 @@ namespace MnemosyneArcana.Prototype
 
         private void ResolveBlind()
         {
+            if (_isCastFlowInputLocked || _isQuizRunning || _isPlayingCardAnim)
+            {
+                AddLog("答題或出卡流程未完成，暫時無法結算盲注。");
+                return;
+            }
+
             var result = _runManager.ResolveBlindResult();
             if (!result.IsSuccess)
             {
@@ -3311,6 +3376,7 @@ namespace MnemosyneArcana.Prototype
         private IEnumerator PlayCardsAnimationThenSubmit(IReadOnlyList<int> selectedIndexes, int finalScore)
         {
             _isPlayingCardAnim = true;
+            SetCardQuizCastPhase(CardQuizCastPhase.CastAnimationQueue);
             var start = Time.unscaledTime;
             const float duration = 0.3f;
 
@@ -3359,16 +3425,21 @@ namespace MnemosyneArcana.Prototype
             }
 
             _lastScore = finalScore;
+            SetCardQuizCastPhase(CardQuizCastPhase.CardFlipReveal);
+            yield return new WaitForSecondsRealtime(0.18f);
+            SetCardQuizCastPhase(CardQuizCastPhase.ResolveScore);
             var submit = _runManager.SubmitHandScore(_lastScore);
             if (!submit.IsSuccess)
             {
                 AddLog(string.Format("提交分數失敗：{0}", submit.Error));
                 _isPlayingCardAnim = false;
+                SetCardQuizCastPhase(CardQuizCastPhase.RoundPostState);
                 yield break;
             }
 
             AddLog(string.Format("出牌完成：+{0} 分，目前 {1}/{2}", _lastScore, _runManager.CurrentState.CurrentScore, _runManager.CurrentState.TargetScore));
             _isPlayingCardAnim = false;
+            SetCardQuizCastPhase(CardQuizCastPhase.RoundPostState);
             DrawHand();
         }
 
@@ -3457,9 +3528,7 @@ namespace MnemosyneArcana.Prototype
 
         private static string BuildCardText(DemoWord word, bool selected)
         {
-            var selectedText = selected ? "【上桌】\n" : string.Empty;
             return
-                selectedText +
                 word.Text + "\n" +
                 string.Format("元素：{0}\n詞性：{1}\n等級：{2}", ElementZh(word.Element), PosZh(word.Pos), word.Level);
         }
@@ -3468,9 +3537,8 @@ namespace MnemosyneArcana.Prototype
         {
             if (_isCompactMobileLayout)
             {
-                var selectedText = selected ? "【上桌】\n" : string.Empty;
                 var levelToken = word.Level.ToString().Replace("Lv", string.Empty);
-                return selectedText + string.Format("{0}\nLv{1}", word.Text, levelToken);
+                return string.Format("{0}\nLv{1}", word.Text, levelToken);
             }
 
             return BuildCardText(word, selected);

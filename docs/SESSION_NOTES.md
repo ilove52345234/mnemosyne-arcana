@@ -17,6 +17,29 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 M3.2 一鍵演示翻牌落地
+
+- 目標：提供穩定可重現的翻牌演示流程，支援持續截圖循環
+- 完成內容：
+  - 新增答題操作按鈕「一鍵演示翻牌」
+  - 新增 `ForceRevealDemoFlow()`：自動選牌、進答題、逐題提交、進入出卡翻牌
+  - 新增翻牌揭露停留視窗，便於在揭露階段截圖
+  - 非選項題型演示補強，避免流程停在待命
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity Console `error` = 0（刷新後再次確認）
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r14-reveal-demo-1.png`
+- 風險/阻塞：
+  - 目前翻牌揭露仍為 prototype 風格，尚未接正式美術卡面
+- 下一步：
+  - 進入 R15：把答題舞台抽成更明確 modal 層，提升與 Balatro 的節奏對齊
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 M3.1 翻牌可視強化
 
 - 目標：提升翻牌揭露可視性並避免非選項題型卡住

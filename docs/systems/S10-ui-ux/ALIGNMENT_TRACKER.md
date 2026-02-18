@@ -22,6 +22,25 @@
 
 ## 迭代紀錄
 
+### Round R14（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r14-reveal-demo-1.png`
+- Score:
+  - Layout: 25/30
+  - Readability: 21/25
+  - Interaction: 24/25
+  - Polish: 14/20
+  - Total: 84/100
+- 本輪修改:
+  - M3.2：新增「一鍵演示翻牌」入口，強制走 `選牌 -> 答題 -> 出卡 -> 翻牌` 全流程。
+  - 出卡後增加揭露停留視窗，提供穩定截圖時機。
+  - 自動流程補強：非選項題型可自動提交，避免演示卡住。
+- 未解決問題:
+  - 目前仍是 Prototype 風格，與 Balatro 正式美術語言仍有質感落差。
+- 下一輪優先:
+  - 將「答題舞台」獨立成更清楚的中央模態層，降低主版面資訊壓力。
+  - 針對橫向手機版補上進場/出牌過場動態，強化節奏感。
+
 ### Round R13（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r10-m3-3.png`

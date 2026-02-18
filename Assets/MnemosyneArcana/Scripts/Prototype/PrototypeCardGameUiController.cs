@@ -274,6 +274,8 @@ namespace MnemosyneArcana.Prototype
         private Coroutine _fullValidationCoroutine;
         private Coroutine _modelValidationCoroutine;
         private Coroutine _modelBatchValidationCoroutine;
+        private Coroutine _forceRevealDemoCoroutine;
+        private bool _holdRevealForCapture;
 
         internal bool IsCardInteractionLocked => _isPlayingCardAnim || _isCastFlowInputLocked || _isQuizRunning;
         internal RectTransform DragLayer => _dragLayer;
@@ -724,6 +726,7 @@ namespace MnemosyneArcana.Prototype
             var quizActionRow = CreateRow(_quizPageContainer, 52);
             CreateButton(quizActionRow, "開始答題並出牌", StartQuizAndPlay);
             CreateButton(quizActionRow, "返回出牌頁", delegate { SetMainPage(0); });
+            CreateButton(quizActionRow, "一鍵演示翻牌", StartForceRevealDemo);
 
             var bottomRail = CreatePanel(_playPageContainer, new Color(0.05f, 0.08f, 0.15f, 0.92f));
             var bottomRailElement = bottomRail.gameObject.AddComponent<LayoutElement>();
@@ -1457,6 +1460,7 @@ namespace MnemosyneArcana.Prototype
             _isQuizRunning = false;
             _isCastFlowInputLocked = false;
             _cardQuizCastPhase = CardQuizCastPhase.HandSelect;
+            _holdRevealForCapture = false;
             _quizCardIndexes.Clear();
             _quizCardCorrectness.Clear();
             _quizCursor = 0;
@@ -1619,6 +1623,71 @@ namespace MnemosyneArcana.Prototype
                     yield return new WaitForSecondsRealtime(0.6f);
                 }
             }
+        }
+
+        private void StartForceRevealDemo()
+        {
+            if (_forceRevealDemoCoroutine != null)
+            {
+                AddLog("翻牌演示已在進行中。");
+                return;
+            }
+
+            _forceRevealDemoCoroutine = StartCoroutine(ForceRevealDemoFlow());
+        }
+
+        private IEnumerator ForceRevealDemoFlow()
+        {
+            _holdRevealForCapture = true;
+            if (_runManager.CurrentState.Phase != RunPhase.HandSelect)
+            {
+                AddLog("目前不是可出牌階段，無法啟動翻牌演示。");
+                _holdRevealForCapture = false;
+                _forceRevealDemoCoroutine = null;
+                yield break;
+            }
+
+            if (_playZoneOrder.Count == 0)
+            {
+                _playZoneCardIndexes.Clear();
+                _playZoneOrder.Clear();
+                var pickCount = Mathf.Min(3, _hand.Count);
+                for (var i = 0; i < pickCount; i++)
+                {
+                    _playZoneCardIndexes.Add(i);
+                    _playZoneOrder.Add(i);
+                }
+
+                RefreshHandCardVisuals();
+                RebuildPlayZoneCards();
+                RefreshView();
+            }
+
+            SetMainPage(2);
+            StartQuizAndPlay();
+            while (_isQuizRunning)
+            {
+                if (_quizCurrentCorrectOptionIndex >= 0)
+                {
+                    OnQuizOptionSelected(_quizCurrentCorrectOptionIndex);
+                }
+                else
+                {
+                    SubmitQuizAnswer(true);
+                }
+
+                yield return new WaitForSecondsRealtime(0.15f);
+            }
+
+            var guard = 0;
+            while (_isPlayingCardAnim && _cardQuizCastPhase != CardQuizCastPhase.CardFlipReveal && guard < 120)
+            {
+                guard++;
+                yield return null;
+            }
+
+            AddLog("翻牌演示：已進入翻牌揭露階段，可立即截圖。");
+            _forceRevealDemoCoroutine = null;
         }
 
         private void StartAutoRunToComplete()
@@ -3678,6 +3747,12 @@ namespace MnemosyneArcana.Prototype
             }
 
             AddLog(string.Format("出牌完成：+{0} 分，目前 {1}/{2}", _lastScore, _runManager.CurrentState.CurrentScore, _runManager.CurrentState.TargetScore));
+            if (_holdRevealForCapture)
+            {
+                AddLog("翻牌揭露停留中（可截圖）...");
+                yield return new WaitForSecondsRealtime(1.25f);
+                _holdRevealForCapture = false;
+            }
             _isPlayingCardAnim = false;
             SetCardQuizCastPhase(CardQuizCastPhase.RoundPostState);
             DrawHand();

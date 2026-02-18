@@ -18,8 +18,10 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             var alerts = new List<TelemetryAlert>();
+            var lowRecall = snapshot.ActiveRecallAccuracy < 0.75f;
+            var longStall = snapshot.GateStallDays >= 7f;
 
-            if (snapshot.PassRateByGate > 0.85f)
+            if (snapshot.PassRateByGate > 0.85f && !lowRecall)
             {
                 alerts.Add(new TelemetryAlert
                 {
@@ -27,12 +29,12 @@ namespace MnemosyneArcana.Core.Managers
                     Message = "PassRateByGate > 85%，關卡壓力不足。"
                 });
             }
-            else if (snapshot.PassRateByGate < 0.35f)
+            else if (snapshot.PassRateByGate < 0.35f || (longStall && snapshot.PassRateByGate < 0.45f))
             {
                 alerts.Add(new TelemetryAlert
                 {
                     Code = "GATE_TOO_HARD",
-                    Message = "PassRateByGate < 35%，關卡挫折過高。"
+                    Message = "PassRateByGate 過低或長時間卡關，關卡挫折過高。"
                 });
             }
 
@@ -49,4 +51,3 @@ namespace MnemosyneArcana.Core.Managers
         }
     }
 }
-

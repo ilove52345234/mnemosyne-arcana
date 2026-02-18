@@ -62,5 +62,37 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsTrue(result.IsSuccess);
             Assert.That(result.Value, Has.Some.Matches<TelemetryAlert>(a => a.Code == "GATE_TOO_EASY"));
         }
+
+        [Test]
+        public void S8_FP_HighPassButLowRecall_DoesNotTriggerTooEasy()
+        {
+            var result = _telemetry.EvaluateAlerts(new LearningTelemetrySnapshot
+            {
+                PassRateByGate = 0.88f,
+                RecoverySuccessRate = 0.70f,
+                ActiveRecallAccuracy = 0.60f,
+                DecayRegressionRate = 0.18f,
+                GateStallDays = 2f
+            });
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.That(result.Value, Has.None.Matches<TelemetryAlert>(a => a.Code == "GATE_TOO_EASY"));
+        }
+
+        [Test]
+        public void S8_FN_BorderlinePassWithLongStall_TriggersTooHard()
+        {
+            var result = _telemetry.EvaluateAlerts(new LearningTelemetrySnapshot
+            {
+                PassRateByGate = 0.40f,
+                RecoverySuccessRate = 0.60f,
+                ActiveRecallAccuracy = 0.74f,
+                DecayRegressionRate = 0.22f,
+                GateStallDays = 8f
+            });
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.That(result.Value, Has.Some.Matches<TelemetryAlert>(a => a.Code == "GATE_TOO_HARD"));
+        }
     }
 }

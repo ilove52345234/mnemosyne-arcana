@@ -49,7 +49,7 @@ namespace MnemosyneArcana.Prototype
         private void Start()
         {
             StartNewRun();
-            Log("Prototype Sandbox ready. Press buttons to drive run flow.");
+            Log("原型沙盒已啟動，可用按鈕推進流程。");
         }
 
         private void OnGUI()
@@ -70,83 +70,83 @@ namespace MnemosyneArcana.Prototype
 
         private void DrawRunPanel()
         {
-            GUILayout.Label("Run Control", GUI.skin.label);
+            GUILayout.Label("Run 控制", GUI.skin.label);
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Difficulty", GUILayout.Width(70));
-            if (GUILayout.Button(_difficulty.ToString(), GUILayout.Width(130)))
+            GUILayout.Label("難度", GUILayout.Width(70));
+            if (GUILayout.Button(PrototypeUiText.DifficultyZh(_difficulty), GUILayout.Width(130)))
             {
                 _difficulty = (RunDifficultyProfile)(((int)_difficulty + 1) % 3);
             }
-            GUILayout.Label("Seed", GUILayout.Width(40));
+            GUILayout.Label("種子", GUILayout.Width(40));
             var seedText = GUILayout.TextField(_seed.ToString(), GUILayout.Width(100));
             if (int.TryParse(seedText, out var parsedSeed))
             {
                 _seed = parsedSeed;
             }
-            if (GUILayout.Button("Start New Run", GUILayout.Width(120)))
+            if (GUILayout.Button("重開新局", GUILayout.Width(120)))
             {
                 StartNewRun();
             }
             GUILayout.EndHorizontal();
 
             var s = _runManager.CurrentState;
-            GUILayout.Label($"Phase={s.Phase} | Ante={s.Ante} {s.BlindType} | Target={s.TargetScore} | Score={s.CurrentScore} | Plays={s.PlaysLeft} | Money={s.Money}");
+            GUILayout.Label($"階段={PrototypeUiText.PhaseZh(s.Phase)} | 關卡=第{s.Ante}關 {PrototypeUiText.BlindZh(s.BlindType)} | 目標={s.TargetScore} | 目前分={s.CurrentScore} | 出牌={s.PlaysLeft} | 金錢={s.Money}");
             GUILayout.Space(4);
         }
 
         private void DrawScoringPanel()
         {
-            GUILayout.Label("Scoring Sandbox", GUI.skin.label);
+            GUILayout.Label("計分沙盒", GUI.skin.label);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Preset", GUILayout.Width(70));
+            GUILayout.Label("預設牌組", GUILayout.Width(70));
             if (GUILayout.Button(_handPreset.ToString(), GUILayout.Width(120)))
             {
                 _handPreset = (HandPreset)(((int)_handPreset + 1) % Enum.GetValues(typeof(HandPreset)).Length);
             }
-            GUILayout.Label("Base Chips", GUILayout.Width(75));
+            GUILayout.Label("基礎籌碼", GUILayout.Width(75));
             _simCardBaseChips = Mathf.Clamp(ParseIntField(_simCardBaseChips, 45), 1, 99);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Upgrade", GUILayout.Width(70));
+            GUILayout.Label("升級", GUILayout.Width(70));
             _simUpgradeLevel = Mathf.Clamp(ParseIntField(_simUpgradeLevel, 45), 0, 9);
-            GUILayout.Label("Wrong", GUILayout.Width(50));
+            GUILayout.Label("答錯", GUILayout.Width(50));
             _simWrongCount = Mathf.Clamp(ParseIntField(_simWrongCount, 45), 0, 5);
-            GUILayout.Label("AddMult", GUILayout.Width(60));
+            GUILayout.Label("加法倍率", GUILayout.Width(60));
             _simAdditiveMult = ParseFloatField(_simAdditiveMult, 55);
-            GUILayout.Label("Factor", GUILayout.Width(50));
+            GUILayout.Label("乘區", GUILayout.Width(50));
             _simFactor = Mathf.Clamp(ParseFloatField(_simFactor, 55), 1f, 5f);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Sim Hand + Submit", GUILayout.Width(180)))
+            if (GUILayout.Button("模擬出牌並提交", GUILayout.Width(180)))
             {
                 SimulateAndSubmitHand();
             }
-            if (GUILayout.Button("Resolve Blind", GUILayout.Width(120)))
+            if (GUILayout.Button("結算盲注", GUILayout.Width(120)))
             {
                 ResolveBlind();
             }
-            if (GUILayout.Button("Advance After Shop", GUILayout.Width(140)))
+            if (GUILayout.Button("商店後前進", GUILayout.Width(140)))
             {
                 AdvanceAfterShop();
             }
             GUILayout.EndHorizontal();
 
-            GUILayout.Label($"Last Hand Score = {_lastHandScore}");
+            GUILayout.Label($"上次出牌分數 = {_lastHandScore}");
             GUILayout.Space(4);
         }
 
         private void DrawShopPanel()
         {
-            GUILayout.Label("Shop Sandbox", GUI.skin.label);
+            GUILayout.Label("商店沙盒", GUI.skin.label);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Generate Shop Offers", GUILayout.Width(170)))
+            if (GUILayout.Button("生成商店商品", GUILayout.Width(170)))
             {
                 GenerateOffers();
             }
-            if (GUILayout.Button("Auto Buy First", GUILayout.Width(120)))
+            if (GUILayout.Button("自動買第一項", GUILayout.Width(120)))
             {
                 TryBuyFirstOffer();
             }
@@ -154,13 +154,13 @@ namespace MnemosyneArcana.Prototype
 
             if (_shopOffers.Count == 0)
             {
-                GUILayout.Label("- no offers -");
+                GUILayout.Label("- 目前沒有商品 -");
             }
             else
             {
                 foreach (var offer in _shopOffers)
                 {
-                    GUILayout.Label($"{offer.OfferId} | {offer.Category} | ${offer.Price}");
+                    GUILayout.Label($"{offer.OfferId} | {PrototypeUiText.OfferZh(offer.Category)} | ${offer.Price}");
                 }
             }
 
@@ -169,21 +169,21 @@ namespace MnemosyneArcana.Prototype
 
         private void DrawLearningPanel()
         {
-            GUILayout.Label("Learning Sandbox", GUI.skin.label);
+            GUILayout.Label("學習沙盒", GUI.skin.label);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Answer Correct", GUILayout.Width(120)))
+            if (GUILayout.Button("答對", GUILayout.Width(120)))
             {
                 ApplyLearningAnswer(AnswerResult.Correct);
             }
-            if (GUILayout.Button("Answer Wrong", GUILayout.Width(120)))
+            if (GUILayout.Button("答錯", GUILayout.Width(120)))
             {
                 ApplyLearningAnswer(AnswerResult.Wrong);
             }
-            if (GUILayout.Button("Wrong -> Retry", GUILayout.Width(120)))
+            if (GUILayout.Button("答錯 -> 重答", GUILayout.Width(120)))
             {
                 ResolveWrongChoice(WrongAnswerChoice.RetryWithCost);
             }
-            if (GUILayout.Button("Wrong -> Gamble", GUILayout.Width(130)))
+            if (GUILayout.Button("答錯 -> 賭一把", GUILayout.Width(130)))
             {
                 ResolveWrongChoice(WrongAnswerChoice.Gamble);
             }
@@ -193,7 +193,7 @@ namespace MnemosyneArcana.Prototype
 
         private void DrawMetaPanel()
         {
-            GUILayout.Label("Meta Sandbox", GUI.skin.label);
+            GUILayout.Label("局外沙盒", GUI.skin.label);
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("LP", GUILayout.Width(22));
@@ -203,17 +203,17 @@ namespace MnemosyneArcana.Prototype
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Node", GUILayout.Width(38));
+            GUILayout.Label("節點", GUILayout.Width(38));
             _unlockNodeId = GUILayout.TextField(_unlockNodeId, GUILayout.Width(90));
-            if (GUILayout.Button("Try Unlock", GUILayout.Width(100)))
+            if (GUILayout.Button("嘗試解鎖", GUILayout.Width(100)))
             {
                 TryUnlockNode();
             }
-            if (GUILayout.Button("Generate Contract", GUILayout.Width(130)))
+            if (GUILayout.Button("生成契約", GUILayout.Width(130)))
             {
                 GenerateContract();
             }
-            if (GUILayout.Button("Settle Contract", GUILayout.Width(120)))
+            if (GUILayout.Button("結算契約", GUILayout.Width(120)))
             {
                 SettleSelectedContract();
             }
@@ -224,8 +224,8 @@ namespace MnemosyneArcana.Prototype
 
         private void DrawLogPanel()
         {
-            GUILayout.Label("Event Log", GUI.skin.label);
-            if (GUILayout.Button("Clear Log", GUILayout.Width(90)))
+            GUILayout.Label("事件紀錄", GUI.skin.label);
+            if (GUILayout.Button("清空紀錄", GUILayout.Width(90)))
             {
                 _logLines.Clear();
             }
@@ -242,7 +242,7 @@ namespace MnemosyneArcana.Prototype
             _runManager.StartRun(_seed);
             _shopOffers.Clear();
             _retryUsed = false;
-            Log($"Run started. Difficulty={_difficulty}, Seed={_seed}");
+            Log($"新局開始：難度={PrototypeUiText.DifficultyZh(_difficulty)}，種子={_seed}");
         }
 
         private void SimulateAndSubmitHand()
@@ -258,7 +258,7 @@ namespace MnemosyneArcana.Prototype
 
             if (!breakdownResult.IsSuccess)
             {
-                Log($"EvaluateHand failed: {breakdownResult.Error}");
+                Log($"手牌計分失敗：{breakdownResult.Error}");
                 return;
             }
 
@@ -266,11 +266,11 @@ namespace MnemosyneArcana.Prototype
             var submit = _runManager.SubmitHandScore(_lastHandScore);
             if (!submit.IsSuccess)
             {
-                Log($"SubmitHandScore failed: {submit.Error}");
+                Log($"提交分數失敗：{submit.Error}");
                 return;
             }
 
-            Log($"Hand {_handPreset}: +{_lastHandScore}, Phase={_runManager.CurrentState.Phase}, Score={_runManager.CurrentState.CurrentScore}/{_runManager.CurrentState.TargetScore}");
+            Log($"出牌 {_handPreset}: +{_lastHandScore}，階段={PrototypeUiText.PhaseZh(_runManager.CurrentState.Phase)}，分數={_runManager.CurrentState.CurrentScore}/{_runManager.CurrentState.TargetScore}");
         }
 
         private void ResolveBlind()
@@ -278,11 +278,11 @@ namespace MnemosyneArcana.Prototype
             var result = _runManager.ResolveBlindResult();
             if (!result.IsSuccess)
             {
-                Log($"ResolveBlindResult failed: {result.Error}");
+                Log($"盲注結算失敗：{result.Error}");
                 return;
             }
 
-            Log($"Blind result: Pass={result.Value.Passed}, Next={result.Value.NextPhase}");
+            Log($"盲注結果：通過={result.Value.Passed}，下一階段={PrototypeUiText.PhaseZh(result.Value.NextPhase)}");
             if (result.Value.NextPhase == RunPhase.Shop)
             {
                 GenerateOffers();
@@ -294,12 +294,12 @@ namespace MnemosyneArcana.Prototype
             var result = _runManager.AdvanceAfterShop();
             if (!result.IsSuccess)
             {
-                Log($"AdvanceAfterShop failed: {result.Error}");
+                Log($"商店後前進失敗：{result.Error}");
                 return;
             }
 
             _shopOffers.Clear();
-            Log($"Advanced to Ante={result.Value.Ante} {result.Value.BlindType}, Target={result.Value.TargetScore}");
+            Log($"推進到：第{result.Value.Ante}關 {PrototypeUiText.BlindZh(result.Value.BlindType)}，目標={result.Value.TargetScore}");
         }
 
         private void GenerateOffers()
@@ -309,20 +309,20 @@ namespace MnemosyneArcana.Prototype
             var offers = _shopManager.GenerateOffers(state.Ante, _seed + state.Ante * 31, isBossShop);
             if (!offers.IsSuccess)
             {
-                Log($"GenerateOffers failed: {offers.Error}");
+                Log($"生成商品失敗：{offers.Error}");
                 return;
             }
 
             _shopOffers.Clear();
             _shopOffers.AddRange(offers.Value);
-            Log($"Shop generated ({_shopOffers.Count}) offers. BossShop={isBossShop}");
+            Log($"商店已生成 {_shopOffers.Count} 項商品（魔王商店={isBossShop}）");
         }
 
         private void TryBuyFirstOffer()
         {
             if (_shopOffers.Count == 0)
             {
-                Log("No offers to buy.");
+                Log("目前沒有可購買商品。");
                 return;
             }
 
@@ -331,19 +331,19 @@ namespace MnemosyneArcana.Prototype
             var buy = _shopManager.PurchaseOffer(offer, state.Money);
             if (!buy.IsSuccess)
             {
-                Log($"Purchase failed: {buy.Error}");
+                Log($"購買失敗：{buy.Error}");
                 return;
             }
 
             if (!buy.Value.Success)
             {
-                Log($"Not enough money for {offer.OfferId} (${offer.Price})");
+                Log($"金錢不足：{offer.OfferId} 需要 ${offer.Price}");
                 return;
             }
 
             state.Money = buy.Value.RemainingMoney;
             _shopOffers.RemoveAt(0);
-            Log($"Purchased {offer.OfferId}, money now {state.Money}");
+            Log($"已購買 {offer.OfferId}，剩餘金錢 {state.Money}");
         }
 
         private void ApplyLearningAnswer(AnswerResult answer)
@@ -361,12 +361,12 @@ namespace MnemosyneArcana.Prototype
             var result = _learningManager.ApplyAnswer("demo_word", answer, context);
             if (!result.IsSuccess)
             {
-                Log($"ApplyAnswer failed: {result.Error}");
+                Log($"學習結算失敗：{result.Error}");
                 return;
             }
 
             var r = result.Value;
-            Log($"Learning: {answer}, mode={r.QuestionMode}, x{r.ChipMultiplier:0.##}, next={r.NextLevel}, auto={r.IsAutoResolved}");
+            Log($"學習：{answer}，題型={r.QuestionMode}，倍率x{r.ChipMultiplier:0.##}，下一級={r.NextLevel}，自動={r.IsAutoResolved}");
         }
 
         private void ResolveWrongChoice(WrongAnswerChoice choice)
@@ -375,14 +375,14 @@ namespace MnemosyneArcana.Prototype
             var result = _learningManager.ResolveWrongAnswerChoice(choice, state.Money, _retryUsed, _seed + state.Ante);
             if (!result.IsSuccess)
             {
-                Log($"ResolveWrongChoice failed: {result.Error}");
+                Log($"答錯選擇處理失敗：{result.Error}");
                 return;
             }
 
             var r = result.Value;
             _retryUsed = _retryUsed || r.RetryConsumed;
             state.Money = r.RemainingMoney;
-            Log($"WrongChoice={choice}, Final={r.FinalAnswerResult}, money={r.RemainingMoney}, retryUsed={_retryUsed}");
+            Log($"答錯選擇={choice}，最終={r.FinalAnswerResult}，金錢={r.RemainingMoney}，已用重答={_retryUsed}");
         }
 
         private void TryUnlockNode()
@@ -399,12 +399,12 @@ namespace MnemosyneArcana.Prototype
             var result = _metaManager.TryUnlockNode(_unlockNodeId, progress);
             if (!result.IsSuccess)
             {
-                Log($"TryUnlockNode failed: {result.Error} ({_unlockNodeId})");
+                Log($"節點解鎖失敗：{result.Error}（{_unlockNodeId}）");
                 return;
             }
 
             _metaLp = result.Value.RemainingLp;
-            Log($"Unlock success: {_unlockNodeId}, LP left={_metaLp}");
+            Log($"節點解鎖成功：{_unlockNodeId}，剩餘學習點={_metaLp}");
         }
 
         private void GenerateContract()
@@ -412,31 +412,31 @@ namespace MnemosyneArcana.Prototype
             var result = _metaManager.GenerateContracts(new MetaProgress { Lp = _metaLp, Xp = _metaXp }, _seed);
             if (!result.IsSuccess || result.Value.Count == 0)
             {
-                Log($"GenerateContracts failed: {result.Error}");
+                Log($"生成契約失敗：{result.Error}");
                 return;
             }
 
             _selectedContract = result.Value[0];
-            Log($"Contract selected: {_selectedContract.ContractId} ({_selectedContract.Name}) +{_selectedContract.LpReward}LP");
+            Log($"已選契約：{_selectedContract.ContractId}（{_selectedContract.Name}） +{_selectedContract.LpReward}學習點");
         }
 
         private void SettleSelectedContract()
         {
             if (_selectedContract == null)
             {
-                Log("No contract selected.");
+                Log("尚未選擇契約。");
                 return;
             }
 
             var settlement = _metaManager.SettleContractWithCap(_selectedContract, new RunTelemetry { ContractCompleted = true }, lpBase: 20);
             if (!settlement.IsSuccess)
             {
-                Log($"SettleContract failed: {settlement.Error}");
+                Log($"契約結算失敗：{settlement.Error}");
                 return;
             }
 
             _metaLp += settlement.Value.LpBonusCapped;
-            Log($"Contract settled: +{settlement.Value.LpBonusCapped} LP (raw={settlement.Value.LpBonusRaw})");
+            Log($"契約已結算：+{settlement.Value.LpBonusCapped} 學習點（原始={settlement.Value.LpBonusRaw}）");
         }
 
         private IReadOnlyList<PlayedCard> BuildCardsByPreset(HandPreset preset)

@@ -45,7 +45,7 @@
   - 新增「全節點 effect 映射檢查」驗測，要求 60 節點每個至少映射一個 runtime effect 欄位。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18，重啟 S6）：全節點實作已補完；目前驗測 runner 卡於 `tests_running`，已完成腳本級語法驗證，等待 runner 恢復後補跑完整 MCP job 證據。
+- 驗測結論（2026-02-18，重啟 S6）：全節點實作已補完；本輪已補跑 MCP job 證據，runner 可正常完成回歸驗測；`Done`（已決策同意）。
 - 三模型對應：
   - `M-Low`：`MetaManagerTests`（含 invalid input、mutex/prereq fail 等邊界；18/18）。
   - `M-Mid`：`UserStoryAcceptanceTests.US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh`（契約生成與刷新可預測）。
@@ -93,12 +93,13 @@
   - `ad69bfaa6c5c411799eea33ef7816a4b`（US10：1/1）
   - `a4a067ee6ac8407d8b7269c537c8242d`（US11：1/1）
   - `42eb6672a03a46108357fc9778bedcb9`（PlayableLoop Meta 結算：1/1）
+- 本輪補強證據（MCP job，2026-02-18）：
+  - `dae7c0b1e5dc47f5a6a8b1c82b9ce218`（EditMode：175/175，含 `MetaManagerTests`、`US10`、`US11`、`PlayableLoopUseCaseTests.UseCase_CompleteRunAndSettleMeta_ContractRatioWithin45Percent`）
 - 本輪設計問題：
-1. 節點入場覆蓋已完成，當前主要風險改為測試基礎設施：MCP `run_tests` 長時間回傳 `tests_running`，使自動 job 證據暫時中斷。
+1. 本輪未觀察到新增設計問題；既有節點效果覆蓋率與契約 cap 行為維持穩定。
 - 調整建議：
-1. 先恢復/重啟 Unity MCP test runner，補跑 `Meta/Shop/Learning + US10/US11 + PlayableLoop cap` 的 MCP job 證據。
-2. 維持「節點效果覆蓋率」為 S6 Done 必要條件，runner 恢復後一次收口驗證。
-3. 契約 LP cap（45%）持續維持不變，先驗證穩定再做數值微調。
+1. 維持「節點效果覆蓋率」為 S6 Done 必要條件，後續新增節點需同步補映射驗測。
+2. 契約 LP cap（45%）持續維持不變，先驗證穩定再做數值微調。
 
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
@@ -111,3 +112,4 @@
 - 2026-02-18：完成 Batch-4（FLU_04/05/07/09、BLD_01/02/03A/03B）效果入場與測試，`MetaManagerTests` 擴充為 27/27。
 - 2026-02-18：完成 Batch-5（BLD_06A/06B/07/10A/10B、MAS_07/09/11/12）效果入場與測試，`MetaManagerTests` 擴充為 30/30，`ShopManagerTests` 擴充為 17/17，`LearningManagerTests` 擴充為 16/16。
 - 2026-02-18：完成 Batch-6（全節點補完：FLU/LEX/MAS 剩餘節點 + BLD 補充事件 API），新增全節點 effect 映射驗測；目前 `run_tests` 受 runner busy 影響，待恢復後補 MCP job 證據。
+- 2026-02-18：runner 恢復後完成補跑，新增 MCP job `dae7c0b1e5dc47f5a6a8b1c82b9ce218`（EditMode 175/175）作為 S6 收口證據。

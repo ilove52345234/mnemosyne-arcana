@@ -197,10 +197,11 @@ namespace MnemosyneArcana.Prototype
         private int _quizCursor;
         private int _quizCorrectCount;
         private int _quizCurrentCorrectOptionIndex = -1;
+        [SerializeField] private bool _playerMode = true;
         private bool _isTuningCollapsed = true;
         [SerializeField] private bool _autoDemoOnStart = true;
         [SerializeField] private float _autoDemoStartDelaySeconds = 1.2f;
-        [SerializeField] private bool _autoStartTenModelValidationOnPlay = true;
+        [SerializeField] private bool _autoStartTenModelValidationOnPlay = false;
         [SerializeField] private bool _autoStartTenModelBatchValidationOnPlay = false;
         private bool _suppressVerboseLogs;
         private Coroutine _autoDemoCoroutine;
@@ -236,22 +237,61 @@ namespace MnemosyneArcana.Prototype
         {
             _font = LoadBuiltinFont();
             EnsureEventSystem();
+            DisableLegacyPrototypeControllers();
             BuildDeck();
             BuildUi();
             StartRun();
-            AddLog("已載入真實卡牌 UI 原型，可直接邊玩邊調參。");
+            AddLog(_playerMode
+                ? "已載入正式玩家 UI 原型，可直接進行牌列操作與答題流程。"
+                : "已載入真實卡牌 UI 原型，可直接邊玩邊調參。");
 
-            if (_autoStartTenModelBatchValidationOnPlay)
+            if (!_playerMode && _autoStartTenModelBatchValidationOnPlay)
             {
                 StartCoroutine(AutoStartTenModelBatchValidationFlow());
             }
-            else if (_autoStartTenModelValidationOnPlay)
+            else if (!_playerMode && _autoStartTenModelValidationOnPlay)
             {
                 StartCoroutine(AutoStartTenModelValidationFlow());
             }
             else if (_autoDemoOnStart)
             {
                 _autoDemoCoroutine = StartCoroutine(AutoDemoFlow());
+            }
+        }
+
+        private void DisableLegacyPrototypeControllers()
+        {
+            var disabledCount = 0;
+
+            var legacyGameScreens = FindObjectsOfType<PrototypeGameScreenController>(true);
+            for (var i = 0; i < legacyGameScreens.Length; i++)
+            {
+                var legacy = legacyGameScreens[i];
+                if (legacy == null || !legacy.enabled)
+                {
+                    continue;
+                }
+
+                legacy.enabled = false;
+                disabledCount++;
+            }
+
+            var legacySandboxes = FindObjectsOfType<PrototypeSandboxController>(true);
+            for (var i = 0; i < legacySandboxes.Length; i++)
+            {
+                var legacy = legacySandboxes[i];
+                if (legacy == null || !legacy.enabled)
+                {
+                    continue;
+                }
+
+                legacy.enabled = false;
+                disabledCount++;
+            }
+
+            if (disabledCount > 0)
+            {
+                Debug.Log($"[PrototypeFlow] 已自動停用 {disabledCount} 個舊版 Prototype 控制器。");
             }
         }
 
@@ -365,20 +405,27 @@ namespace MnemosyneArcana.Prototype
             rightFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             rightFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            var tuningToggleRow = CreateRow(rightCol, 42);
-            _toggleTuningButton = CreateButtonWithLabel(tuningToggleRow, "展開調參", 30);
-            _toggleTuningButtonText = _toggleTuningButton.GetComponentInChildren<Text>();
-            _toggleTuningButton.onClick.AddListener(ToggleTuningPanel);
+            if (_playerMode)
+            {
+                _tuningContentContainer = rightCol;
+            }
+            else
+            {
+                var tuningToggleRow = CreateRow(rightCol, 42);
+                _toggleTuningButton = CreateButtonWithLabel(tuningToggleRow, "展開調參", 30);
+                _toggleTuningButtonText = _toggleTuningButton.GetComponentInChildren<Text>();
+                _toggleTuningButton.onClick.AddListener(ToggleTuningPanel);
 
-            _tuningContentContainer = CreatePanel(rightCol, new Color(0f, 0f, 0f, 0f));
-            _tuningContentContainer.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
-            var tuningContentLayout = _tuningContentContainer.gameObject.AddComponent<VerticalLayoutGroup>();
-            tuningContentLayout.spacing = 8;
-            tuningContentLayout.padding = new RectOffset(0, 0, 0, 0);
-            tuningContentLayout.childControlWidth = true;
-            tuningContentLayout.childControlHeight = true;
-            tuningContentLayout.childForceExpandWidth = true;
-            tuningContentLayout.childForceExpandHeight = false;
+                _tuningContentContainer = CreatePanel(rightCol, new Color(0f, 0f, 0f, 0f));
+                _tuningContentContainer.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
+                var tuningContentLayout = _tuningContentContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+                tuningContentLayout.spacing = 8;
+                tuningContentLayout.padding = new RectOffset(0, 0, 0, 0);
+                tuningContentLayout.childControlWidth = true;
+                tuningContentLayout.childControlHeight = true;
+                tuningContentLayout.childForceExpandWidth = true;
+                tuningContentLayout.childForceExpandHeight = false;
+            }
 
             _statusText = CreateText(leftCol, "狀態", 20, TextAnchor.UpperLeft, FontStyle.Bold);
             _statusText.gameObject.AddComponent<LayoutElement>().minHeight = 82;
@@ -457,16 +504,22 @@ namespace MnemosyneArcana.Prototype
             var actionRow3 = CreateRow(leftCol, 46);
             CreateButton(actionRow3, "生成商店商品", GenerateShopOffers);
             CreateButton(actionRow3, "購買第一項", BuyFirstOffer);
-            CreateButton(actionRow3, "嘗試解鎖節點", TryUnlockNode);
+            if (!_playerMode)
+            {
+                CreateButton(actionRow3, "嘗試解鎖節點", TryUnlockNode);
+            }
 
-            var actionRow4 = CreateRow(leftCol, 46);
-            CreateButton(actionRow4, "一鍵跑到通關", StartAutoRunToComplete);
-            CreateButton(actionRow4, "連跑3局", StartAutoBatchRuns);
-            CreateButton(actionRow4, "失敗後重開演示", StartFailThenRecoverDemo);
-            CreateButton(actionRow4, "驗證全部用例", StartUseCaseVerification);
-            CreateButton(actionRow4, "全流程最終驗收", StartFullValidationFlow);
-            CreateButton(actionRow4, "10模型驗證", StartTenModelValidation);
-            CreateButton(actionRow4, "10模型30輪", StartTenModelBatchValidation);
+            if (!_playerMode)
+            {
+                var actionRow4 = CreateRow(leftCol, 46);
+                CreateButton(actionRow4, "一鍵跑到通關", StartAutoRunToComplete);
+                CreateButton(actionRow4, "連跑3局", StartAutoBatchRuns);
+                CreateButton(actionRow4, "失敗後重開演示", StartFailThenRecoverDemo);
+                CreateButton(actionRow4, "驗證全部用例", StartUseCaseVerification);
+                CreateButton(actionRow4, "全流程最終驗收", StartFullValidationFlow);
+                CreateButton(actionRow4, "10模型驗證", StartTenModelValidation);
+                CreateButton(actionRow4, "10模型30輪", StartTenModelBatchValidation);
+            }
 
             _shopText = CreateText(leftCol, "商店：尚未生成", 14, TextAnchor.UpperLeft, FontStyle.Normal);
             _shopText.gameObject.AddComponent<LayoutElement>().minHeight = 36;
@@ -479,33 +532,42 @@ namespace MnemosyneArcana.Prototype
             _shopGridLayout.spacing = new Vector2(8, 8);
             _shopGridLayout.padding = new RectOffset(8, 8, 8, 8);
 
-            CreateText(_tuningContentContainer, "調參面板（中文）", 18, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _tuningText = CreateText(_tuningContentContainer, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
-            _tuningText.gameObject.AddComponent<LayoutElement>().minHeight = 120;
+            if (_playerMode)
+            {
+                CreateText(_tuningContentContainer, "局外資訊", 18, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _tuningText = CreateText(_tuningContentContainer, "玩家模式：已隱藏調參功能。", 14, TextAnchor.UpperLeft, FontStyle.Normal);
+                _tuningText.gameObject.AddComponent<LayoutElement>().minHeight = 50;
+            }
+            else
+            {
+                CreateText(_tuningContentContainer, "調參面板（中文）", 18, TextAnchor.MiddleLeft, FontStyle.Bold);
+                _tuningText = CreateText(_tuningContentContainer, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
+                _tuningText.gameObject.AddComponent<LayoutElement>().minHeight = 120;
 
-            var tuneRow1 = CreateRow(_tuningContentContainer, 42);
-            CreateButton(tuneRow1, "難度切換", CycleDifficulty);
-            CreateButton(tuneRow1, "籌碼 +1", delegate { _baseChips = Mathf.Min(30, _baseChips + 1); RefreshView(); });
-            CreateButton(tuneRow1, "籌碼 -1", delegate { _baseChips = Mathf.Max(1, _baseChips - 1); RefreshView(); });
+                var tuneRow1 = CreateRow(_tuningContentContainer, 42);
+                CreateButton(tuneRow1, "難度切換", CycleDifficulty);
+                CreateButton(tuneRow1, "籌碼 +1", delegate { _baseChips = Mathf.Min(30, _baseChips + 1); RefreshView(); });
+                CreateButton(tuneRow1, "籌碼 -1", delegate { _baseChips = Mathf.Max(1, _baseChips - 1); RefreshView(); });
 
-            var tuneRow2 = CreateRow(_tuningContentContainer, 42);
-            CreateButton(tuneRow2, "升級 +1", delegate { _upgradeLevel = Mathf.Min(9, _upgradeLevel + 1); RefreshView(); });
-            CreateButton(tuneRow2, "升級 -1", delegate { _upgradeLevel = Mathf.Max(0, _upgradeLevel - 1); RefreshView(); });
-            CreateButton(tuneRow2, "答錯 +1", delegate { _wrongCount = Mathf.Min(5, _wrongCount + 1); RefreshView(); });
+                var tuneRow2 = CreateRow(_tuningContentContainer, 42);
+                CreateButton(tuneRow2, "升級 +1", delegate { _upgradeLevel = Mathf.Min(9, _upgradeLevel + 1); RefreshView(); });
+                CreateButton(tuneRow2, "升級 -1", delegate { _upgradeLevel = Mathf.Max(0, _upgradeLevel - 1); RefreshView(); });
+                CreateButton(tuneRow2, "答錯 +1", delegate { _wrongCount = Mathf.Min(5, _wrongCount + 1); RefreshView(); });
 
-            var tuneRow3 = CreateRow(_tuningContentContainer, 42);
-            CreateButton(tuneRow3, "答錯 -1", delegate { _wrongCount = Mathf.Max(0, _wrongCount - 1); RefreshView(); });
-            CreateButton(tuneRow3, "加法倍率 +0.5", delegate { _additiveMult = Mathf.Min(8f, _additiveMult + 0.5f); RefreshView(); });
-            CreateButton(tuneRow3, "乘區 +0.1", delegate { _factor = Mathf.Min(5f, _factor + 0.1f); RefreshView(); });
+                var tuneRow3 = CreateRow(_tuningContentContainer, 42);
+                CreateButton(tuneRow3, "答錯 -1", delegate { _wrongCount = Mathf.Max(0, _wrongCount - 1); RefreshView(); });
+                CreateButton(tuneRow3, "加法倍率 +0.5", delegate { _additiveMult = Mathf.Min(8f, _additiveMult + 0.5f); RefreshView(); });
+                CreateButton(tuneRow3, "乘區 +0.1", delegate { _factor = Mathf.Min(5f, _factor + 0.1f); RefreshView(); });
 
-            var tuneRow4 = CreateRow(_tuningContentContainer, 42);
-            CreateButton(tuneRow4, "乘區 -0.1", delegate { _factor = Mathf.Max(1f, _factor - 0.1f); RefreshView(); });
-            CreateButton(tuneRow4, "LP +10", delegate { _metaLp += 10; RefreshView(); });
-            CreateButton(tuneRow4, "LP -10", delegate { _metaLp = Mathf.Max(0, _metaLp - 10); RefreshView(); });
+                var tuneRow4 = CreateRow(_tuningContentContainer, 42);
+                CreateButton(tuneRow4, "乘區 -0.1", delegate { _factor = Mathf.Max(1f, _factor - 0.1f); RefreshView(); });
+                CreateButton(tuneRow4, "學習點 +10", delegate { _metaLp += 10; RefreshView(); });
+                CreateButton(tuneRow4, "學習點 -10", delegate { _metaLp = Mathf.Max(0, _metaLp - 10); RefreshView(); });
 
-            var tuneRow5 = CreateRow(_tuningContentContainer, 42);
-            CreateButton(tuneRow5, "節點切換", CycleUnlockNode);
-            CreateButton(tuneRow5, "清空紀錄", delegate { _logs.Clear(); RefreshView(); });
+                var tuneRow5 = CreateRow(_tuningContentContainer, 42);
+                CreateButton(tuneRow5, "節點切換", CycleUnlockNode);
+                CreateButton(tuneRow5, "清空紀錄", delegate { _logs.Clear(); RefreshView(); });
+            }
 
             _metaText = CreateText(_tuningContentContainer, "-", 14, TextAnchor.UpperLeft, FontStyle.Normal);
             _metaText.gameObject.AddComponent<LayoutElement>().minHeight = 80;
@@ -514,7 +576,19 @@ namespace MnemosyneArcana.Prototype
             _logText = CreateText(_tuningContentContainer, "-", 13, TextAnchor.UpperLeft, FontStyle.Normal);
             _logText.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
 
-            ApplyTuningPanelState();
+            if (_playerMode)
+            {
+                if (_rightColLayout != null)
+                {
+                    _rightColLayout.minWidth = 220;
+                    _rightColLayout.preferredWidth = 240;
+                    _rightColLayout.flexibleWidth = 1f;
+                }
+            }
+            else
+            {
+                ApplyTuningPanelState();
+            }
         }
 
         private RectTransform CreateRow(Transform parent, int minHeight)
@@ -660,7 +734,7 @@ namespace MnemosyneArcana.Prototype
             _lastScore = 0;
             GenerateRunContract();
             DrawHand();
-            AddLog(string.Format("開新局：難度={0}, Seed={1}", DifficultyZh(_difficulty), _seed));
+            AddLog(string.Format("開新局：難度={0}, 種子={1}", DifficultyZh(_difficulty), _seed));
             RefreshView();
         }
 
@@ -746,7 +820,7 @@ namespace MnemosyneArcana.Prototype
             }
 
             _activeRunContract = contracts.Value[0];
-            AddLog(string.Format("本局契約：{0}（+{1} LP）", _activeRunContract.Name, _activeRunContract.LpReward));
+            AddLog(string.Format("本局契約：{0}（+{1} 學習點）", _activeRunContract.Name, _activeRunContract.LpReward));
         }
 
         private void DrawHand()
@@ -2470,7 +2544,7 @@ namespace MnemosyneArcana.Prototype
             _statusText.text =
                 "Mnemosyne Arcana - 真實卡牌 UI 原型\n" +
                 string.Format(
-                    "階段：{0} | 關卡：Ante {1} {2} | 目標分：{3} | 目前分：{4} | 出牌：{5} | 金錢：${6} | 上次出牌：{7}",
+                    "階段：{0} | 關卡：第 {1} 關 {2} | 目標分：{3} | 目前分：{4} | 出牌：{5} | 金錢：${6} | 上次出牌：{7}",
                     PhaseZh(state.Phase), state.Ante, BlindZh(state.BlindType), state.TargetScore, state.CurrentScore, state.PlaysLeft, state.Money, _lastScore);
 
             _selectedText.text = string.Format("已上桌卡牌：{0} 張（拖曳到牌桌區，未上桌則預設全打）", _playZoneCardIndexes.Count);
@@ -2489,23 +2563,27 @@ namespace MnemosyneArcana.Prototype
             }
 
             var contractText = _activeRunContract != null ? _activeRunContract.ContractId : "-";
-            _metaText.text = string.Format("局外：XP={0} | LP={1} | 本局契約={2} | 下一解鎖節點={3}", _metaXp, _metaLp, contractText, _unlockNodeId);
-            _tuningText.text =
-                string.Format(
-                    "難度：{0}\nSeed：{1}\n基礎籌碼：{2}\n升級層：{3}\n答錯數：{4}\n加法倍率：{5:0.##}\n乘區：{6:0.##}\n模型：M{7}/M{8}\n有效詞彙：{9:0}\n效率增益：x{10:0.00}\nBoss通過：{11}\n掌握率：{12:P0}\n100%穩定天數：{13}\nMain/True Clear：{14}/{15}\n回補中：{16}\n回補連敗：{17}\n退回倒數：{18}",
-                    DifficultyZh(_difficulty), _seed, _baseChips, _upgradeLevel, _wrongCount, _additiveMult, _factor,
-                    _currentGateModelIndex,
-                    _highestUnlockedModelIndex,
-                    Mathf.RoundToInt(_learnedCount * Mathf.Clamp(_learningEfficiencyBoost, 1f, _maxLearningEfficiencyBoost) * _retentionRate * _retrievalRate),
-                    _learningEfficiencyBoost,
-                    _bossGatePasses,
-                    _overallMasteryRate,
-                    _stableDaysAtHundredPercent,
-                    _mainClearCount,
-                    _trueClearCount,
-                    _inRecoveryGate ? "是" : "否",
-                    _consecutiveRecoveryFailures,
-                    Mathf.Max(0, 7 - _daysSinceLastDemotion));
+            _metaText.text = string.Format("局外：經驗={0} | 學習點={1} | 本局契約={2} | 下一解鎖節點={3}", _metaXp, _metaLp, contractText, _unlockNodeId);
+            if (_tuningText != null)
+            {
+                _tuningText.text = _playerMode
+                    ? "玩家模式：已隱藏調參與開發驗證按鈕。"
+                    : string.Format(
+                        "難度：{0}\n種子：{1}\n基礎籌碼：{2}\n升級層：{3}\n答錯數：{4}\n加法倍率：{5:0.##}\n乘區：{6:0.##}\n模型：M{7}/M{8}\n有效詞彙：{9:0}\n效率增益：x{10:0.00}\n魔王通過：{11}\n掌握率：{12:P0}\n100%穩定天數：{13}\n主線/真結局通關：{14}/{15}\n回補中：{16}\n回補連敗：{17}\n退回倒數：{18}",
+                        DifficultyZh(_difficulty), _seed, _baseChips, _upgradeLevel, _wrongCount, _additiveMult, _factor,
+                        _currentGateModelIndex,
+                        _highestUnlockedModelIndex,
+                        Mathf.RoundToInt(_learnedCount * Mathf.Clamp(_learningEfficiencyBoost, 1f, _maxLearningEfficiencyBoost) * _retentionRate * _retrievalRate),
+                        _learningEfficiencyBoost,
+                        _bossGatePasses,
+                        _overallMasteryRate,
+                        _stableDaysAtHundredPercent,
+                        _mainClearCount,
+                        _trueClearCount,
+                        _inRecoveryGate ? "是" : "否",
+                        _consecutiveRecoveryFailures,
+                        Mathf.Max(0, 7 - _daysSinceLastDemotion));
+            }
 
             var logLines = "";
             var start = Mathf.Max(0, _logs.Count - 22);
@@ -2538,17 +2616,26 @@ namespace MnemosyneArcana.Prototype
             }
 
             var screenW = Screen.width;
-            if (_isTuningCollapsed)
+            if (_playerMode)
             {
-                _rightColLayout.minWidth = 120;
-                _rightColLayout.preferredWidth = 120;
+                _rightColLayout.minWidth = screenW < 980 ? 190 : 220;
+                _rightColLayout.preferredWidth = screenW < 980 ? 200 : 240;
+                _leftColLayout.minWidth = screenW < 980 ? 360 : 460;
             }
             else
             {
-                _rightColLayout.minWidth = screenW < 980 ? 220 : 250;
-                _rightColLayout.preferredWidth = -1;
+                if (_isTuningCollapsed)
+                {
+                    _rightColLayout.minWidth = 120;
+                    _rightColLayout.preferredWidth = 120;
+                }
+                else
+                {
+                    _rightColLayout.minWidth = screenW < 980 ? 220 : 250;
+                    _rightColLayout.preferredWidth = -1;
+                }
+                _leftColLayout.minWidth = screenW < 980 ? 360 : 420;
             }
-            _leftColLayout.minWidth = screenW < 980 ? 360 : 420;
 
             var width = _shopGridContainer.rect.width;
             var targetColumns = 3;
@@ -2569,6 +2656,11 @@ namespace MnemosyneArcana.Prototype
 
         private void ToggleTuningPanel()
         {
+            if (_playerMode)
+            {
+                return;
+            }
+
             _isTuningCollapsed = !_isTuningCollapsed;
             ApplyTuningPanelState();
             UpdateResponsiveLayout();
@@ -2577,6 +2669,11 @@ namespace MnemosyneArcana.Prototype
 
         private void ApplyTuningPanelState()
         {
+            if (_playerMode)
+            {
+                return;
+            }
+
             if (_tuningContentContainer != null)
             {
                 _tuningContentContainer.gameObject.SetActive(!_isTuningCollapsed);
@@ -2757,55 +2854,22 @@ namespace MnemosyneArcana.Prototype
 
         private static string DifficultyZh(RunDifficultyProfile profile)
         {
-            return profile switch
-            {
-                RunDifficultyProfile.Relaxed => "輕鬆",
-                RunDifficultyProfile.Standard => "標準",
-                RunDifficultyProfile.Challenging => "挑戰",
-                _ => profile.ToString()
-            };
+            return PrototypeUiText.DifficultyZh(profile);
         }
 
         private static string BlindZh(BlindType blind)
         {
-            return blind switch
-            {
-                BlindType.Small => "小盲注",
-                BlindType.Big => "大盲注",
-                BlindType.Boss => "Boss 盲注",
-                _ => blind.ToString()
-            };
+            return PrototypeUiText.BlindZh(blind);
         }
 
         private static string OfferZh(ShopOfferCategory category)
         {
-            return category switch
-            {
-                ShopOfferCategory.Sense => "語感",
-                ShopOfferCategory.Material => "教材",
-                ShopOfferCategory.Affix => "詞綴",
-                ShopOfferCategory.Course => "課程",
-                _ => category.ToString()
-            };
+            return PrototypeUiText.OfferZh(category);
         }
 
         private static string PhaseZh(RunPhase phase)
         {
-            return phase switch
-            {
-                RunPhase.Boot => "初始化",
-                RunPhase.RunStart => "開局",
-                RunPhase.BlindStart => "盲注開始",
-                RunPhase.HandSelect => "選牌",
-                RunPhase.HandResolve => "手牌結算",
-                RunPhase.BlindResult => "盲注結果",
-                RunPhase.Shop => "商店",
-                RunPhase.AnteAdvance => "關卡前進",
-                RunPhase.BossResolve => "Boss 結算",
-                RunPhase.RunComplete => "通關",
-                RunPhase.RunFail => "失敗",
-                _ => phase.ToString()
-            };
+            return PrototypeUiText.PhaseZh(phase);
         }
 
         private static string ElementZh(Element element)

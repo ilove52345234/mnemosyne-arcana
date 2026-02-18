@@ -999,3 +999,211 @@
   - `docs/PROGRESS_OVERVIEW.md`：S4 狀態改為 `Done`
 - 下一步：
   - 進入 S5（Shop/Economy）驗測。
+
+## 交接記錄（2026-02-18）- S5 驗測重跑完成（依交接續做）
+
+- 目標：依最新交接紀錄，銜接執行 S5（Shop/Economy）驗測並補最新證據。
+- 驗測執行：
+  - Unity MCP EditMode：job `dae7c0b1e5dc47f5a6a8b1c82b9ce218`（`175/175 passed`）
+  - S5 對應測項確認：
+    - `ShopManagerTests.PurchaseOffer_NotEnoughMoney_FailsGracefully`（M-Low）
+    - `UserStoryAcceptanceTests.US04_ShopCanGenerateAndPurchaseWithBalanceGuard`（M-Mid）
+    - `UserStoryAcceptanceTests.US08_BossShopAlwaysOffersTwoCoursesAtPrice10`（M-High）
+    - `PlayableLoopUseCaseTests.UseCase_FirstBlindToShopPurchaseAndAdvance_Works`（M-High）
+    - `ShopManagerTests.GetRerollCost_TwentyRolls_IsStrictlyIncreasing`（重擲遞增）
+    - `ShopManagerTests.RerollEconomy_Budget80_CannotSustainTwentyRollsAndLosesBuyWindows`（長局/可購買窗口）
+- 判定：
+  - Low/Mid/High 與邊界案例覆蓋可追溯。
+  - 測項皆通過，S5 可維持 `Done` 判定。
+- 下一步：
+  - 進入 S6（Meta/Contract/Curriculum）驗測收口，確認 MCP job 證據可重跑取得。
+
+## 交接記錄（2026-02-18）- S6 標記 Done，啟動 S7 round-2 監控
+
+- 目標：依你決策「S6 done，開始 S7」，更新總表並執行 S7 新一輪驗測。
+- 完成內容：
+  - `docs/PROGRESS_OVERVIEW.md`：
+    - `S6` 由 `In Progress` 更新為 `Done`（Verification=`Done`，Next Action=`Monitor`）。
+    - `S7` 維持 `In Progress`，Verification 更新為 `Done (round-2)`。
+  - `docs/systems/S7-final-endless/SYSTEM.md`：
+    - 回填 round-2 驗測證據、設計問題（0 項）、調整建議。
+- 驗測執行：
+  - Unity MCP EditMode：job `2fad6495060d4df69e36460981cb5794`（`175/175 passed`）
+  - S7 對應四測項均通過（M-Low/M-Mid/M-High/M-Edge）。
+- 風險/阻塞：
+  - 無新增阻塞；S7 目前進入監控階段，待後續監測資料決定是否可申請 `Done`。
+- 下一步：
+  - 持續監控 S7 高模型通關帶與 30-seed 長局穩定性趨勢，再提 `Done` 決策。
+
+## 交接記錄（2026-02-18）- S7 高模型通關帶監控（round-3）
+
+- 目標：依決策啟動 S7 高模型通關帶驗測，確認 M9 是否維持在目標區間（30%~60%）。
+- 驗測執行：
+  - Unity MCP EditMode：job `c74eb22c0ac841778133f41195e6415f`（`176/176 passed`）
+  - 新增監控測項：`S7_M9_ThirtyRuns_ClearRateMonitoring`
+- 關鍵結果：
+  - M9 通關率：`16/30 = 53.3%`
+  - 判定：落在目標通關帶（30%~60%）
+- 風險/阻塞：
+  - 無新增阻塞；目前未觀察到偏離趨勢。
+- 下一步：
+  - 等你決策是否將 `S7` 由 `In Progress` 更新為 `Done`。
+
+## 交接記錄（2026-02-18）- S7 決策完成（標記 Done）
+
+- 目標：依產品決策將 S7 正式收口。
+- 完成內容：
+  - 已依決策更新 `docs/PROGRESS_OVERVIEW.md`：`S7 Final/Endless` 由 `In Progress` 改為 `Done`。
+  - `Verification` 收斂為 `Done`，`Next Action` 設為 `Monitor`。
+  - `docs/systems/S7-final-endless/SYSTEM.md` 已標註 `Done`（已決策同意）。
+- 下一步：
+  - 進入 S8（Telemetry/Observability）誤報/漏報場景補齊與驗測。
+
+## 交接記錄（2026-02-18）- S8 誤報/漏報場景補齊完成（round-2）
+
+- 目標：補齊 S8 誤報（false positive）/漏報（false negative）場景，完成可決策的驗測證據。
+- 完成內容：
+  - 新增測項：
+    - `S8_FP_HighPassButLowRecall_DoesNotTriggerTooEasy`
+    - `S8_FN_BorderlinePassWithLongStall_TriggersTooHard`
+  - 調整 `LearningTelemetryManagerV2`：
+    - 高通關率但主動回憶偏低時，不觸發 `GATE_TOO_EASY`。
+    - 長時間卡關且通關率偏低時，補觸發 `GATE_TOO_HARD`。
+  - 文件回填：
+    - `docs/systems/S8-telemetry-observability/SYSTEM.md`
+    - `docs/baseline/17-test-matrix.md`
+    - `docs/PROGRESS_OVERVIEW.md`（S8 Verification 更新為 `Done (round-2)`，待你決策）
+- 驗測執行：
+  - Unity MCP EditMode：job `ecd8f23ab6d145898f2d16437a1ee508`（red，2 fail，作為 fail-first 證據）
+  - Unity MCP EditMode：job `6dcd9412cb4241dc86131720501989a4`（green，`178/178 passed`）
+- 風險/阻塞：
+  - 無新增阻塞。
+- 下一步：
+  - 等你決策是否將 `S8` 由 `In Progress` 更新為 `Done`。
+
+## 交接記錄（2026-02-18）- S8 決策完成（標記 Done）
+
+- 目標：依產品決策（採 A：維持現行規則）完成 S8 收口。
+- 完成內容：
+  - `docs/PROGRESS_OVERVIEW.md`：`S8 Telemetry/Observability` 由 `In Progress` 改為 `Done`。
+  - `docs/systems/S8-telemetry-observability/SYSTEM.md`：更新為 `Done`（已決策同意）。
+  - 維持現行告警門檻與誤報/漏報修正，不追加新規則改動。
+- 下一步：
+  - 進入 S9（NFR/Quality）建置 soak 趨勢報表並補齊驗測收口證據。
+
+## 交接記錄（2026-02-18）- S9 soak 趨勢報表完成（round-2）
+
+- 目標：完成 S9 的 soak 趨勢基線，補齊 `PROGRESS_OVERVIEW` 指定缺口。
+- 完成內容：
+  - 新增趨勢報表：`docs/verification/06-s9-soak-trend-report-2026-02-18.md`
+  - 完成 3 輪 * 3 測項（M1/M2/M3）趨勢採樣並彙整平均值。
+  - 更新 `docs/systems/S9-nfr-quality/SYSTEM.md`（驗測證據、趨勢摘要、調整建議）。
+  - 更新 `docs/PROGRESS_OVERVIEW.md`：S9 Verification -> `Done (round-2)`（待你決策）。
+- 驗測執行（MCP job）：
+  - Round 1: `485718af4ca9446ba4e27f734018dc09`, `863b0a73fb8e4534a9f1a10ffe906f9b`, `f62aa912919a49c68085550eec263550`
+  - Round 2: `a4fece45c4b542e197d2daafad7142c0`, `914e0458919847e4a18d4ada8868bde4`, `79490389c7ed40e0ae943b53607f4b74`
+  - Round 3: `a4862e1b797048ceaf543572e8982261`, `2a6f4af3c6154952b040b030e39aca1e`, `240726559a7c44a5b40fc0729e7a60cc`
+- 關鍵結果（3 輪平均）：
+  - S9-M1：0.2539s
+  - S9-M2：0.1183s
+  - S9-M3：0.5456s
+  - 全部通過，未觀察到失敗與異常漂移。
+- 下一步：
+  - 等你決策是否將 `S9` 由 `In Progress` 更新為 `Done`。
+
+## 交接記錄（2026-02-18）- S9 決策完成（標記 Done）
+
+- 目標：完成 S9 正式收口，與總表狀態一致。
+- 完成內容：
+  - `docs/PROGRESS_OVERVIEW.md`：`S9 NFR/Quality` 由 `In Progress` 更新為 `Done`。
+  - `docs/systems/S9-nfr-quality/SYSTEM.md`：驗測結論改為「已完成決策並標記 Done」。
+  - 保留本輪調整建議作為監控規範，不再新增功能性改動。
+- 驗測結果：
+  - 以 round-2 既有 3 輪 * 3 測項證據作為收口依據（全 Pass、均值無異常漂移）。
+- 風險/阻塞：
+  - 無阻塞；風險轉為監控型風險（效能漂移）。
+- 下一步：
+  - 進入例行監控：每週 3 輪 soak，若均值相對基線漂移 >10% 則觸發回歸調查。
+
+## 交接記錄（2026-02-18）- S10 UI/UX 繁中基線建立（round-1）
+
+- 目標：建立 S10，落地「非學習區繁中、學習區可英文」規範，並補齊可重跑驗測。
+- 完成內容：
+  - 新增 `docs/systems/S10-ui-ux/SYSTEM.md` 與 `docs/systems/S10-ui-ux/BASELINE_REFERENCE.md`。
+  - 調整 `PrototypeCardGameUiController`：
+    - `Seed -> 種子`
+    - `Boss -> 魔王`
+    - `Main/True Clear -> 主線/真結局通關`
+    - `LP +/-10 -> 學習點 +/-10`
+    - 局外狀態詞改為 `經驗/學習點`
+  - 調整 `PrototypeSandboxController` 菜單與按鈕文案為繁中。
+  - 新增驗測：`Assets/MnemosyneArcana/Tests/EditMode/S10UiLocalizationTests.cs`。
+  - 更新 `docs/PROGRESS_OVERVIEW.md`：新增 `S10 UI/UX` 列，狀態 `In Progress`。
+- 驗測結果：
+  - Unity MCP EditMode：`75c0159540894a0884ea2be76bef96cd`（`3/3 passed`）
+  - 首次測試因 UI `Awake` 初始化未觸發而失敗，已修正測試初始化流程後重跑全綠。
+- 風險/阻塞：
+  - 尚未抽離 UI 字串集中管理，後續改版仍有回歸風險。
+- 下一步：
+  - 回報你 round-1 結果與調整建議，由你決策是否將 `S10` 標記為 `Done`。
+
+## 交接記錄（2026-02-18）- S10 決策完成（標記 Done）
+
+- 目標：依產品決策完成 S10 正式收口。
+- 完成內容：
+  - `docs/PROGRESS_OVERVIEW.md`：`S10 UI/UX` 由 `In Progress` 更新為 `Done`。
+  - `docs/systems/S10-ui-ux/SYSTEM.md`：驗測結論改為「已完成決策並標記 Done」。
+  - 維持本輪 UI 文案調整，不追加新流程改動。
+- 驗測結果：
+  - 採用 round-1 證據 `75c0159540894a0884ea2be76bef96cd`（`3/3 passed`）作為收口依據。
+- 風險/阻塞：
+  - 無阻塞；風險為文案回歸風險（建議下一輪導入 `UIStrings` 集中管理）。
+- 下一步：
+  - 進入 S10 監控與 round-2 UI 結構/視覺優化規劃。
+
+## 交接記錄（2026-02-18）- S10 round-2 文案映射收斂完成
+
+- 目標：降低 UI 文案回歸風險，將關鍵繁中字詞集中管理並補驗測守門。
+- 完成內容：
+  - 新增 `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeUiText.cs`（共用映射：難度/盲注/流程階段/商店類型）。
+  - `PrototypeCardGameUiController`、`PrototypeSandboxController` 改用共用映射。
+  - Sandbox 英文流程 log 文案改為繁中。
+  - `S10UiLocalizationTests` 新增 `S10_M4_SharedUiTerms_AreTraditionalChinese`。
+  - `docs/baseline/17-test-matrix.md` 新增 `TC-S10-004`。
+  - `docs/systems/S10-ui-ux/SYSTEM.md` 回填 round-2 證據與調整建議。
+- 驗測結果：
+  - Unity MCP EditMode：`ba39f0135508427daf8f1ec0f4301c64`（`4/4 passed`）
+- 風險/阻塞：
+  - 無阻塞；目前仍有部分 UI 字串散落於流程 log，後續可再抽離到完整 `UIStrings` 資源表。
+- 下一步：
+  - 若你同意，進入 S10 round-3：開始 UI 結構與視覺層級優化（不改核心遊戲邏輯）。
+
+## 交接記錄（2026-02-18）- S10 舊版 UI 覆蓋問題修正
+
+- 目標：解決進 Play 仍看到舊版 Prototype UI 的問題。
+- 完成內容：
+  - `PrototypeCardGameUiController` 啟動時新增舊控制器停用流程：
+    - `PrototypeGameScreenController`
+    - `PrototypeSandboxController`
+  - 新增測試 `S10_M5_NewUiDisablesLegacyPrototypeControllers`，防止回歸。
+  - 更新 S10 文件與 test matrix（新增 `TC-S10-005`）。
+- 驗測結果：
+  - Unity MCP EditMode：`ad4c0f324b8c47b4ae08b2954fcc6a86`（`5/5 passed`）。
+- 風險/阻塞：
+  - 無阻塞。
+- 下一步：
+  - 你可直接在 Unity Play 驗證新版 UI；若仍有舊畫面，回報具體畫面特徵我可再精準排查。
+
+## 交接記錄（2026-02-18）- S10 正式可玩 UI 重新規劃
+
+- 目標：將 S10 從「開發調參 UI」轉為「玩家正式可玩 UI」路線。
+- 完成內容：
+  - `docs/PROGRESS_OVERVIEW.md`：S10 改回 `In Progress`。
+  - 重寫 `docs/systems/S10-ui-ux/SYSTEM.md`：明確納入正式版 UI 範圍與禁止項（調參/開發按鈕）。
+  - 新增 `docs/plans/2026-02-18-s10-formal-ui-replan.md`：round-3 實作步驟與驗收門檻。
+- 驗測結果：
+  - 本次為規劃重啟，尚未執行 round-3 新測項。
+- 風險/阻塞：
+  - 目前 UI 程式仍有開發按鈕，需進入 round-3 實作才能完成產品目標。
+- 下一步：
+  - 依新規劃實作 `PlayerMode` 及 UI 版面重排，再跑 S10 round-3 驗測。

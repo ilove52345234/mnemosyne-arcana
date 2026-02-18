@@ -197,5 +197,24 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(5, result.Value.Cost);
             Assert.AreEqual(1, result.Value.RemainingMoney);
         }
+
+        [Test]
+        public void PurchaseOffer_CourseAppliesLpRebate_FromBuildNode()
+        {
+            var manager = new ShopManagerV2();
+            var offer = new ShopOffer
+            {
+                OfferId = "COURSE_FAST_TRACK",
+                Category = ShopOfferCategory.Course,
+                Price = 10
+            };
+
+            var effects = new CurriculumEffectSnapshot { CourseLpRebate = 1 };
+            var result = manager.PurchaseOffer(offer, currentMoney: 10, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.IsTrue(result.Value.Success);
+            Assert.AreEqual(1, result.Value.LpRebate);
+        }
     }
 }

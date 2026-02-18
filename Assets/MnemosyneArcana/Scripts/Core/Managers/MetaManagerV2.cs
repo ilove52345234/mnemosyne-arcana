@@ -279,12 +279,15 @@ namespace MnemosyneArcana.Core.Managers
                     case "LEX_10A": snapshot.LexiconUnlockRunRequirementDiscountRate += 0.10f; break;
                     case "LEX_10B": snapshot.LexiconUnlockCoverageDiscountRate += 0.05f; break;
                     case "LEX_11": snapshot.LearningContractQualityBonusRate += 0.20f; break;
+                    case "LEX_03A": snapshot.ShortWordDropBiasRate += 0.08f; break;
+                    case "LEX_03B": snapshot.LongWordDropBiasRate += 0.12f; break;
 
                     case "BLD_04": snapshot.FirstShopRerollDiscount += 2; break;
                     case "BLD_05": snapshot.MaterialPriceDiscountRate += 0.10f; break;
                     case "BLD_08": snapshot.FirstAnteShopCoupon += 2; break;
                     case "BLD_11": snapshot.ResetNextRerollCostToFiveAfterContract = true; break;
                     case "BLD_12": snapshot.FirstLv4UpgradeMoneyRefund += 2; break;
+                    case "BLD_09": snapshot.CourseLpRebate += 1; break;
 
                     case "MAS_01": snapshot.Lv4CardFlatChipBonus += 2; break;
                     case "MAS_02": snapshot.FirstTwoLv4CardsAdditiveMultBonus += 1; break;
@@ -293,6 +296,7 @@ namespace MnemosyneArcana.Core.Managers
                     case "MAS_06B": snapshot.Lv4BalancedBuildMultiplierBonusRate += 0.08f; break;
                     case "MAS_10A": snapshot.MasteryContractLpBonusRate += 0.15f; break;
                     case "MAS_10B": snapshot.MasteryContractRequirementReduction += 1; break;
+                    case "MAS_08": snapshot.IgnoreFirstLv4WrongHandMultPenalty = true; break;
                 }
             }
 
@@ -337,6 +341,15 @@ namespace MnemosyneArcana.Core.Managers
             IReadOnlyDictionary<string, int> staleRunCounts,
             CurriculumEffectSnapshot effects)
         {
+            return BuildLexiconDropWeights(words, staleRunCounts, null, effects);
+        }
+
+        public ServiceResult<IReadOnlyList<WeightedWordCandidate>> BuildLexiconDropWeights(
+            IReadOnlyList<WordProgress> words,
+            IReadOnlyDictionary<string, int> staleRunCounts,
+            IReadOnlyDictionary<string, int> wordLengths,
+            CurriculumEffectSnapshot effects)
+        {
             if (words == null)
             {
                 return ServiceResult<IReadOnlyList<WeightedWordCandidate>>.Fail(ErrorCode.InvalidInput);
@@ -359,6 +372,18 @@ namespace MnemosyneArcana.Core.Managers
                         staleRuns >= 3)
                     {
                         weight *= (1f + effects.StaleWordWeightBonusRate);
+                    }
+
+                    if (wordLengths != null && wordLengths.TryGetValue(word.WordId, out var wordLength))
+                    {
+                        if (wordLength >= 3 && wordLength <= 5)
+                        {
+                            weight *= (1f + effects.ShortWordDropBiasRate);
+                        }
+                        else if (wordLength >= 6)
+                        {
+                            weight *= (1f + effects.LongWordDropBiasRate);
+                        }
                     }
                 }
 

@@ -163,5 +163,22 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(9, result.Value.RemainingMoney);
             Assert.AreEqual(1, result.Value.MoneySpent);
         }
+
+        [Test]
+        public void ApplyAnswer_Lv4FirstWrong_WithMas08_IgnoresHandMultPenalty()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { IgnoreFirstLv4WrongHandMultPenalty = true };
+
+            var result = manager.ApplyAnswer(
+                "word_lv4",
+                AnswerResult.Wrong,
+                new RunContext { BlindType = BlindType.Boss, CurrentLevel = LearningLevel.Lv4 },
+                effects,
+                isFirstLv4WrongThisRun: true);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(0, result.Value.HandMultDelta);
+        }
     }
 }

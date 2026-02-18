@@ -315,17 +315,20 @@ namespace MnemosyneArcana.Tests.EditMode
         {
             var result = _meta.GetCurriculumEffects(new MetaProgress
             {
-                CurriculumNodes = new[] { "FLU_01", "FLU_08", "BLD_04", "MAS_01", "MAS_03A", "LEX_09" }
+                CurriculumNodes = new[] { "FLU_01", "FLU_08", "BLD_04", "MAS_01", "MAS_03A", "LEX_09", "LEX_03A", "BLD_09", "MAS_08" }
             });
 
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(6, result.Value.UnlockedNodeCount);
+            Assert.AreEqual(9, result.Value.UnlockedNodeCount);
             Assert.AreEqual(0.2f, result.Value.Lv1Lv2TimeBonusSec, 0.0001f);
             Assert.AreEqual(1, result.Value.RetryCostDiscount);
             Assert.AreEqual(2, result.Value.FirstShopRerollDiscount);
             Assert.AreEqual(2, result.Value.Lv4CardFlatChipBonus);
             Assert.AreEqual(1, result.Value.Lv4DecayProtectionLayers);
             Assert.AreEqual(0.08f, result.Value.LexiconUnlockLpCostDiscountRate, 0.0001f);
+            Assert.AreEqual(0.08f, result.Value.ShortWordDropBiasRate, 0.0001f);
+            Assert.AreEqual(1, result.Value.CourseLpRebate);
+            Assert.IsTrue(result.Value.IgnoreFirstLv4WrongHandMultPenalty);
         }
 
         [Test]
@@ -373,6 +376,32 @@ namespace MnemosyneArcana.Tests.EditMode
             var normal = result.Value.First(x => x.WordId == "w_normal");
             Assert.AreEqual(132, boosted.Weight);
             Assert.AreEqual(100, normal.Weight);
+        }
+
+        [Test]
+        public void BuildLexiconDropWeights_LengthBias_AdjustsShortAndLongWords()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                ShortWordDropBiasRate = 0.08f,
+                LongWordDropBiasRate = 0.12f
+            };
+
+            var words = new[]
+            {
+                new WordProgress { WordId = "short_word", Pool = WordPool.Learning, Level = LearningLevel.Lv1 },
+                new WordProgress { WordId = "long_word", Pool = WordPool.Learning, Level = LearningLevel.Lv1 }
+            };
+            var lengths = new Dictionary<string, int>
+            {
+                { "short_word", 4 },
+                { "long_word", 7 }
+            };
+
+            var result = _meta.BuildLexiconDropWeights(words, null, lengths, effects);
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(108, result.Value.First(x => x.WordId == "short_word").Weight);
+            Assert.AreEqual(112, result.Value.First(x => x.WordId == "long_word").Weight);
         }
 
         [Test]

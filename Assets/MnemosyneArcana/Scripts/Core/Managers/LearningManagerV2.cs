@@ -8,10 +8,20 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext)
         {
-            return ApplyAnswer(wordId, answer, runContext, null);
+            return ApplyAnswer(wordId, answer, runContext, null, false);
         }
 
         public ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext, CurriculumEffectSnapshot effects)
+        {
+            return ApplyAnswer(wordId, answer, runContext, effects, false);
+        }
+
+        public ServiceResult<LearningResult> ApplyAnswer(
+            string wordId,
+            AnswerResult answer,
+            RunContext runContext,
+            CurriculumEffectSnapshot effects,
+            bool isFirstLv4WrongThisRun)
         {
             if (string.IsNullOrWhiteSpace(wordId) || runContext == null)
             {
@@ -52,6 +62,15 @@ namespace MnemosyneArcana.Core.Managers
 
             var chipMultiplier = isWrong ? wrongChipMultiplier : baseChipMultiplier;
             var nextLevel = isCorrect ? LevelUp(runContext.CurrentLevel) : runContext.CurrentLevel;
+            var handMultDelta = isWrong ? -1 : 0;
+            if (isWrong &&
+                effects != null &&
+                effects.IgnoreFirstLv4WrongHandMultPenalty &&
+                runContext.CurrentLevel == LearningLevel.Lv4 &&
+                isFirstLv4WrongThisRun)
+            {
+                handMultDelta = 0;
+            }
 
             var result = new LearningResult
             {
@@ -59,7 +78,7 @@ namespace MnemosyneArcana.Core.Managers
                 QuestionMode = questionMode,
                 TimeLimitSeconds = timeLimitSec,
                 ChipMultiplier = chipMultiplier,
-                HandMultDelta = isWrong ? -1 : 0,
+                HandMultDelta = handMultDelta,
                 NextLevel = nextLevel,
                 EffectiveLevel = effectiveLevel,
                 IsAutoResolved = autoResolved,

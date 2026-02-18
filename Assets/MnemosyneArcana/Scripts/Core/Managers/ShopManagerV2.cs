@@ -186,9 +186,16 @@ namespace MnemosyneArcana.Core.Managers
                     Success = false,
                     Cost = finalPrice,
                     RemainingMoney = currentMoney,
+                    LpRebate = 0,
                     OfferId = offer.OfferId,
                     Error = ErrorCode.StateConflict
                 });
+            }
+
+            var lpRebate = 0;
+            if (effects != null && offer.Category == ShopOfferCategory.Course)
+            {
+                lpRebate = System.Math.Max(0, effects.CourseLpRebate);
             }
 
             return ServiceResult<PurchaseResult>.Ok(new PurchaseResult
@@ -196,6 +203,7 @@ namespace MnemosyneArcana.Core.Managers
                 Success = true,
                 Cost = finalPrice,
                 RemainingMoney = currentMoney - finalPrice,
+                LpRebate = lpRebate,
                 OfferId = offer.OfferId,
                 Error = ErrorCode.None
             });

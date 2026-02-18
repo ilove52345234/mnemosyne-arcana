@@ -118,6 +118,7 @@ namespace MnemosyneArcana.Core.Contracts
         public bool Success { get; set; }
         public int Cost { get; set; }
         public int RemainingMoney { get; set; }
+        public int LpRebate { get; set; }
         public string OfferId { get; set; } = string.Empty;
         public ErrorCode Error { get; set; } = ErrorCode.None;
     }
@@ -195,6 +196,8 @@ namespace MnemosyneArcana.Core.Contracts
         public float LexiconUnlockRunRequirementDiscountRate { get; set; }
         public float LexiconUnlockCoverageDiscountRate { get; set; }
         public float LearningContractQualityBonusRate { get; set; }
+        public float ShortWordDropBiasRate { get; set; }
+        public float LongWordDropBiasRate { get; set; }
 
         // BLD
         public int FirstShopRerollDiscount { get; set; }
@@ -202,6 +205,7 @@ namespace MnemosyneArcana.Core.Contracts
         public int FirstAnteShopCoupon { get; set; }
         public bool ResetNextRerollCostToFiveAfterContract { get; set; }
         public int FirstLv4UpgradeMoneyRefund { get; set; }
+        public int CourseLpRebate { get; set; }
 
         // MAS
         public int Lv4CardFlatChipBonus { get; set; }
@@ -211,6 +215,7 @@ namespace MnemosyneArcana.Core.Contracts
         public float Lv4BalancedBuildMultiplierBonusRate { get; set; }
         public float MasteryContractLpBonusRate { get; set; }
         public int MasteryContractRequirementReduction { get; set; }
+        public bool IgnoreFirstLv4WrongHandMultPenalty { get; set; }
     }
 
     public sealed class LexiconUnlockRequirement

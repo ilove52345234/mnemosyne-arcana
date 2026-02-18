@@ -66,7 +66,33 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(113, result.Value.FinalScore);
         }
 
-        private static PlayedCard Card(PartOfSpeech pos, Element element, int baseChips, bool isWrong = false)
+        [Test]
+        public void EvaluateHand_WithMasteryEffects_BoostsLv4CardsAndMultipliers()
+        {
+            var manager = new ScoringManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                Lv4CardFlatChipBonus = 2,
+                FirstTwoLv4CardsAdditiveMultBonus = 1,
+                Lv4ConcentratedBuildMultiplierBonusRate = 0.08f
+            };
+
+            var result = manager.EvaluateHand(
+                new[]
+                {
+                    Card(PartOfSpeech.N, Element.Life, 10, level: LearningLevel.Lv4),
+                    Card(PartOfSpeech.V, Element.Life, 10, level: LearningLevel.Lv4),
+                    Card(PartOfSpeech.A, Element.Life, 10, level: LearningLevel.Lv4),
+                    Card(PartOfSpeech.D, Element.Life, 10, level: LearningLevel.Lv4)
+                },
+                new RunModifiers(), effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(48, result.Value.CardChipsTotal);
+            Assert.AreEqual(448, result.Value.FinalScore);
+        }
+
+        private static PlayedCard Card(PartOfSpeech pos, Element element, int baseChips, bool isWrong = false, LearningLevel level = LearningLevel.Lv1)
         {
             return new PlayedCard
             {
@@ -75,7 +101,7 @@ namespace MnemosyneArcana.Tests.EditMode
                 Element = element,
                 BaseChips = baseChips,
                 IsAnswerWrong = isWrong,
-                LearningLevel = LearningLevel.Lv1
+                LearningLevel = level
             };
         }
     }

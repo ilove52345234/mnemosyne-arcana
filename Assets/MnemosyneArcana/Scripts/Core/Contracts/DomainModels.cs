@@ -176,6 +176,43 @@ namespace MnemosyneArcana.Core.Contracts
         public IReadOnlyList<string> UnlockedNodes { get; set; } = Array.Empty<string>();
     }
 
+    public sealed class CurriculumEffectSnapshot
+    {
+        public int UnlockedNodeCount { get; set; }
+
+        // FLU
+        public float Lv1Lv2TimeBonusSec { get; set; }
+        public float WrongPenaltyReductionRate { get; set; }
+        public float ListeningTimeBonusSec { get; set; }
+        public int RetryCostDiscount { get; set; }
+        public float BossTimeBonusRate { get; set; }
+        public float LearningContractLpBonusRate { get; set; }
+
+        // LEX
+        public float DecayedPoolWeightBonusRate { get; set; }
+        public float StaleWordWeightBonusRate { get; set; }
+        public float LexiconUnlockLpCostDiscountRate { get; set; }
+        public float LexiconUnlockRunRequirementDiscountRate { get; set; }
+        public float LexiconUnlockCoverageDiscountRate { get; set; }
+        public float LearningContractQualityBonusRate { get; set; }
+
+        // BLD
+        public int FirstShopRerollDiscount { get; set; }
+        public float MaterialPriceDiscountRate { get; set; }
+        public int FirstAnteShopCoupon { get; set; }
+        public bool ResetNextRerollCostToFiveAfterContract { get; set; }
+        public int FirstLv4UpgradeMoneyRefund { get; set; }
+
+        // MAS
+        public int Lv4CardFlatChipBonus { get; set; }
+        public int FirstTwoLv4CardsAdditiveMultBonus { get; set; }
+        public int Lv4DecayProtectionLayers { get; set; }
+        public float Lv4ConcentratedBuildMultiplierBonusRate { get; set; }
+        public float Lv4BalancedBuildMultiplierBonusRate { get; set; }
+        public float MasteryContractLpBonusRate { get; set; }
+        public int MasteryContractRequirementReduction { get; set; }
+    }
+
     public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }
 
     public sealed class WordProgress

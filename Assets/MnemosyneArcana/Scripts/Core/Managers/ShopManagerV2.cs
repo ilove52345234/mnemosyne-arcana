@@ -158,6 +158,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<PurchaseResult> PurchaseOffer(ShopOffer offer, int currentMoney)
         {
+            return PurchaseOffer(offer, currentMoney, null);
+        }
+
+        public ServiceResult<PurchaseResult> PurchaseOffer(ShopOffer offer, int currentMoney, CurriculumEffectSnapshot effects)
+        {
             if (offer == null || string.IsNullOrWhiteSpace(offer.OfferId))
             {
                 return ServiceResult<PurchaseResult>.Fail(ErrorCode.InvalidInput);
@@ -168,12 +173,18 @@ namespace MnemosyneArcana.Core.Managers
                 return ServiceResult<PurchaseResult>.Fail(ErrorCode.InvalidInput);
             }
 
-            if (currentMoney < offer.Price)
+            var finalPrice = offer.Price;
+            if (effects != null && offer.Category == ShopOfferCategory.Material)
+            {
+                finalPrice = (int)System.Math.Max(1, System.Math.Floor(offer.Price * (1f - effects.MaterialPriceDiscountRate)));
+            }
+
+            if (currentMoney < finalPrice)
             {
                 return ServiceResult<PurchaseResult>.Ok(new PurchaseResult
                 {
                     Success = false,
-                    Cost = offer.Price,
+                    Cost = finalPrice,
                     RemainingMoney = currentMoney,
                     OfferId = offer.OfferId,
                     Error = ErrorCode.StateConflict
@@ -183,8 +194,8 @@ namespace MnemosyneArcana.Core.Managers
             return ServiceResult<PurchaseResult>.Ok(new PurchaseResult
             {
                 Success = true,
-                Cost = offer.Price,
-                RemainingMoney = currentMoney - offer.Price,
+                Cost = finalPrice,
+                RemainingMoney = currentMoney - finalPrice,
                 OfferId = offer.OfferId,
                 Error = ErrorCode.None
             });
@@ -192,12 +203,28 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<int> GetRerollCost(int rerollCount)
         {
+            return GetRerollCost(rerollCount, null, false, false);
+        }
+
+        public ServiceResult<int> GetRerollCost(int rerollCount, CurriculumEffectSnapshot effects, bool isFirstRerollInShop, bool contractJustCompleted)
+        {
             if (rerollCount < 0)
             {
                 return ServiceResult<int>.Fail(ErrorCode.InvalidInput);
             }
 
-            return ServiceResult<int>.Ok(RerollBaseCost + rerollCount * RerollCostStep);
+            if (effects != null && contractJustCompleted && effects.ResetNextRerollCostToFiveAfterContract)
+            {
+                return ServiceResult<int>.Ok(5);
+            }
+
+            var cost = RerollBaseCost + rerollCount * RerollCostStep;
+            if (effects != null && isFirstRerollInShop)
+            {
+                cost = System.Math.Max(1, cost - effects.FirstShopRerollDiscount);
+            }
+
+            return ServiceResult<int>.Ok(cost);
         }
     }
 }

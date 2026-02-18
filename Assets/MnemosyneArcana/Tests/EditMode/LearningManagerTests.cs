@@ -128,5 +128,40 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(first.Value.FinalAnswerResult, second.Value.FinalAnswerResult);
             Assert.AreEqual(first.Value.OverrideChipMultiplier, second.Value.OverrideChipMultiplier);
         }
+
+        [Test]
+        public void ApplyAnswer_WithFluEffects_AdjustsTimeAndWrongPenalty()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                Lv1Lv2TimeBonusSec = 0.2f,
+                ListeningTimeBonusSec = 0.2f,
+                BossTimeBonusRate = 0.1f,
+                WrongPenaltyReductionRate = 0.1f
+            };
+
+            var result = manager.ApplyAnswer("word_005", AnswerResult.Wrong, new RunContext
+            {
+                BlindType = BlindType.Boss,
+                CurrentLevel = LearningLevel.Lv1
+            }, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(3.19f, result.Value.TimeLimitSeconds, 0.001f);
+            Assert.AreEqual(0.45f, result.Value.ChipMultiplier, 0.0001f);
+        }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_RetryCostDiscountedByCurriculum()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { RetryCostDiscount = 1 };
+            var result = manager.ResolveWrongAnswerChoice(WrongAnswerChoice.RetryWithCost, 10, retryUsed: false, seed: 1, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(9, result.Value.RemainingMoney);
+            Assert.AreEqual(1, result.Value.MoneySpent);
+        }
     }
 }

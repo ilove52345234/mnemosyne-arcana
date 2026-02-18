@@ -146,6 +146,20 @@ namespace MnemosyneArcana.Tests.EditMode
         }
 
         [Test]
+        public void SettleContractWithCap_LearningBonusFromCurriculum_AppliesBeforeCap()
+        {
+            var contract = new Contract { ContractId = "CT_LRN_001", ContractType = "Learning", LpReward = 10, Tier = 2 };
+            var telemetry = new RunTelemetry { ContractCompleted = true };
+            var effects = new CurriculumEffectSnapshot { LearningContractLpBonusRate = 0.10f };
+
+            var result = _meta.SettleContractWithCap(contract, telemetry, lpBase: 30, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(11, result.Value.LpBonusRaw);
+            Assert.AreEqual(11, result.Value.LpBonusCapped);
+        }
+
+        [Test]
         public void SettleContractWithCap_ZeroBase_CapIsZero()
         {
             var contract = new Contract { ContractId = "CT_03", LpReward = 10, Tier = 2 };
@@ -294,6 +308,24 @@ namespace MnemosyneArcana.Tests.EditMode
                     Assert.AreEqual(ErrorCode.StateConflict, mutexConflict.Error);
                 }
             }
+        }
+
+        [Test]
+        public void GetCurriculumEffects_MapsRepresentativeNodesToRuntimeModifiers()
+        {
+            var result = _meta.GetCurriculumEffects(new MetaProgress
+            {
+                CurriculumNodes = new[] { "FLU_01", "FLU_08", "BLD_04", "MAS_01", "MAS_03A", "LEX_09" }
+            });
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(6, result.Value.UnlockedNodeCount);
+            Assert.AreEqual(0.2f, result.Value.Lv1Lv2TimeBonusSec, 0.0001f);
+            Assert.AreEqual(1, result.Value.RetryCostDiscount);
+            Assert.AreEqual(2, result.Value.FirstShopRerollDiscount);
+            Assert.AreEqual(2, result.Value.Lv4CardFlatChipBonus);
+            Assert.AreEqual(1, result.Value.Lv4DecayProtectionLayers);
+            Assert.AreEqual(0.08f, result.Value.LexiconUnlockLpCostDiscountRate, 0.0001f);
         }
 
         private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()

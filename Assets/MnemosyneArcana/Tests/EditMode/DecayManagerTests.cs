@@ -207,5 +207,25 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(LearningLevel.Lv2, result.NewLevel);
             Assert.AreEqual(WordPool.Decayed, result.NewPool);
         }
+
+        [Test]
+        public void Lv4_WithMasteryDecayProtection_DoesNotDecay()
+        {
+            var word = new WordProgress
+            {
+                WordId = "keeper",
+                Level = LearningLevel.Lv4,
+                Pool = WordPool.Mastered,
+                LastPracticed = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)
+            };
+            var now = new DateTime(2026, 2, 20, 0, 0, 0, DateTimeKind.Utc);
+            var effects = new CurriculumEffectSnapshot { Lv4DecayProtectionLayers = 1 };
+
+            var result = _decay.EvaluateDecay(word, now, effects);
+
+            Assert.IsFalse(result.Decayed);
+            Assert.AreEqual(LearningLevel.Lv4, result.NewLevel);
+            Assert.AreEqual(WordPool.Mastered, result.NewPool);
+        }
     }
 }

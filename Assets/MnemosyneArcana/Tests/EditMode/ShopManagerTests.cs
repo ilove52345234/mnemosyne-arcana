@@ -158,5 +158,44 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.GreaterOrEqual(performedRerolls, 8);
             Assert.Less(canBuyAnyOfferRounds, performedRerolls);
         }
+
+        [Test]
+        public void GetRerollCost_WithBuildEffects_AppliesFirstDiscountAndContractReset()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                FirstShopRerollDiscount = 2,
+                ResetNextRerollCostToFiveAfterContract = true
+            };
+
+            var first = manager.GetRerollCost(0, effects, isFirstRerollInShop: true, contractJustCompleted: false);
+            var reset = manager.GetRerollCost(10, effects, isFirstRerollInShop: false, contractJustCompleted: true);
+
+            Assert.IsTrue(first.IsSuccess);
+            Assert.AreEqual(1, first.Value);
+            Assert.IsTrue(reset.IsSuccess);
+            Assert.AreEqual(5, reset.Value);
+        }
+
+        [Test]
+        public void PurchaseOffer_MaterialDiscount_FromBuildNode()
+        {
+            var manager = new ShopManagerV2();
+            var offer = new ShopOffer
+            {
+                OfferId = "MAT_TOPIC_READING",
+                Category = ShopOfferCategory.Material,
+                Price = 6
+            };
+
+            var effects = new CurriculumEffectSnapshot { MaterialPriceDiscountRate = 0.10f };
+            var result = manager.PurchaseOffer(offer, currentMoney: 6, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.IsTrue(result.Value.Success);
+            Assert.AreEqual(5, result.Value.Cost);
+            Assert.AreEqual(1, result.Value.RemainingMoney);
+        }
     }
 }

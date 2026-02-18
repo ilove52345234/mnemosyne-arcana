@@ -24,6 +24,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<ScoreBreakdown> EvaluateHand(IReadOnlyList<PlayedCard> cards, RunModifiers modifiers)
         {
+            return EvaluateHand(cards, modifiers, null);
+        }
+
+        public ServiceResult<ScoreBreakdown> EvaluateHand(IReadOnlyList<PlayedCard> cards, RunModifiers modifiers, CurriculumEffectSnapshot effects)
+        {
             if (cards == null || cards.Count < 1 || cards.Count > 5)
             {
                 return ServiceResult<ScoreBreakdown>.Fail(ErrorCode.InvalidInput);
@@ -35,13 +40,32 @@ namespace MnemosyneArcana.Core.Managers
             var upgradedChips = baseChips + chipsGrowth * upgradeLevel;
             var upgradedMult = baseMult + multGrowth * upgradeLevel;
             var wrongAnswers = cards.Count(c => c.IsAnswerWrong);
-            var cardChipsTotal = cards.Sum(ComputeCardChips);
+            var cardChipsTotal = cards.Sum(c => ComputeCardChips(c, effects));
 
             var additiveMult = modifiers?.AdditiveMultTotal ?? 0f;
             var externalHandMultDelta = modifiers?.HandMultDelta ?? 0;
             var factors = (modifiers?.MultiplicativeFactors ?? Array.Empty<float>()).ToArray();
             var effectiveHandMult = Math.Max(1, upgradedMult + externalHandMultDelta - wrongAnswers);
             var computedMult = Math.Max(1f, effectiveHandMult + additiveMult);
+            if (effects != null)
+            {
+                var lv4Count = cards.Count(c => c.LearningLevel == LearningLevel.Lv4);
+                if (lv4Count > 0)
+                {
+                    computedMult += Math.Min(2, lv4Count) * effects.FirstTwoLv4CardsAdditiveMultBonus;
+                }
+
+                if (lv4Count >= 4)
+                {
+                    factors = factors.Concat(new[] { 1f + effects.Lv4ConcentratedBuildMultiplierBonusRate }).ToArray();
+                }
+
+                var lv4PosKinds = cards.Where(c => c.LearningLevel == LearningLevel.Lv4).Select(c => c.PartOfSpeech).Distinct().Count();
+                if (lv4PosKinds >= 4)
+                {
+                    factors = factors.Concat(new[] { 1f + effects.Lv4BalancedBuildMultiplierBonusRate }).ToArray();
+                }
+            }
 
             var rawScore = (upgradedChips + cardChipsTotal) * computedMult;
             foreach (var factor in factors)
@@ -123,7 +147,7 @@ namespace MnemosyneArcana.Core.Managers
             };
         }
 
-        private static int ComputeCardChips(PlayedCard card)
+        private static int ComputeCardChips(PlayedCard card, CurriculumEffectSnapshot effects)
         {
             var chipMultiplier = Math.Max(0f, card.ChipMultiplier);
             if (card.IsAnswerWrong)
@@ -131,7 +155,13 @@ namespace MnemosyneArcana.Core.Managers
                 chipMultiplier = Math.Min(chipMultiplier, 0.5f);
             }
 
-            return (int)Math.Floor(Math.Max(0, card.BaseChips) * chipMultiplier);
+            var baseChips = Math.Max(0, card.BaseChips);
+            if (effects != null && card.LearningLevel == LearningLevel.Lv4)
+            {
+                baseChips += effects.Lv4CardFlatChipBonus;
+            }
+
+            return (int)Math.Floor(baseChips * chipMultiplier);
         }
     }
 }

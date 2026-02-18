@@ -51,7 +51,7 @@
 | S3 Learning/Boss | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S4 Gate/Recovery/Demotion | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S5 Shop/Economy | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
-| S6 Meta/Contract/Curriculum | In Progress | Done | Done | Done | Done（待你決策） | 2026-02-18 | 等待你確認是否標記 Done |
+| S6 Meta/Contract/Curriculum | In Progress | Done | Done | In Progress | In Progress | 2026-02-18 | S6-Effect 第二批：詞庫/滴詞/契約需求效果入場 |
 | S7 Final/Endless | In Progress | Done | Done | Done | Done (round-1) | 2026-02-18 | 監控高模型通關帶 |
 | S8 Telemetry/Observability | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補誤報/漏報場景 |
 | S9 NFR/Quality | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 建 soak 趨勢報表 |

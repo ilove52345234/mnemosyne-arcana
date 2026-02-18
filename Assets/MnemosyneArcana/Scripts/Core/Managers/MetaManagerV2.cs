@@ -150,6 +150,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<ContractSettlement> SettleContractWithCap(Contract contract, RunTelemetry telemetry, int lpBase)
         {
+            return SettleContractWithCap(contract, telemetry, lpBase, null);
+        }
+
+        public ServiceResult<ContractSettlement> SettleContractWithCap(Contract contract, RunTelemetry telemetry, int lpBase, CurriculumEffectSnapshot effects)
+        {
             if (contract == null || telemetry == null)
             {
                 return ServiceResult<ContractSettlement>.Fail(ErrorCode.InvalidInput);
@@ -157,6 +162,18 @@ namespace MnemosyneArcana.Core.Managers
 
             var completed = telemetry.ContractCompleted;
             var rawLp = completed ? contract.LpReward : 0;
+            if (completed && effects != null)
+            {
+                if (string.Equals(contract.ContractType, "Learning", StringComparison.OrdinalIgnoreCase))
+                {
+                    rawLp = (int)Math.Floor(rawLp * (1f + effects.LearningContractLpBonusRate));
+                }
+
+                if (string.Equals(contract.ContractType, "Mastery", StringComparison.OrdinalIgnoreCase))
+                {
+                    rawLp = (int)Math.Floor(rawLp * (1f + effects.MasteryContractLpBonusRate));
+                }
+            }
 
             var capLimit = lpBase > 0 ? (int)(lpBase * 45L / 55) : 0;
             var cappedLp = Math.Min(rawLp, capLimit);
@@ -221,6 +238,60 @@ namespace MnemosyneArcana.Core.Managers
                 Error = ErrorCode.None,
                 UnlockedNodes = unlocked.OrderBy(x => x).ToArray()
             });
+        }
+
+        public ServiceResult<CurriculumEffectSnapshot> GetCurriculumEffects(MetaProgress current)
+        {
+            if (current == null)
+            {
+                return ServiceResult<CurriculumEffectSnapshot>.Fail(ErrorCode.InvalidInput);
+            }
+
+            var snapshot = new CurriculumEffectSnapshot();
+            var unlocked = current.CurriculumNodes ?? Array.Empty<string>();
+
+            foreach (var node in unlocked)
+            {
+                if (!CurriculumNodeDefs.ContainsKey(node))
+                {
+                    continue;
+                }
+
+                snapshot.UnlockedNodeCount++;
+                switch (node)
+                {
+                    case "FLU_01": snapshot.Lv1Lv2TimeBonusSec += 0.2f; break;
+                    case "FLU_02": snapshot.WrongPenaltyReductionRate += 0.10f; break;
+                    case "FLU_06A": snapshot.ListeningTimeBonusSec += 0.2f; break;
+                    case "FLU_08": snapshot.RetryCostDiscount += 1; break;
+                    case "FLU_10B": snapshot.WrongPenaltyReductionRate += 0.15f; break;
+                    case "FLU_10A": snapshot.BossTimeBonusRate += 0.10f; break;
+                    case "FLU_11": snapshot.LearningContractLpBonusRate += 0.10f; break;
+
+                    case "LEX_01": snapshot.DecayedPoolWeightBonusRate += 0.10f; break;
+                    case "LEX_02": snapshot.StaleWordWeightBonusRate += 0.20f; break;
+                    case "LEX_09": snapshot.LexiconUnlockLpCostDiscountRate += 0.08f; break;
+                    case "LEX_10A": snapshot.LexiconUnlockRunRequirementDiscountRate += 0.10f; break;
+                    case "LEX_10B": snapshot.LexiconUnlockCoverageDiscountRate += 0.05f; break;
+                    case "LEX_11": snapshot.LearningContractQualityBonusRate += 0.20f; break;
+
+                    case "BLD_04": snapshot.FirstShopRerollDiscount += 2; break;
+                    case "BLD_05": snapshot.MaterialPriceDiscountRate += 0.10f; break;
+                    case "BLD_08": snapshot.FirstAnteShopCoupon += 2; break;
+                    case "BLD_11": snapshot.ResetNextRerollCostToFiveAfterContract = true; break;
+                    case "BLD_12": snapshot.FirstLv4UpgradeMoneyRefund += 2; break;
+
+                    case "MAS_01": snapshot.Lv4CardFlatChipBonus += 2; break;
+                    case "MAS_02": snapshot.FirstTwoLv4CardsAdditiveMultBonus += 1; break;
+                    case "MAS_03A": snapshot.Lv4DecayProtectionLayers += 1; break;
+                    case "MAS_06A": snapshot.Lv4ConcentratedBuildMultiplierBonusRate += 0.08f; break;
+                    case "MAS_06B": snapshot.Lv4BalancedBuildMultiplierBonusRate += 0.08f; break;
+                    case "MAS_10A": snapshot.MasteryContractLpBonusRate += 0.15f; break;
+                    case "MAS_10B": snapshot.MasteryContractRequirementReduction += 1; break;
+                }
+            }
+
+            return ServiceResult<CurriculumEffectSnapshot>.Ok(snapshot);
         }
     }
 }

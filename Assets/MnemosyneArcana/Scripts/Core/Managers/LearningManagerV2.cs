@@ -8,6 +8,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext)
         {
+            return ApplyAnswer(wordId, answer, runContext, null);
+        }
+
+        public ServiceResult<LearningResult> ApplyAnswer(string wordId, AnswerResult answer, RunContext runContext, CurriculumEffectSnapshot effects)
+        {
             if (string.IsNullOrWhiteSpace(wordId) || runContext == null)
             {
                 return ServiceResult<LearningResult>.Fail(ErrorCode.InvalidInput);
@@ -19,8 +24,33 @@ namespace MnemosyneArcana.Core.Managers
             var isWrong = answer == AnswerResult.Wrong || answer == AnswerResult.GambleFailed;
 
             var effectiveLevel = GetEffectiveLevel(runContext.CurrentLevel, runContext.BlindType);
-            var (questionMode, timeLimitSec, baseChipMultiplier, autoResolved) = GetBehaviorByLevel(effectiveLevel);
-            var chipMultiplier = isWrong ? 0.5f : baseChipMultiplier;
+            var (questionMode, baseTimeLimitSec, baseChipMultiplier, autoResolved) = GetBehaviorByLevel(effectiveLevel);
+            var timeLimitSec = baseTimeLimitSec;
+            if (effects != null)
+            {
+                if (effectiveLevel == LearningLevel.Lv1 || effectiveLevel == LearningLevel.Lv2)
+                {
+                    timeLimitSec += effects.Lv1Lv2TimeBonusSec;
+                }
+
+                if (effectiveLevel == LearningLevel.Lv2)
+                {
+                    timeLimitSec += effects.ListeningTimeBonusSec;
+                }
+
+                if (runContext.BlindType == BlindType.Boss)
+                {
+                    timeLimitSec *= (1f + effects.BossTimeBonusRate);
+                }
+            }
+
+            var wrongChipMultiplier = 0.5f;
+            if (effects != null)
+            {
+                wrongChipMultiplier = System.Math.Max(0f, wrongChipMultiplier * (1f - effects.WrongPenaltyReductionRate));
+            }
+
+            var chipMultiplier = isWrong ? wrongChipMultiplier : baseChipMultiplier;
             var nextLevel = isCorrect ? LevelUp(runContext.CurrentLevel) : runContext.CurrentLevel;
 
             var result = new LearningResult
@@ -41,10 +71,17 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed)
         {
+            return ResolveWrongAnswerChoice(choice, currentMoney, retryUsed, seed, null);
+        }
+
+        public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed, CurriculumEffectSnapshot effects)
+        {
             if (currentMoney < 0)
             {
                 return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.InvalidInput);
             }
+
+            var retryCost = System.Math.Max(1, RetryCost - (effects?.RetryCostDiscount ?? 0));
 
             switch (choice)
             {
@@ -61,7 +98,7 @@ namespace MnemosyneArcana.Core.Managers
                     });
 
                 case WrongAnswerChoice.RetryWithCost:
-                    if (retryUsed || currentMoney < RetryCost)
+                    if (retryUsed || currentMoney < retryCost)
                     {
                         return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.StateConflict);
                     }
@@ -71,8 +108,8 @@ namespace MnemosyneArcana.Core.Managers
                         Choice = choice,
                         Accepted = true,
                         RetryConsumed = true,
-                        MoneySpent = RetryCost,
-                        RemainingMoney = currentMoney - RetryCost,
+                        MoneySpent = retryCost,
+                        RemainingMoney = currentMoney - retryCost,
                         FinalAnswerResult = AnswerResult.RetryAccepted,
                         OverrideChipMultiplier = 1.0f
                     });

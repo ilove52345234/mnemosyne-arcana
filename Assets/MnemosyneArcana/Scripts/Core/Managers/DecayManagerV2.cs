@@ -42,7 +42,25 @@ namespace MnemosyneArcana.Core.Managers
 
         public DecayResult EvaluateDecay(WordProgress word, DateTime now)
         {
+            return EvaluateDecay(word, now, null);
+        }
+
+        public DecayResult EvaluateDecay(WordProgress word, DateTime now, CurriculumEffectSnapshot effects)
+        {
             if (word == null) throw new ArgumentNullException(nameof(word));
+
+            if (effects != null && word.Level == LearningLevel.Lv4 && effects.Lv4DecayProtectionLayers > 0)
+            {
+                return new DecayResult
+                {
+                    WordId = word.WordId,
+                    Decayed = false,
+                    PreviousLevel = word.Level,
+                    NewLevel = word.Level,
+                    PreviousPool = word.Pool,
+                    NewPool = word.Pool
+                };
+            }
 
             var decayDays = GetDecayDays(word.Level);
 
@@ -88,12 +106,17 @@ namespace MnemosyneArcana.Core.Managers
 
         public IReadOnlyList<DecayResult> EvaluateBatch(IReadOnlyList<WordProgress> words, DateTime now)
         {
+            return EvaluateBatch(words, now, null);
+        }
+
+        public IReadOnlyList<DecayResult> EvaluateBatch(IReadOnlyList<WordProgress> words, DateTime now, CurriculumEffectSnapshot effects)
+        {
             if (words == null) throw new ArgumentNullException(nameof(words));
 
             var results = new List<DecayResult>(words.Count);
             for (var i = 0; i < words.Count; i++)
             {
-                results.Add(EvaluateDecay(words[i], now));
+                results.Add(EvaluateDecay(words[i], now, effects));
             }
             return results;
         }

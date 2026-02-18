@@ -906,3 +906,16 @@
   - 更新 `README.md`，改為以新入口為主。
 - 下一步：
   - 逐系統驗測完成後，只更新對應 `SYSTEM.md` 與 `PROGRESS_OVERVIEW.md`。
+
+## 交接記錄（2026-02-18）- 文件收束（保守模式）
+
+- 目標：在不脫離原規劃前提下，收束重複維護。
+- 完成內容：
+  - 修正 `docs/PROGRESS_OVERVIEW.md` 的量化門檻格式（移除字面 `\\n`）。
+  - 將 `docs/IMPLEMENTATION_STATUS.md` 定位為歷史快照；即時狀態改由 `docs/PROGRESS_OVERVIEW.md` 單一維護。
+  - 將 `docs/PROJECT_EXECUTION_PLAN.md` 定位為排程基準，並改為引用 `docs/PROGRESS_OVERVIEW.md` 作為即時狀態來源。
+  - 明確區分驗測文件角色：
+    - `docs/verification/00-master-verification-plan.md`：基線規範
+    - `docs/verification/05-game-system-reverification-plan-2026-02-18.md`：本輪執行計畫
+- 下一步：
+  - 按 `05` 計畫逐系統執行實測，完成後只回填 `SYSTEM.md` + `PROGRESS_OVERVIEW.md` + 驗測報告。

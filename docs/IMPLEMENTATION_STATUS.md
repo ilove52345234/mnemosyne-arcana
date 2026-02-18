@@ -1,6 +1,7 @@
 # 實作進度看板
 
-> 使用方式：每次任務狀態改變就更新本檔。
+> 角色定位：里程碑與任務「歷史快照」。
+> 即時狀態單一來源：`docs/PROGRESS_OVERVIEW.md`。
 > 狀態欄位限定：`Todo` / `In Progress` / `Done` / `Blocked`
 
 ---

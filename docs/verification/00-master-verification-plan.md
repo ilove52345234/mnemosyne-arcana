@@ -1,5 +1,8 @@
 # 00 - Master Verification Plan
 
+> 文件定位：長期基線規範（Baseline）
+> 本輪執行計畫：`docs/verification/05-game-system-reverification-plan-2026-02-18.md`
+
 ## 1. 目標
 - 建立單一驗測標準，覆蓋所有設計文件中的主系統。
 - 每個主系統至少使用 3 種模型驗證，避免單一玩家假設造成偏差。

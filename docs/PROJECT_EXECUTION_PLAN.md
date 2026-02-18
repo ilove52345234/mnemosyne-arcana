@@ -1,7 +1,8 @@
 # 專案執行總排程（PM）
 
 > 專案：Mnemosyne Arcana
-> 更新方式：每次完成任務後，必須同步更新本檔、`docs/IMPLEMENTATION_STATUS.md`、`docs/SESSION_NOTES.md`
+> 角色定位：排程與里程碑基準（非即時進度表）
+> 即時狀態單一來源：`docs/PROGRESS_OVERVIEW.md`
 
 ---
 
@@ -47,11 +48,11 @@
 ## 二、工作流與更新規則
 
 1. 每個任務開始前：
-- 在 `docs/IMPLEMENTATION_STATUS.md` 建立任務列（狀態：`In Progress`）
+- 在 `docs/PROGRESS_OVERVIEW.md` 更新對應系統/工作流狀態（`In Progress`）
 
 2. 每次工作結束後：
 - 在 `docs/SESSION_NOTES.md` 新增一筆「交接記錄」（日期、內容、結果、下一步）
-- 更新 `docs/IMPLEMENTATION_STATUS.md` 對應任務狀態（`Done/Blocked`）
+- 更新 `docs/PROGRESS_OVERVIEW.md` 對應狀態（`Done/Blocked`）與下一步
 - 若規格有改動，同步更新對應文件（01~18）
 
 3. 任何破壞性改動：

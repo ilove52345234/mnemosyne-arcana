@@ -2,6 +2,8 @@
 
 > Date: 2026-02-18  
 > Scope: 全遊戲系統重新驗測（以實際行為為主，不以 code-level 通過視為完成）
+> 文件定位：本輪執行計畫（Active）
+> 基線規範：`docs/verification/00-master-verification-plan.md`
 
 ## 1. 目標
 

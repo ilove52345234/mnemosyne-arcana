@@ -16,15 +16,27 @@
 - `Design = Done`：有明確目標、範圍、非目標與風險（至少 1 條）。
 - `Spec = Done`：規則可執行，至少包含輸入/輸出、邊界條件、失敗處理。
 - `Implementation = Done`：功能可重現；至少 1 條實作紀錄與 1 條變更紀錄。
-- `Verification = Done`：\n  1) 至少 `M-Low/M-Mid/M-High` 三模型完成。\n  2) 核心平衡系統（S4/S7/S9）需加 `M-Edge` 或 `>=30 seeds` 批次。\n  3) 測試通過率 `100%`（該系統對應測項）。\n  4) 至少 1 個失敗/邊界案例被驗證。\n  5) 具可追溯證據（job id 或等價執行紀錄）。
+- `Verification = Done`：
+  1) 至少 `M-Low/M-Mid/M-High` 三模型完成。
+  2) 核心平衡系統（S4/S7/S9）需加 `M-Edge` 或 `>=30 seeds` 批次。
+  3) 測試通過率 `100%`（該系統對應測項）。
+  4) 至少 1 個失敗/邊界案例被驗證。
+  5) 具可追溯證據（job id 或等價執行紀錄）。
 
 ### B. 系統級門檻
 
-- `System Status = Done` 必須同時滿足：\n  1) `Design/Spec/Implementation/Verification` 四欄全部為 `Done`。\n  2) `SYSTEM.md` 第 4 節含「結果 + 參數建議」。\n  3) `SYSTEM.md` 第 5 節有最近一次更新日期。\n  4) 本表 `Last Update` 為最近更新日期，`Next Action` 可留空或標記 `Monitor`。
+- `System Status = Done` 必須同時滿足：
+  1) `Design/Spec/Implementation/Verification` 四欄全部為 `Done`。
+  2) `SYSTEM.md` 第 4 節含「結果 + 參數建議」。
+  3) `SYSTEM.md` 第 5 節有最近一次更新日期。
+  4) 本表 `Last Update` 為最近更新日期，`Next Action` 可留空或標記 `Monitor`。
 
 ### C. Blocked 管理門檻
 
-- `Status = Blocked` 必須加註：\n  1) 阻塞原因\n  2) 解除條件\n  3) 預計檢查時間（日期）
+- `Status = Blocked` 必須加註：
+  1) 阻塞原因
+  2) 解除條件
+  3) 預計檢查時間（日期）
 
 | System | Status | Design | Spec | Implementation | Verification | Last Update | Next Action |
 |---|---|---|---|---|---|---|---|

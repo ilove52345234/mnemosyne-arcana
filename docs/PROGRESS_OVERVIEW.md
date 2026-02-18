@@ -40,9 +40,9 @@
 
 | System | Status | Design | Spec | Implementation | Verification | Last Update | Next Action |
 |---|---|---|---|---|---|---|---|
-| S1 Run/Blind | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補重開與失敗分支行為批次 |
-| S2 Scoring/HandType | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補同族/高倍率實戰分佈 |
-| S3 Learning/Boss | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補連錯保底長局驗測 |
+| S1 Run/Blind | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
+| S2 Scoring/HandType | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
+| S3 Learning/Boss | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S4 Gate/Recovery/Demotion | In Progress | Done | Done | Done | Done (round-1) | 2026-02-18 | 持續 30-seed 週期回歸 |
 | S5 Shop/Economy | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補重擲經濟壓測 |
 | S6 Meta/Contract/Curriculum | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補全樹行為驗測 |

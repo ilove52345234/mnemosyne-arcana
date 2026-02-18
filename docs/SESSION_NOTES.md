@@ -932,3 +932,53 @@
   - 系統資料夾提供分配視圖，不複製原文，避免多版本漂移。
 - 下一步：
   - 若需要，可再進一步把每個 `SYSTEM.md` 的「規格文件」段落收斂為 `BASELINE_REFERENCE.md` 的精簡清單。
+
+## 交接記錄（2026-02-18）- S1 驗測完成（達成 Done）
+
+- 目標：依「S1 done 才能進下一系統」規則，完成 S1 行為驗測並收斂為 Done。
+- 驗測執行：
+  - RunFlowTests：job `e02540ea27314d9cbdc88c3c8cda3298`（9/9）
+  - AlphaRegressionTests：job `3f9ccd60230741b3ab249f25d5dd300a`（2/2）
+  - PlayableLoopUseCaseTests：job `b7170cb97e764ea3b21e9d23f38da8b5`（2/2）
+- 判定：
+  - Low/Mid/High 覆蓋完成
+  - Failure/Boundary case 已覆蓋
+  - 測項 100% pass，證據可追溯
+- 文件回填：
+  - `docs/systems/S1-run-blind/SYSTEM.md` 第 4/5 節已更新
+  - `docs/PROGRESS_OVERVIEW.md`：S1 狀態改為 `Done`
+- 下一步：
+  - 進入 S2（Scoring/HandType）驗測。
+
+## 交接記錄（2026-02-18）- S2 驗測完成（達成 Done）
+
+- 目標：在 S1 完成後，收斂 S2（Scoring/HandType）到 Done。
+- 驗測執行：
+  - ScoringHandTypeTests：job `f50a4925d23d42bfb5c0a7b61156d052`（6/6）
+  - ScoringFormulaTests：job `fb3e219b58fc417fa3c89d0f57905193`（3/3）
+- 判定：
+  - Low/Mid/High 覆蓋完成
+  - 邊界案例（倍率下限、逆序語序鏈）已覆蓋
+  - 測項 100% pass，證據可追溯
+- 文件回填：
+  - `docs/systems/S2-scoring-handtype/SYSTEM.md` 第 4/5 節已更新
+  - `docs/PROGRESS_OVERVIEW.md`：S2 狀態改為 `Done`
+- 下一步：
+  - 進入 S3（Learning/Boss）驗測。
+
+## 交接記錄（2026-02-18）- S3 驗測完成（達成 Done）
+
+- 目標：在 S2 完成後，收斂 S3（Learning/Boss）到 Done。
+- 驗測執行：
+  - LearningManagerTests：job `50345a33123740d18bd0d0e337af7a50`（9/9）
+  - BossLearningTests：job `7251ce2f9e3a4b5aafd8eb9b976f1d52`（14/14）
+  - UserStoryAcceptanceTests.US12：job `1d2d6da66d75418687e8d6401009feb3`（1/1）
+- 判定：
+  - Low/Mid/High 覆蓋完成
+  - 邊界/失敗案例已覆蓋（InvalidInput/StateConflict/null input）
+  - 測項 100% pass，證據可追溯
+- 文件回填：
+  - `docs/systems/S3-learning-boss/SYSTEM.md` 第 4/5 節已更新
+  - `docs/PROGRESS_OVERVIEW.md`：S3 狀態改為 `Done`
+- 下一步：
+  - 進入 S4（Gate/Recovery/Demotion）驗測與 done 判定。

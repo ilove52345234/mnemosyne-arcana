@@ -18,10 +18,22 @@
 - 已落地升級成長值與答錯懲罰整合。
 
 ## 4. 驗測報告與調整建議
-- 現況：公式與牌型判定測試通過。
-- 調整建議：
-1. 補三模型實戰分布（特別是同族系牌型的真實出現率與收益）。
-2. 補高倍率上限穩定性與極端乘算檢查。
+- 驗測結論（2026-02-18）：`Done`（符合當前 S2 門檻）。
+- 三模型對應：
+  - `M-Low`：`ScoringFormulaTests.EvaluateHand_AppliesWrongAnswerPenalty`（答錯降益、倍率下限保護）。
+  - `M-Mid`：`ScoringHandTypeTests.EvaluateHand_A_N_V_IsGrammarChain`、`...ThreePlusTwoPos_IsFullHouse`（常見牌型判定）。
+  - `M-High`：`ScoringFormulaTests.EvaluateHand_AppliesFullFormulaWithModifiers`（乘算因子與高分輸出）、`...AppliesHandUpgradeGrowth`（升級成長值）。
+- 失敗/邊界案例：
+  - `ScoringFormulaTests.EvaluateHand_AppliesWrongAnswerPenalty`（`effectiveHandMult` 下限為 1）。
+  - `ScoringHandTypeTests.EvaluateHand_N_A_V_IsNotGrammarChain`（逆序不誤判為語序鏈）。
+- 證據（MCP job）：
+  - `f50a4925d23d42bfb5c0a7b61156d052`（ScoringHandTypeTests：6/6）
+  - `fb3e219b58fc417fa3c89d0f57905193`（ScoringFormulaTests：3/3）
+- 調整建議（小幅）：
+1. 若同族系牌型在實戰出現率偏低，可微升同族對/同族三成長值 1 級差距（先 +5 chips 級距試探）。
+2. 若高端 build 分數膨脹過快，優先壓乘算因子來源，不直接砍基礎牌型值。
+3. 維持「答錯不破牌型」原則，僅調整懲罰幅度與加算/乘算來源密度。
 
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
+- 2026-02-18：完成 S2 首輪行為驗測，達成 Done 門檻（Low/Mid/High + boundary case + job evidence）。

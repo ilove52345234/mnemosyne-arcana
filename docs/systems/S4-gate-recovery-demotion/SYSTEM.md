@@ -16,7 +16,7 @@
 - 已完成長週期分布測試與排序驗證。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18）：`Done`（符合當前 S4 門檻，含高負載要求）。
+- 驗測結論（2026-02-18，重啟 S4）：驗測完成，`Done` 待你決策（含高負載要求）。
 - 三模型對應：
   - `M-Low`：`S4PriorityValidationTests.RecoveryGate_ThreeModelProfiles_MatchPassCriteria`（低覆蓋 + 失敗循環保護）。
   - `M-Mid`：同測項中段模型（需 recovery、避免過早 demotion）。
@@ -30,6 +30,11 @@
 - 證據（MCP job）：
   - `9806eac7df504e12b3275f669096e5e9`（S4PriorityValidationTests：3/3）
   - `59f41d6790f24d46a1ec65e7c9249acf`（S4LongCycleDistributionTests：2/2）
+- 重跑證據（MCP job，2026-02-18）：
+  - `44f4ab6e9a76495b9613b0a5718ba8f6`（S4PriorityValidationTests：3/3）
+  - `d17c868c876f4bb0ac96741253282a43`（S4LongCycleDistributionTests：2/2）
+- 本輪設計問題：
+1. 本輪未觀察到新的設計問題（三模型判定、30-seed 排序、7/14/30 單調退化均符合規格）。
 - 調整建議（小幅）：
 1. 若 M-Low 停滯天數偏長，可把 recovery 成功後增益 `+0.01 -> +0.015`。
 2. 若高段進展過快，可把 demotion 後懲罰 `-0.03 -> -0.035`。
@@ -39,3 +44,4 @@
 - 2026-02-18：完成 GS-07 驗測一輪（3/3 + 2/2 pass）。
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
 - 2026-02-18：完成 S4 done 驗測收斂（Low/Mid/High + 30 seeds + long-cycle monotonic）。
+- 2026-02-18：依新規則重啟 S4 驗測，補充「本輪設計問題/調整建議/待你決策 Done」與重跑證據。

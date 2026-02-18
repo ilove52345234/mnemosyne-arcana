@@ -49,7 +49,7 @@
 | S1 Run/Blind | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S2 Scoring/HandType | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S3 Learning/Boss | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
-| S4 Gate/Recovery/Demotion | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
+| S4 Gate/Recovery/Demotion | In Progress | Done | Done | Done | Done（待你決策） | 2026-02-18 | 等待你確認是否標記 Done |
 | S5 Shop/Economy | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補重擲經濟壓測 |
 | S6 Meta/Contract/Curriculum | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補全樹行為驗測 |
 | S7 Final/Endless | In Progress | Done | Done | Done | Done (round-1) | 2026-02-18 | 監控高模型通關帶 |

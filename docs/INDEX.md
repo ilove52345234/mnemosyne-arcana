@@ -10,6 +10,7 @@
 - S7：docs/systems/S7-final-endless/SYSTEM.md
 - S8：docs/systems/S8-telemetry-observability/SYSTEM.md
 - S9：docs/systems/S9-nfr-quality/SYSTEM.md
+- 各系統 baseline 分配：`docs/systems/Sx-*/BASELINE_REFERENCE.md`
 
 ## B. 技術規範
 - Architecture：docs/tech/architecture/README.md

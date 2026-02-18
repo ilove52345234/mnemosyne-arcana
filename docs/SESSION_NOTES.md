@@ -919,3 +919,16 @@
     - `docs/verification/05-game-system-reverification-plan-2026-02-18.md`：本輪執行計畫
 - 下一步：
   - 按 `05` 計畫逐系統執行實測，完成後只回填 `SYSTEM.md` + `PROGRESS_OVERVIEW.md` + 驗測報告。
+
+## 交接記錄（2026-02-18）- Baseline 00~25 分配到各系統資料夾
+
+- 目標：讓 `00~25` 能在各系統資料夾中直接看到對應落位。
+- 完成內容：
+  - 於 `docs/systems/S1~S9/` 新增 `BASELINE_REFERENCE.md`。
+  - 每個系統都列出對應的 `docs/baseline/00~25` 文件清單（可跨系統重疊）。
+  - 更新 `docs/INDEX.md`，新增 baseline 分配入口說明。
+- 原則：
+  - 保留 `docs/baseline/` 作為 Reference Only 原文存放。
+  - 系統資料夾提供分配視圖，不複製原文，避免多版本漂移。
+- 下一步：
+  - 若需要，可再進一步把每個 `SYSTEM.md` 的「規格文件」段落收斂為 `BASELINE_REFERENCE.md` 的精簡清單。

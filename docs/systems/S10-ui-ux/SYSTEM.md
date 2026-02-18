@@ -61,3 +61,9 @@
 ## 6. 對齊追蹤
 - 主文件：`docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
 - 規則：每輪循環（Play -> 截圖 -> 對比 -> 調整）完成後，必須更新追蹤檔並推送遠端。
+
+## 7. 設計進場規範
+- 強制入口：`docs/ui_reference/DESIGN_ENTRY_RULE.md`
+- 截圖分析：`docs/ui_reference/SCREEN_ANALYSIS_AND_PAGE_PLAN.md`
+- 頁面分解：`docs/systems/S10-ui-ux/pages/README.md`
+- 原則：未完成前置閱讀，不得開始 S10 UI 設計與實作。

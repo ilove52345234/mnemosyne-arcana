@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R19（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r19-quiz-to-cast-transition-1.png`
+- Score:
+  - Layout: 27/30
+  - Readability: 22/25
+  - Interaction: 25/25
+  - Polish: 16/20
+  - Total: 90/100
+- 本輪修改:
+  - P0 主線：補上 `QuizCompleted -> CastAnimationQueue` 過場協程。
+  - 答題完成後先顯示「準備出卡中」動態點點提示，再切入出卡與翻牌流程，減少硬切感。
+  - 過場期間加入 modal 輕量 alpha 波動，並在結束後恢復穩定狀態。
+- 未解決問題:
+  - 翻牌揭露仍缺少更明顯的「答案卡翻轉」運鏡與音效節點。
+- 下一輪優先:
+  - 強化翻牌揭露段落：加入更清楚的前後卡面切換節奏與答題結果徽章過場。
+
 ### Round R18（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r18-quiz-stage-animation-1.png`

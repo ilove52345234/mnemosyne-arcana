@@ -17,6 +17,30 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R19 答題完成到出卡過場
+
+- 目標：提升 P0 主線銜接品質，避免答題完成後直接硬切出卡
+- 完成內容：
+  - 新增 `PlayQuizToCastTransitionThenSubmit()` 過場協程
+  - 顯示「答題完成，準備出卡中」動態文案（點點節奏）
+  - 過場期間加入 quiz modal 輕量 alpha 波動，結束後再進出卡流程
+  - 在重置時補回收 `quiz-to-cast` 協程，避免狀態殘留
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity compile refresh 成功
+  - Unity Console `error` = 0
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r19-quiz-to-cast-transition-1.png`
+- 風險/阻塞：
+  - 翻牌揭露段仍欠缺更強可視節奏（運鏡/音效）
+- 下一步：
+  - R20 強化翻牌揭露動畫，拉高答題結果呈現辨識度
+
+---
+
 ## 交接記錄（2026-02-19）- S10-R18 P0 答題舞台動態補齊
 
 - 目標：推進 P0 流程節奏，讓「開始答題」與「逐題切換」有可感知動態

@@ -284,6 +284,7 @@ namespace MnemosyneArcana.Prototype
         private Coroutine _forceRevealDemoCoroutine;
         private Coroutine _quizFocusInCoroutine;
         private Coroutine _quizQuestionPulseCoroutine;
+        private Coroutine _quizToCastTransitionCoroutine;
         private bool _holdRevealForCapture;
 
         internal bool IsCardInteractionLocked => _isPlayingCardAnim || _isCastFlowInputLocked || _isQuizRunning;
@@ -1587,6 +1588,12 @@ namespace MnemosyneArcana.Prototype
             {
                 StopCoroutine(_quizQuestionPulseCoroutine);
                 _quizQuestionPulseCoroutine = null;
+            }
+
+            if (_quizToCastTransitionCoroutine != null)
+            {
+                StopCoroutine(_quizToCastTransitionCoroutine);
+                _quizToCastTransitionCoroutine = null;
             }
 
             _isQuizRunning = false;
@@ -3055,8 +3062,62 @@ namespace MnemosyneArcana.Prototype
                 return;
             }
 
+            if (_quizToCastTransitionCoroutine != null)
+            {
+                StopCoroutine(_quizToCastTransitionCoroutine);
+            }
+
+            _quizToCastTransitionCoroutine = StartCoroutine(
+                PlayQuizToCastTransitionThenSubmit(
+                    selectedIndexes,
+                    _quizCardCorrectness.ToList(),
+                    score.Value.FinalScore));
+        }
+
+        private IEnumerator PlayQuizToCastTransitionThenSubmit(
+            IReadOnlyList<int> selectedIndexes,
+            IReadOnlyList<bool> correctnessFlags,
+            int finalScore)
+        {
             SetCardQuizCastPhase(CardQuizCastPhase.CastAnimationQueue);
-            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, _quizCardCorrectness.ToList(), score.Value.FinalScore));
+            if (_quizPromptText != null)
+            {
+                _quizPromptText.text = "答題完成，準備出卡中";
+            }
+
+            var start = Time.unscaledTime;
+            const float duration = 0.42f;
+            while (Time.unscaledTime - start < duration)
+            {
+                var elapsed = Time.unscaledTime - start;
+                var dotCount = 1 + Mathf.FloorToInt((elapsed / duration) * 3f);
+                dotCount = Mathf.Clamp(dotCount, 1, 3);
+                if (_quizPromptText != null)
+                {
+                    _quizPromptText.text = "答題完成，準備出卡中" + new string('．', dotCount);
+                }
+
+                if (_quizModalCanvasGroup != null)
+                {
+                    var wave = 0.96f + 0.04f * Mathf.Sin(elapsed * 18f);
+                    _quizModalCanvasGroup.alpha = Mathf.Clamp(wave, 0.92f, 1f);
+                }
+
+                yield return null;
+            }
+
+            if (_quizModalCanvasGroup != null)
+            {
+                _quizModalCanvasGroup.alpha = 1f;
+            }
+
+            if (_quizPromptText != null)
+            {
+                _quizPromptText.text = "答題完成，依序出卡與翻牌揭露中...";
+            }
+
+            _quizToCastTransitionCoroutine = null;
+            StartCoroutine(PlayCardsAnimationThenSubmit(selectedIndexes, correctnessFlags, finalScore));
         }
 
         private void PlaySelectedCards(bool wrong)

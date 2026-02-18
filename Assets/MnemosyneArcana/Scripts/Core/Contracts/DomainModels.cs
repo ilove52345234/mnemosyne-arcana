@@ -213,6 +213,19 @@ namespace MnemosyneArcana.Core.Contracts
         public int MasteryContractRequirementReduction { get; set; }
     }
 
+    public sealed class LexiconUnlockRequirement
+    {
+        public int LpCost { get; set; }
+        public int RequiredRuns { get; set; }
+        public float RequiredCoverageRate { get; set; }
+    }
+
+    public sealed class WeightedWordCandidate
+    {
+        public string WordId { get; set; } = string.Empty;
+        public int Weight { get; set; }
+    }
+
     public enum WordPool { Locked, Discoverable, Learning, Mastered, Decayed }
 
     public sealed class WordProgress

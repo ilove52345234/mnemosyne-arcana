@@ -109,6 +109,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<IReadOnlyList<Contract>> GenerateContracts(MetaProgress meta, int seed)
         {
+            return GenerateContracts(meta, seed, null);
+        }
+
+        public ServiceResult<IReadOnlyList<Contract>> GenerateContracts(MetaProgress meta, int seed, CurriculumEffectSnapshot effects)
+        {
             if (meta == null)
             {
                 return ServiceResult<IReadOnlyList<Contract>>.Fail(ErrorCode.InvalidInput);
@@ -120,7 +125,7 @@ namespace MnemosyneArcana.Core.Managers
 
             for (int i = 0; i < ContractCount && pool.Count > 0; i++)
             {
-                var index = rng.Next(pool.Count);
+                var index = RollWeightedContractIndex(rng, pool, effects);
                 selected.Add(pool[index]);
                 pool.RemoveAt(index);
             }
@@ -292,6 +297,136 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             return ServiceResult<CurriculumEffectSnapshot>.Ok(snapshot);
+        }
+
+        public ServiceResult<LexiconUnlockRequirement> GetLexiconUnlockRequirement(
+            int baseLpCost,
+            int baseRequiredRuns,
+            float baseRequiredCoverageRate,
+            CurriculumEffectSnapshot effects)
+        {
+            if (baseLpCost < 0 || baseRequiredRuns < 0 || baseRequiredCoverageRate < 0f)
+            {
+                return ServiceResult<LexiconUnlockRequirement>.Fail(ErrorCode.InvalidInput);
+            }
+
+            var lpCost = baseLpCost;
+            var requiredRuns = baseRequiredRuns;
+            var requiredCoverageRate = baseRequiredCoverageRate;
+
+            if (effects != null)
+            {
+                var lpPercent = Math.Max(0, 100 - (int)Math.Round(effects.LexiconUnlockLpCostDiscountRate * 100f, MidpointRounding.AwayFromZero));
+                var runPercent = Math.Max(0, 100 - (int)Math.Round(effects.LexiconUnlockRunRequirementDiscountRate * 100f, MidpointRounding.AwayFromZero));
+
+                lpCost = (int)Math.Max(0, Math.Round(baseLpCost * lpPercent / 100.0, MidpointRounding.AwayFromZero));
+                requiredRuns = (int)Math.Max(0, Math.Round(baseRequiredRuns * runPercent / 100.0, MidpointRounding.AwayFromZero));
+                requiredCoverageRate = Math.Max(0f, baseRequiredCoverageRate * (1f - effects.LexiconUnlockCoverageDiscountRate));
+            }
+
+            return ServiceResult<LexiconUnlockRequirement>.Ok(new LexiconUnlockRequirement
+            {
+                LpCost = lpCost,
+                RequiredRuns = requiredRuns,
+                RequiredCoverageRate = requiredCoverageRate
+            });
+        }
+
+        public ServiceResult<IReadOnlyList<WeightedWordCandidate>> BuildLexiconDropWeights(
+            IReadOnlyList<WordProgress> words,
+            IReadOnlyDictionary<string, int> staleRunCounts,
+            CurriculumEffectSnapshot effects)
+        {
+            if (words == null)
+            {
+                return ServiceResult<IReadOnlyList<WeightedWordCandidate>>.Fail(ErrorCode.InvalidInput);
+            }
+
+            var result = new List<WeightedWordCandidate>(words.Count);
+            for (var i = 0; i < words.Count; i++)
+            {
+                var word = words[i];
+                var weight = 100f;
+                if (effects != null)
+                {
+                    if (word.Pool == WordPool.Decayed)
+                    {
+                        weight *= (1f + effects.DecayedPoolWeightBonusRate);
+                    }
+
+                    if (staleRunCounts != null &&
+                        staleRunCounts.TryGetValue(word.WordId, out var staleRuns) &&
+                        staleRuns >= 3)
+                    {
+                        weight *= (1f + effects.StaleWordWeightBonusRate);
+                    }
+                }
+
+                result.Add(new WeightedWordCandidate
+                {
+                    WordId = word.WordId,
+                    Weight = (int)Math.Max(1, Math.Floor(weight))
+                });
+            }
+
+            return ServiceResult<IReadOnlyList<WeightedWordCandidate>>.Ok(result);
+        }
+
+        public ServiceResult<int> GetContractRequirementAfterCurriculum(
+            int baseRequirement,
+            Contract contract,
+            CurriculumEffectSnapshot effects)
+        {
+            if (baseRequirement < 0 || contract == null)
+            {
+                return ServiceResult<int>.Fail(ErrorCode.InvalidInput);
+            }
+
+            var required = baseRequirement;
+            if (effects != null &&
+                string.Equals(contract.ContractType, "Mastery", StringComparison.OrdinalIgnoreCase))
+            {
+                required = Math.Max(1, baseRequirement - effects.MasteryContractRequirementReduction);
+            }
+
+            return ServiceResult<int>.Ok(required);
+        }
+
+        private static int RollWeightedContractIndex(Random rng, IReadOnlyList<Contract> pool, CurriculumEffectSnapshot effects)
+        {
+            if (effects == null || effects.LearningContractQualityBonusRate <= 0f)
+            {
+                return rng.Next(pool.Count);
+            }
+
+            var weights = new int[pool.Count];
+            var total = 0;
+            for (var i = 0; i < pool.Count; i++)
+            {
+                var weight = 100;
+                var contract = pool[i];
+                if (string.Equals(contract.ContractType, "Learning", StringComparison.OrdinalIgnoreCase))
+                {
+                    var tierWeight = 1f + (contract.Tier - 1) * effects.LearningContractQualityBonusRate;
+                    weight = (int)Math.Max(1, Math.Floor(weight * tierWeight));
+                }
+
+                weights[i] = weight;
+                total += weight;
+            }
+
+            var roll = rng.Next(total);
+            var acc = 0;
+            for (var i = 0; i < pool.Count; i++)
+            {
+                acc += weights[i];
+                if (roll < acc)
+                {
+                    return i;
+                }
+            }
+
+            return pool.Count - 1;
         }
     }
 }

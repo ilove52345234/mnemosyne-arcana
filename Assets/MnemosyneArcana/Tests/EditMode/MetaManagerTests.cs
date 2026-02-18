@@ -328,6 +328,68 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(0.08f, result.Value.LexiconUnlockLpCostDiscountRate, 0.0001f);
         }
 
+        [Test]
+        public void GetLexiconUnlockRequirement_AppliesLexiconDiscounts()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                LexiconUnlockLpCostDiscountRate = 0.08f,
+                LexiconUnlockRunRequirementDiscountRate = 0.10f,
+                LexiconUnlockCoverageDiscountRate = 0.05f
+            };
+
+            var result = _meta.GetLexiconUnlockRequirement(baseLpCost: 100, baseRequiredRuns: 20, baseRequiredCoverageRate: 0.80f, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(92, result.Value.LpCost);
+            Assert.AreEqual(18, result.Value.RequiredRuns);
+            Assert.AreEqual(0.76f, result.Value.RequiredCoverageRate, 0.0001f);
+        }
+
+        [Test]
+        public void BuildLexiconDropWeights_DecayedAndStaleWords_GetHigherWeight()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                DecayedPoolWeightBonusRate = 0.10f,
+                StaleWordWeightBonusRate = 0.20f
+            };
+
+            var words = new[]
+            {
+                new WordProgress { WordId = "w_decayed_stale", Pool = WordPool.Decayed, Level = LearningLevel.Lv2 },
+                new WordProgress { WordId = "w_normal", Pool = WordPool.Learning, Level = LearningLevel.Lv2 }
+            };
+            var stale = new Dictionary<string, int>
+            {
+                { "w_decayed_stale", 3 },
+                { "w_normal", 0 }
+            };
+
+            var result = _meta.BuildLexiconDropWeights(words, stale, effects);
+            Assert.IsTrue(result.IsSuccess);
+
+            var boosted = result.Value.First(x => x.WordId == "w_decayed_stale");
+            var normal = result.Value.First(x => x.WordId == "w_normal");
+            Assert.AreEqual(132, boosted.Weight);
+            Assert.AreEqual(100, normal.Weight);
+        }
+
+        [Test]
+        public void GetContractRequirementAfterCurriculum_MasteryRequirementReducedButNotBelowOne()
+        {
+            var contract = new Contract { ContractId = "CT_MAS_001", ContractType = "Mastery", Tier = 2, LpReward = 10 };
+            var effects = new CurriculumEffectSnapshot { MasteryContractRequirementReduction = 2 };
+
+            var reduced = _meta.GetContractRequirementAfterCurriculum(3, contract, effects);
+            var floorOne = _meta.GetContractRequirementAfterCurriculum(1, contract, effects);
+
+            Assert.IsTrue(reduced.IsSuccess);
+            Assert.AreEqual(1, reduced.Value);
+            Assert.IsTrue(floorOne.IsSuccess);
+            Assert.AreEqual(1, floorOne.Value);
+        }
+
         private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()
         {
             var defsField = typeof(MetaManagerV2).GetField("CurriculumNodeDefs", BindingFlags.NonPublic | BindingFlags.Static);

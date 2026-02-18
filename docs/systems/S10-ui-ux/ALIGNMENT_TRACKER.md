@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R9（2026-02-19）
+- Screenshots:
+  - 無（本輪為 P0 規格落地）
+- Score:
+  - Layout: 24/30
+  - Readability: 20/25
+  - Interaction: 19/25
+  - Polish: 12/20
+  - Total: 75/100
+- 本輪修改:
+  - 新增 `S10-P0` 優先落地規格：`PRIORITY_P0_CARD_QUIZ_CAST_FLOW.md`。
+  - 完成「選牌 -> 逐張答題 -> 依序出卡 -> 翻牌揭露」狀態機與事件定義。
+  - 將 P0 流程掛接到 `P02-run-table` 與 S10 主系統文件。
+- 未解決問題:
+  - 尚未實作到程式層狀態機與動畫佇列。
+- 下一輪優先:
+  - 先做 M1：狀態機骨架 + 輸入鎖 + 逐張題目控制器。
+
 ### Round R8（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r8-1.png`

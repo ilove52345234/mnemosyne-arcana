@@ -10,3 +10,6 @@
 - `P07-tooltip-and-popups`：浮層提示
 
 每個頁面資料夾都包含：`SYSTEM.md` + `BASELINE_REFERENCE.md`。
+
+P0 優先流程規格：
+- `docs/systems/S10-ui-ux/PRIORITY_P0_CARD_QUIZ_CAST_FLOW.md`

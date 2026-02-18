@@ -17,6 +17,31 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 選牌答題後出卡規格落地
+
+- 目標：把「選牌 -> 答題 -> 出卡翻牌」定義為 S10 優先落地流程
+- 完成內容：
+  - 新增 `docs/systems/S10-ui-ux/PRIORITY_P0_CARD_QUIZ_CAST_FLOW.md`
+  - 定義單回合狀態機、事件表、題型策略、動畫節奏與風險對策
+  - 更新 `P02-run-table` 規格，掛接 P0 流程
+  - 更新 S10 主文件與對齊追蹤，標記本工作流為 P0
+- 變更檔案：
+  - `docs/systems/S10-ui-ux/PRIORITY_P0_CARD_QUIZ_CAST_FLOW.md`
+  - `docs/systems/S10-ui-ux/pages/P02-run-table/SYSTEM.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/pages/README.md`
+  - `docs/PROGRESS_OVERVIEW.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 文件鏈路已建立（主系統 -> 頁面 -> P0 規格）
+- 風險/阻塞：
+  - 程式層尚未進入 M1 狀態機實作
+- 下一步：
+  - 進入 M1：實作狀態機骨架與輸入鎖
+
+---
+
 ## 交接記錄（2026-02-19）- S10 對齊追蹤機制建立
 
 - 目標：建立 S10 UI 對齊的固定記錄與提交流程

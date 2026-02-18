@@ -1,7 +1,9 @@
-# Tech - Runtime & Events
+# Tech - Runtime Event Standard
 
-- 核心文件：
-- docs/10-runtime-state-and-event-contracts.md
-- docs/14-core-usecase-sequences.md
+## 設計原則
+- 事件命名固定為 domain.action.phase。
+- payload 需可版本化並具向後相容策略。
 
-- 用途：執行期狀態、事件契約、管理器間通訊邊界。
+## 必守規則
+- 禁止雙向同步事件循環。
+- 事件與 state 更新順序需可測試與可重現。

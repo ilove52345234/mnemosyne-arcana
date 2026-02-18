@@ -14,9 +14,9 @@
 
 開始任何開發前，**必須完整閱讀 `docs/` 底下所有文件**（含 `docs/adr/` 與 `docs/archive/` 歷史資料）。
 
-建議先從新入口進入（系統化視圖）：
-1. `docs/INDEX.md`（系統/技術/管理分組入口）
-2. `docs/PROGRESS_OVERVIEW.md`（每個資料夾完成度總表）
+建議先從新入口進入（唯一主入口）：
+1. `docs/INDEX.md`（系統與技術入口）
+2. `docs/PROGRESS_OVERVIEW.md`（唯一進度總表）
 
 建議閱讀順序：
 1. `docs/06-onboarding-checklist.md`
@@ -45,11 +45,11 @@
 
 ### 系統化入口（新版）
 
-- `docs/INDEX.md`：全文件分組入口（Systems / Tech / Management）
-- `docs/PROGRESS_OVERVIEW.md`：全域進度總表（可視化完成度）
-- `docs/systems/*/SYSTEM.md`：每個遊戲系統的單一整合文件（含設計、規格、實作、驗測、更新）
+- `docs/INDEX.md`：全文件主入口（系統與技術）
+- `docs/PROGRESS_OVERVIEW.md`：全域進度唯一總表
+- `docs/systems/*/SYSTEM.md`：每個遊戲系統單一整合文件（設計/規格/實作/驗測/更新）
 
-### 目錄級用途
+### 舊結構備查（逐步收斂）
 
 - `docs/`：專案主規格、流程、進度與驗測文件（唯一官方來源）。
 - `docs/adr/`：架構決策紀錄（為何這樣選型/取捨）。

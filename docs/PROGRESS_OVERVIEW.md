@@ -1,23 +1,20 @@
-# Docs Progress Overview
+# Progress Overview (Single Source)
 
-> 單一總表：追蹤每個資料夾/系統目前進度。
+> 專案唯一進度總表。所有系統完成度以本檔為準。
 
-| Folder | Scope | Status | Owner | Next Action |
-|---|---|---|---|---|
-| docs/systems/S1-run-blind | Run/Blind | In Progress | Team | 補行為驗測證據鏈 |
-| docs/systems/S2-scoring-handtype | Scoring/HandType | In Progress | Team | 補同族與高牌型實戰分佈 |
-| docs/systems/S3-learning-boss | Learning/Boss | In Progress | Team | 補保底與強壓場景 |
-| docs/systems/S4-gate-recovery-demotion | Gate/Recovery/Demotion | In Progress | Team | 固定 30 seeds 週期回歸 |
-| docs/systems/S5-shop-economy | Shop/Economy | In Progress | Team | 補重擲經濟/交互壓測 |
-| docs/systems/S6-meta-contract-curriculum | Meta/Contract/Curriculum | In Progress | Team | 補全樹與詞庫演進行為驗測 |
-| docs/systems/S7-final-endless | Final/Endless | In Progress | Team | 維持規則，調模型參數 |
-| docs/systems/S8-telemetry-observability | Telemetry/Observability | In Progress | Team | 補誤報/漏報路徑 |
-| docs/systems/S9-nfr-quality | NFR/Quality | In Progress | Team | 補 soak 趨勢報表 |
-| docs/tech | 技術規範分組 | Done | Team | 新規格同步分類更新 |
-| docs/management | 管理與交接分組 | Done | Team | 每次迭代回填狀態 |
+| System | Status | Design | Spec | Implementation | Verification | Last Update | Next Action |
+|---|---|---|---|---|---|---|---|
+| S1 Run/Blind | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補重開與失敗分支行為批次 |
+| S2 Scoring/HandType | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補同族/高倍率實戰分佈 |
+| S3 Learning/Boss | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補連錯保底長局驗測 |
+| S4 Gate/Recovery/Demotion | In Progress | Done | Done | Done | Done (round-1) | 2026-02-18 | 持續 30-seed 週期回歸 |
+| S5 Shop/Economy | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補重擲經濟壓測 |
+| S6 Meta/Contract/Curriculum | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補全樹行為驗測 |
+| S7 Final/Endless | In Progress | Done | Done | Done | Done (round-1) | 2026-02-18 | 監控高模型通關帶 |
+| S8 Telemetry/Observability | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 補誤報/漏報場景 |
+| S9 NFR/Quality | In Progress | Done | Done | Done | In Progress | 2026-02-18 | 建 soak 趨勢報表 |
 
-## 更新規則
-
-1. 任一系統狀態變更，先更新對應 SYSTEM.md，再更新本總表。
-2. 狀態只使用：Todo / In Progress / Done / Blocked。
-3. 本檔作為「完成度可視化」主入口。
+## 更新規範
+1. 每完成一輪系統驗測，先更新對應 `docs/systems/Sx-*/SYSTEM.md` 的第 4/5 區塊。
+2. 再更新本檔 `Verification`、`Last Update`、`Next Action`。
+3. 狀態僅使用：Todo / In Progress / Done / Blocked。

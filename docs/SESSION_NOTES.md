@@ -895,3 +895,14 @@
   - `docs/SESSION_NOTES.md`
 - 下一步：
   - 依 `docs/PROGRESS_OVERVIEW.md` 持續逐系統回填驗測結果與參數調整建議。
+
+## 交接記錄（2026-02-18）- 系統文件自洽化重整
+
+- 目標：允許破壞舊索引依賴，將系統文件改為單檔自洽（不再寫來源路徑）。
+- 完成內容：
+  - 重寫 `docs/systems/S1~S9/SYSTEM.md`，每份直接含設計/規格/實作/驗測/更新。
+  - 重寫 `docs/tech/*/README.md` 為技術標準，不再只是來源清單。
+  - 重寫 `docs/INDEX.md` 與 `docs/PROGRESS_OVERVIEW.md`，將進度收斂為單一總表。
+  - 更新 `README.md`，改為以新入口為主。
+- 下一步：
+  - 逐系統驗測完成後，只更新對應 `SYSTEM.md` 與 `PROGRESS_OVERVIEW.md`。

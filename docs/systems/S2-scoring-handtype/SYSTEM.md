@@ -1,17 +1,27 @@
 # S2 - Scoring/HandType 得分與牌型
 
 ## 1. 設計規劃
-- 核心目標：牌型判定 deterministic，分數體感可預測。
+- 目標：分數可理解、可預測、可校準。
+- 核心原則：同輸入同 seed 必須 deterministic。
 
 ## 2. 規格文件
-- docs/01-game-design-core.md\n- docs/15-balance-source-of-truth.md\n- docs/18-api-and-domain-types.md
+- 基本公式：
+- FinalScore = (BaseHandChips + CardChipsTotal) * (BaseHandMult + AdditiveMult) * Multipliers
+- 答錯不破牌型，僅降低收益：
+- 該卡籌碼 50%
+- 牌型倍率 -1（最低 1）
+- 牌型集合（10 種）：單字、同性對、同族對、三同性、語序鏈、同族三、滿堂、同族花、全同性、語序同族。
+- 單卡籌碼依字長給值，牌型升級依成長表增幅。
 
 ## 3. 實作紀錄
-- docs/IMPLEMENTATION_STATUS.md（M1-01、M1-02）\n- docs/SESSION_NOTES.md（Scoring 引擎）
+- 已落地 HandType 判定優先序與分數拆解輸出。
+- 已落地升級成長值與答錯懲罰整合。
 
 ## 4. 驗測報告與調整建議
-- docs/25-gate-model-sweep-report-2026-02-17.md\n- 建議：以實戰分佈補強同族/高牌型行為驗測。
+- 現況：公式與牌型判定測試通過。
+- 調整建議：
+1. 補三模型實戰分布（特別是同族系牌型的真實出現率與收益）。
+2. 補高倍率上限穩定性與極端乘算檢查。
 
 ## 5. 更新紀錄
-- 2026-02-18：建立系統化文件入口，改為此檔集中追蹤。
-- 後續每次更新請補：日期、變更內容、影響範圍、下一步。
+- 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。

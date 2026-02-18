@@ -1,7 +1,9 @@
-# Tech - Config Governance
+# Tech - Config Governance Standard
 
-- 核心文件：
-- docs/15-balance-source-of-truth.md
-- docs/16-config-governance.md
+## 設計原則
+- SoT 先更新，實作後更新。
+- JSON 設定需可 schema 驗證。
 
-- 用途：SoT 數值治理、設定檔命名/版本/驗證流程。
+## 必守規則
+- 任一數值調整需留下理由與回歸證據。
+- 無法驗證的配置不得進主分支。

@@ -1,9 +1,10 @@
-# Tech - Architecture
+# Tech - Architecture Standard
 
-- 核心文件：
-- docs/03-technical-architecture.md
-- docs/13-system-context.md
-- docs/14-core-usecase-sequences.md
-- docs/12-architecture-gap-closure.md
+## 設計原則
+- 模組單一責任：Run / Scoring / Learning / Shop / Meta 分層。
+- UI 只讀公開狀態，不直接改寫 domain 私有欄位。
+- 流程靠狀態機，不靠隱式 side effect。
 
-- 用途：模組邊界、狀態機、系統上下文與用例流程。
+## 必守規則
+- 任何跨模組協作先定義契約，再落實程式。
+- 破壞性架構調整需先補風險與決策紀錄。

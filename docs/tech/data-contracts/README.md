@@ -1,10 +1,10 @@
-# Tech - Data Contracts
+# Tech - Data Contract Standard
 
-- 核心文件：
-- docs/04-data-contracts.md
-- docs/18-api-and-domain-types.md
-- docs/schemas/word_entry_v2.schema.json
-- docs/schemas/deck_card_v2.schema.json
-- docs/schemas/meta_progress_v2.schema.json
+## 設計原則
+- 所有存檔必須具版本欄位。
+- Enum 使用字串序列化。
+- unknown field 可忽略，必填缺失需拒載或 fallback。
 
-- 用途：資料結構、版本、schema 驗證與 migration 規範。
+## 必守規則
+- 資料結構變更必須同步 schema 與 migration。
+- 不允許未版本化的破壞性欄位調整。

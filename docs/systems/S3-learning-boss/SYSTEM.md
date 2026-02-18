@@ -1,17 +1,32 @@
 # S3 - Learning（答題、三選一、Boss）
 
 ## 1. 設計規劃
-- 核心目標：學習嵌入流程且不打斷節奏。
+- 目標：學習嵌在玩法內，不做跳窗式中斷。
+- 核心原則：答錯降收益，不破壞組牌成立。
 
 ## 2. 規格文件
-- docs/01-game-design-core.md\n- docs/02-meta-progression.md\n- docs/18-api-and-domain-types.md
+- 等級行為：Lv0(4選1) -> Lv1(2選1) -> Lv2(2選1聽力) -> Lv3(拼字) -> Lv4(免答)。
+- 答錯後三選一：
+- AcceptLoss：免費接受降益
+- RetryWithCost：花費重答（單題一次）
+- Gamble：50% 回復 / 50% 歸零
+- 保底：連錯 3 題降難，連錯 5 題該關剩餘題型進一步降難。
+- Boss 規則：
+- 題型整體 +1 階
+- Lv4 在 Boss 以 Lv3 行為處理
+- 每連對 3 題下一張卡 x2
+- Boss 全對後，當 Ante 打出卡可 +1 等級（有上限）
 
 ## 3. 實作紀錄
-- docs/IMPLEMENTATION_STATUS.md（M2-01~M2-04）\n- docs/SESSION_NOTES.md（Learning/Boss 實作）
+- 已完成 Lv0~Lv4 行為模型。
+- 已完成答錯三選一決策 API。
+- 已完成 Boss 升階、連對獎勵與全對升級。
 
 ## 4. 驗測報告與調整建議
-- docs/verification/03-final-verification-report-2026-02-18.md\n- 建議：補強連錯保底與 Boss 強壓場景行為驗測。
+- 現況：關鍵規則測試通過。
+- 調整建議：
+1. 補強長局中「連錯保底」觸發率與體感。
+2. 在高壓 Boss 詞條下檢查是否出現難度突刺。
 
 ## 5. 更新紀錄
-- 2026-02-18：建立系統化文件入口，改為此檔集中追蹤。
-- 後續每次更新請補：日期、變更內容、影響範圍、下一步。
+- 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。

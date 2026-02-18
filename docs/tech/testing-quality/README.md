@@ -1,9 +1,9 @@
-# Tech - Testing & Quality
+# Tech - Testing & Quality Standard
 
-- 核心文件：
-- docs/09-nfr-and-quality-gates.md
-- docs/17-test-matrix.md
-- docs/22-alpha-a01-regression-checklist.md
-- docs/verification/00-master-verification-plan.md
+## 設計原則
+- 先驗行為，再驗代碼。
+- 同一系統至少 Low/Mid/High 三模型。
 
-- 用途：測試矩陣、品質門檻、回歸與驗測主計畫。
+## 必守規則
+- 核心平衡系統需補 Edge + 多 seed。
+- 驗測結論必須附證據鏈（測試結果 + 場景證據 + 文件回填）。

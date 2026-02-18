@@ -1,17 +1,24 @@
 # S9 - NFR/Quality
 
 ## 1. 設計規劃
-- 核心目標：效能、穩定、可維護性達標。
+- 目標：可玩、可維護、可持續迭代。
+- 核心原則：功能完成不等於品質完成。
 
 ## 2. 規格文件
-- docs/09-nfr-and-quality-gates.md\n- docs/17-test-matrix.md\n- docs/22-alpha-a01-regression-checklist.md
+- 效能：FPS、frame time、GC、載入時間門檻。
+- 穩定：完整 run 無 blocker crash；存檔成功率高；migration 可回退。
+- 正確性：分數 deterministic、契約 cap、互斥節點守門。
+- 可維護：測試覆蓋與模組邊界一致。
 
 ## 3. 實作紀錄
-- docs/IMPLEMENTATION_STATUS.md（A-03）\n- docs/SESSION_NOTES.md（S9 壓測）
+- 已建立 NFR 驗測組（低/中/高負載）。
+- 已完成多輪 EditMode 回歸驗證。
 
 ## 4. 驗測報告與調整建議
-- docs/verification/03-final-verification-report-2026-02-18.md\n- 建議：固定 soak 節奏並保存趨勢比較報表。
+- 現況：基準壓測通過。
+- 調整建議：
+1. 固定每週 soak 批次並保留趨勢圖。
+2. 針對 memory growth 建立警戒值回歸。
 
 ## 5. 更新紀錄
-- 2026-02-18：建立系統化文件入口，改為此檔集中追蹤。
-- 後續每次更新請補：日期、變更內容、影響範圍、下一步。
+- 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。

@@ -982,3 +982,20 @@
   - `docs/PROGRESS_OVERVIEW.md`：S3 狀態改為 `Done`
 - 下一步：
   - 進入 S4（Gate/Recovery/Demotion）驗測與 done 判定。
+
+## 交接記錄（2026-02-18）- S4 驗測完成（達成 Done）
+
+- 目標：依序收斂 S4（Gate/Recovery/Demotion）到 Done。
+- 驗測執行：
+  - S4PriorityValidationTests：job `9806eac7df504e12b3275f669096e5e9`（3/3）
+  - S4LongCycleDistributionTests：job `59f41d6790f24d46a1ec65e7c9249acf`（2/2）
+- 判定：
+  - Low/Mid/High 覆蓋完成
+  - Edge/批次要求（30 seeds）已覆蓋
+  - 長週期 7/14/30 天單調退化已驗證
+  - 測項 100% pass，證據可追溯
+- 文件回填：
+  - `docs/systems/S4-gate-recovery-demotion/SYSTEM.md` 第 4/5 節已更新
+  - `docs/PROGRESS_OVERVIEW.md`：S4 狀態改為 `Done`
+- 下一步：
+  - 進入 S5（Shop/Economy）驗測。

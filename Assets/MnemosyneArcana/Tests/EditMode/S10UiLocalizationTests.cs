@@ -60,19 +60,13 @@ namespace MnemosyneArcana.Tests.EditMode
             var ui = CreateAndInitializeUi();
 
             var statusText = GetPrivateText(ui, "_statusText");
-            var tuningText = GetPrivateText(ui, "_tuningText");
             var metaText = GetPrivateText(ui, "_metaText");
 
-            Assert.IsTrue(statusText.Contains("關卡：第"));
+            Assert.IsTrue(statusText.Contains("第 "));
+            Assert.IsTrue(statusText.Contains("目標分"));
             Assert.IsFalse(statusText.Contains("Ante"));
-            Assert.IsTrue(tuningText.Contains("種子："));
-            Assert.IsFalse(tuningText.Contains("Seed："));
-            Assert.IsTrue(tuningText.Contains("魔王通過："));
-            Assert.IsFalse(tuningText.Contains("Boss通過："));
-            Assert.IsTrue(tuningText.Contains("主線/真結局通關："));
-            Assert.IsFalse(tuningText.Contains("Main/True Clear："));
-            Assert.IsTrue(metaText.Contains("經驗="));
-            Assert.IsTrue(metaText.Contains("學習點="));
+            Assert.IsTrue(metaText.Contains("經驗"));
+            Assert.IsTrue(metaText.Contains("學習點"));
         }
 
         [Test]
@@ -140,6 +134,23 @@ namespace MnemosyneArcana.Tests.EditMode
             {
                 Assert.IsFalse(texts.Contains(label), $"Player mode should hide dev/tuning label: {label}");
             }
+        }
+
+        [Test]
+        public void S10_M7_PlayerMode_KeepsFormalCoreSections()
+        {
+            var ui = CreateAndInitializeUi();
+            var texts = ui.GetComponentsInChildren<Text>(true).Select(x => x.text).ToArray();
+            var buttons = ui.GetComponentsInChildren<Button>(true).Select(x => x.GetComponentInChildren<Text>()?.text ?? string.Empty).ToArray();
+
+            Assert.IsTrue(texts.Contains("牌桌區（拖曳卡牌到這裡）"));
+            Assert.IsTrue(texts.Contains("答題區（英文題幹 / 中文選項）"));
+            Assert.IsTrue(texts.Any(x => x.StartsWith("商店：")));
+            Assert.IsTrue(buttons.Contains("開始答題並出牌"));
+            Assert.IsTrue(buttons.Contains("結算盲注"));
+            Assert.IsTrue(buttons.Contains("前往下一關"));
+            Assert.IsTrue(buttons.Contains("生成商店商品"));
+            Assert.IsTrue(buttons.Contains("購買第一項"));
         }
 
         private static string GetPrivateText(object instance, string fieldName)

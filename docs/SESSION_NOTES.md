@@ -746,3 +746,24 @@
   - `docs/25-gate-model-sweep-report-2026-02-17.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/SESSION_NOTES.md`
+
+## 交接記錄（2026-02-18）- S4 優先驗測啟動與 MCP 重連規範
+
+- 目標：
+  - 啟動 S4（Gate/Recovery/Demotion）優先驗測
+  - 固化 MCP 連線故障時的標準恢復流程
+- 完成內容：
+  - 新增 S4 測試檔：
+    - `Assets/MnemosyneArcana/Tests/EditMode/S4PriorityValidationTests.cs`
+    - 覆蓋三模型 Recovery Gate + 7/14/30 天長週期退化案例
+  - 修正測試 enum 錯誤：
+    - `WordPool.Active -> WordPool.Mastered`
+  - 新增驗測連線規範文件：
+    - `docs/verification/04-mcp-connection-recovery-checklist.md`
+  - 更新 Master Plan：
+    - 加入 MCP `15 秒 timeout 規則` 與恢復順序
+- 當前狀態：
+  - 由於 MCP transport 仍有 session 級超時，S4 測試待新 session 重新執行驗證
+- 下一步：
+  - 新 session 先跑 MCP smoke test（15 秒內）
+  - 立即執行 EditMode 測試，確認 `S4PriorityValidationTests` 通過

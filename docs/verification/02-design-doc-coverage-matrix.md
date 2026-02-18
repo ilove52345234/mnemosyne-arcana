@@ -16,7 +16,7 @@
 | `docs/15-balance-source-of-truth.md` | S2/S5/S7 | 平衡三模型 + 多 seed | In Progress | 10 模型/30 輪結果 |
 | `docs/17-test-matrix.md` | S1~S9 | 測試 ID 對齊與補齊 | In Progress | 現有 test matrix |
 | `docs/23-user-stories-and-use-cases.md` | S1/S3/S5/S6 | US/UC 覆蓋三模型 | In Progress | US01~US12 測試 |
-| `docs/24-vocab-growth-curve-and-gating-plan.md` | S4/S7/S8 | 十模型 + 長週期遺忘 | In Progress | `docs/25` + MCP logs |
+| `docs/24-vocab-growth-curve-and-gating-plan.md` | S4/S7/S8 | 十模型 + 長週期遺忘 | In Progress | `docs/25` + MCP logs + `S4PriorityValidationTests` |
 | `docs/25-gate-model-sweep-report-2026-02-17.md` | S4/S7 | 30 輪分佈 | Covered | M9 12/30(40%) |
 
 ## 3. 缺口清單（需優先補齊）

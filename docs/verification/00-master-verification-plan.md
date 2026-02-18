@@ -37,3 +37,11 @@
 - 模型庫：`docs/verification/01-system-model-library.md`
 - 覆蓋矩陣：`docs/verification/02-design-doc-coverage-matrix.md`
 - 最終報告：`docs/verification/03-final-verification-report-template.md`
+
+## 7. MCP 連線作業規範
+- MCP endpoint 統一使用：`http://127.0.0.1:8080`。
+- 任一 MCP 呼叫超過 `15 秒` 即判定失敗，進入恢復流程，不做無限等待。
+- 失敗恢復順序：
+1. 停止 Play Mode
+2. 確認 Unity plugin 與 HTTP server 已啟動
+3. 重啟 Codex session 重新建立 MCP transport

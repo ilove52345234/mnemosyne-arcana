@@ -349,7 +349,11 @@ namespace MnemosyneArcana.Tests.EditMode
                 });
             }
 
-            Assert.IsNotEmpty(result);
+            Assert.AreEqual(60, result.Count, "Curriculum should define 4 branches x 12 levels (with A/B splits).");
+            CollectionAssert.Contains(result.Select(x => x.NodeId), "FLU_12");
+            CollectionAssert.Contains(result.Select(x => x.NodeId), "LEX_12");
+            CollectionAssert.Contains(result.Select(x => x.NodeId), "BLD_12");
+            CollectionAssert.Contains(result.Select(x => x.NodeId), "MAS_12");
             return result;
         }
 

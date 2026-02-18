@@ -35,27 +35,58 @@ namespace MnemosyneArcana.Core.Managers
             public IReadOnlyList<string> MutexWith { get; set; } = Array.Empty<string>();
         }
 
-        // M3-04 MVP: 先落地每個分支前 3 層（含 A/B 互斥）
-        private static readonly IReadOnlyDictionary<string, CurriculumNodeDef> CurriculumNodeDefs =
-            new Dictionary<string, CurriculumNodeDef>
-            {
-                { "FLU_01", new CurriculumNodeDef { Cost = 20 } },
-                { "FLU_02", new CurriculumNodeDef { Cost = 25, RequiredAnyOfGroups = new[] { new[] { "FLU_01" } } } },
-                { "FLU_03A", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "FLU_02" } }, MutexWith = new[] { "FLU_03B" } } },
-                { "FLU_03B", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "FLU_02" } }, MutexWith = new[] { "FLU_03A" } } },
-                { "LEX_01", new CurriculumNodeDef { Cost = 20 } },
-                { "LEX_02", new CurriculumNodeDef { Cost = 25, RequiredAnyOfGroups = new[] { new[] { "LEX_01" } } } },
-                { "LEX_03A", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "LEX_02" } }, MutexWith = new[] { "LEX_03B" } } },
-                { "LEX_03B", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "LEX_02" } }, MutexWith = new[] { "LEX_03A" } } },
-                { "BLD_01", new CurriculumNodeDef { Cost = 20 } },
-                { "BLD_02", new CurriculumNodeDef { Cost = 25, RequiredAnyOfGroups = new[] { new[] { "BLD_01" } } } },
-                { "BLD_03A", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "BLD_02" } }, MutexWith = new[] { "BLD_03B" } } },
-                { "BLD_03B", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "BLD_02" } }, MutexWith = new[] { "BLD_03A" } } },
-                { "MAS_01", new CurriculumNodeDef { Cost = 20 } },
-                { "MAS_02", new CurriculumNodeDef { Cost = 25, RequiredAnyOfGroups = new[] { new[] { "MAS_01" } } } },
-                { "MAS_03A", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "MAS_02" } }, MutexWith = new[] { "MAS_03B" } } },
-                { "MAS_03B", new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = new[] { new[] { "MAS_02" } }, MutexWith = new[] { "MAS_03A" } } },
-            };
+        // 完整課程樹：4 分支 x 12 層（含 3/6/10 層 A/B 互斥）
+        private static readonly IReadOnlyDictionary<string, CurriculumNodeDef> CurriculumNodeDefs = BuildCurriculumNodeDefs();
+
+        private static IReadOnlyDictionary<string, CurriculumNodeDef> BuildCurriculumNodeDefs()
+        {
+            var defs = new Dictionary<string, CurriculumNodeDef>(StringComparer.Ordinal);
+            AddBranch(defs, "FLU");
+            AddBranch(defs, "LEX");
+            AddBranch(defs, "BLD");
+            AddBranch(defs, "MAS");
+            return defs;
+        }
+
+        private static void AddBranch(IDictionary<string, CurriculumNodeDef> defs, string branch)
+        {
+            var n01 = $"{branch}_01";
+            var n02 = $"{branch}_02";
+            var n03a = $"{branch}_03A";
+            var n03b = $"{branch}_03B";
+            var n04 = $"{branch}_04";
+            var n05 = $"{branch}_05";
+            var n06a = $"{branch}_06A";
+            var n06b = $"{branch}_06B";
+            var n07 = $"{branch}_07";
+            var n08 = $"{branch}_08";
+            var n09 = $"{branch}_09";
+            var n10a = $"{branch}_10A";
+            var n10b = $"{branch}_10B";
+            var n11 = $"{branch}_11";
+            var n12 = $"{branch}_12";
+
+            defs[n01] = new CurriculumNodeDef { Cost = 20 };
+            defs[n02] = new CurriculumNodeDef { Cost = 25, RequiredAnyOfGroups = AnyOf(n01) };
+            defs[n03a] = new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = AnyOf(n02), MutexWith = new[] { n03b } };
+            defs[n03b] = new CurriculumNodeDef { Cost = 30, RequiredAnyOfGroups = AnyOf(n02), MutexWith = new[] { n03a } };
+            defs[n04] = new CurriculumNodeDef { Cost = 35, RequiredAnyOfGroups = AnyOf(n03a, n03b) };
+            defs[n05] = new CurriculumNodeDef { Cost = 35, RequiredAnyOfGroups = AnyOf(n04) };
+            defs[n06a] = new CurriculumNodeDef { Cost = 40, RequiredAnyOfGroups = AnyOf(n05), MutexWith = new[] { n06b } };
+            defs[n06b] = new CurriculumNodeDef { Cost = 40, RequiredAnyOfGroups = AnyOf(n05), MutexWith = new[] { n06a } };
+            defs[n07] = new CurriculumNodeDef { Cost = 45, RequiredAnyOfGroups = AnyOf(n06a, n06b) };
+            defs[n08] = new CurriculumNodeDef { Cost = 50, RequiredAnyOfGroups = AnyOf(n07) };
+            defs[n09] = new CurriculumNodeDef { Cost = 55, RequiredAnyOfGroups = AnyOf(n08) };
+            defs[n10a] = new CurriculumNodeDef { Cost = 60, RequiredAnyOfGroups = AnyOf(n09), MutexWith = new[] { n10b } };
+            defs[n10b] = new CurriculumNodeDef { Cost = 60, RequiredAnyOfGroups = AnyOf(n09), MutexWith = new[] { n10a } };
+            defs[n11] = new CurriculumNodeDef { Cost = 65, RequiredAnyOfGroups = AnyOf(n10a, n10b) };
+            defs[n12] = new CurriculumNodeDef { Cost = 70, RequiredAnyOfGroups = AnyOf(n11) };
+        }
+
+        private static IReadOnlyList<IReadOnlyList<string>> AnyOf(params string[] nodes)
+        {
+            return new IReadOnlyList<string>[] { nodes };
+        }
 
         public ServiceResult<MetaSettlement> SettleRun(RunResult runResult, MetaProgress current)
         {

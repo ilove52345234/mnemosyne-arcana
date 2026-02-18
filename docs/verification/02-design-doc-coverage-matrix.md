@@ -25,3 +25,25 @@
 ## 4. 執行順序（建議）
 1. 完成最終 sign-off 報告與 Go/No-Go 判定（中優先）
 2. 轉入 A-02（存檔/migration）驗測（高優先）
+
+## 5. 行為驗測追蹤（2026-02-18 Replan）
+
+> 說明：本區塊只追蹤「實際遊戲行為是否符合設計」，不以單元測試通過取代。
+
+| 系統 ID | 系統名稱 | 三模型行為驗測 | 狀態 |
+|---|---|---|---|
+| GS-01 | Run/Blind 推進 | M-Low/M-Mid/M-High | Pending |
+| GS-02 | 牌型/得分（含同族） | M-Low/M-Mid/M-High | Pending |
+| GS-03 | 學習題型/答錯三選一 | M-Low/M-Mid/M-High | Pending |
+| GS-04 | Boss 學習機制 | M-Low/M-Mid/M-High | Pending |
+| GS-05 | 商店/經濟/重擲 | M-Low/M-Mid/M-High | Pending |
+| GS-06 | Build 五層交互 | M-Low/M-Mid/M-High | Pending |
+| GS-07 | Gate/Recovery/Demotion | M-Low/M-Mid/M-High(+M-Edge) | Pending |
+| GS-08 | Final Gate/Endless | M-Low/M-Mid/M-High(+M-Edge) | Pending |
+| GS-09 | Meta/Contract/Curriculum | M-Low/M-Mid/M-High | Pending |
+| GS-10 | 詞庫演進/五池抽樣 | M-Low/M-Mid/M-High | Pending |
+| GS-11 | Telemetry/告警 | M-Low/M-Mid/M-High | Pending |
+| GS-12 | NFR 行為穩定 | M-Low/M-Mid/M-High(+M-Edge) | Pending |
+| GS-13 | 遺物系統（Legacy） | 先裁決 Retain/Retire | Pending |
+| GS-14 | 卡牌進化（Legacy） | 先裁決 Retain/Retire | Pending |
+| GS-15 | 舊書房系統（Legacy） | 先裁決 Retain/Retire | Pending |

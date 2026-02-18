@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R17（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r17-horizontal-scrollbar-1.png`
+- Score:
+  - Layout: 27/30
+  - Readability: 22/25
+  - Interaction: 25/25
+  - Polish: 14/20
+  - Total: 88/100
+- 本輪修改:
+  - 新增主畫面「測試用橫向捲動軸（正式版移除）」。
+  - 左右主區改包在 `ScrollRect` 內，支援橫向拖曳與底部 scrollbar 快速對位檢查。
+  - 補上 content 最小寬度自適應，避免不同解析度下捲動失效。
+- 未解決問題:
+  - 目前為測試用途，正式版需移除該 scrollbar 與提示文案。
+- 下一輪優先:
+  - 在維持測試開關的前提下，調整底部手牌區視覺層次（框線/陰影/過場）。
+
 ### Round R16（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r16-hand-bottom-1.png`

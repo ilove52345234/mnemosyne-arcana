@@ -167,6 +167,7 @@ namespace MnemosyneArcana.Prototype
         private Text _bottomDiscardText;
         private Text _bottomHintText;
         private Text _handSectionTitleText;
+        private LayoutElement _rootContentLayoutElement;
         private LayoutElement _playFillerLayoutElement;
         private LayoutElement _playPageLayoutElement;
         private RectTransform _playPageContainer;
@@ -441,11 +442,29 @@ namespace MnemosyneArcana.Prototype
             rootFrame.offsetMin = new Vector2(18, 16);
             rootFrame.offsetMax = new Vector2(-18, -16);
 
-            var root = CreatePanel(rootFrame, new Color(0f, 0f, 0f, 0f));
+            var rootViewport = CreatePanel(rootFrame, new Color(0f, 0f, 0f, 0f));
+            rootViewport.anchorMin = new Vector2(0f, 0f);
+            rootViewport.anchorMax = new Vector2(1f, 1f);
+            rootViewport.offsetMin = new Vector2(0f, 26f);
+            rootViewport.offsetMax = Vector2.zero;
+            var viewportImage = rootViewport.GetComponent<Image>();
+            if (viewportImage != null)
+            {
+                viewportImage.raycastTarget = true;
+            }
+
+            var viewportMask = rootViewport.gameObject.AddComponent<Mask>();
+            viewportMask.showMaskGraphic = false;
+
+            var root = CreatePanel(rootViewport, new Color(0f, 0f, 0f, 0f));
             root.anchorMin = Vector2.zero;
-            root.anchorMax = Vector2.one;
+            root.anchorMax = new Vector2(0f, 1f);
+            root.pivot = new Vector2(0f, 0.5f);
             root.offsetMin = Vector2.zero;
             root.offsetMax = Vector2.zero;
+            _rootContentLayoutElement = root.gameObject.AddComponent<LayoutElement>();
+            _rootContentLayoutElement.minWidth = 1400f;
+            _rootContentLayoutElement.flexibleHeight = 1f;
 
             var rootLayout = root.gameObject.AddComponent<HorizontalLayoutGroup>();
             rootLayout.spacing = 10;
@@ -453,7 +472,62 @@ namespace MnemosyneArcana.Prototype
             rootLayout.childControlHeight = true;
             rootLayout.childForceExpandWidth = true;
             rootLayout.childForceExpandHeight = true;
-            rootLayout.padding = new RectOffset(0, 0, 0, 10);
+            rootLayout.padding = new RectOffset(0, 0, 0, 0);
+
+            var rootScroller = rootViewport.gameObject.AddComponent<ScrollRect>();
+            rootScroller.content = root;
+            rootScroller.viewport = rootViewport;
+            rootScroller.horizontal = true;
+            rootScroller.vertical = false;
+            rootScroller.movementType = ScrollRect.MovementType.Clamped;
+            rootScroller.horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+            rootScroller.horizontalScrollbarSpacing = 2f;
+
+            var scrollBarPanel = CreatePanel(rootFrame, new Color(0.08f, 0.12f, 0.2f, 0.9f));
+            scrollBarPanel.anchorMin = new Vector2(0f, 0f);
+            scrollBarPanel.anchorMax = new Vector2(1f, 0f);
+            scrollBarPanel.pivot = new Vector2(0.5f, 0f);
+            scrollBarPanel.sizeDelta = new Vector2(0f, 22f);
+            scrollBarPanel.anchoredPosition = new Vector2(0f, 0f);
+
+            var scrollNote = CreateText(scrollBarPanel, "測試用橫向捲動軸（正式版移除）", 10, TextAnchor.MiddleLeft, FontStyle.Bold);
+            scrollNote.color = new Color(0.86f, 0.9f, 1f, 0.72f);
+            scrollNote.rectTransform.anchorMin = new Vector2(0f, 0f);
+            scrollNote.rectTransform.anchorMax = new Vector2(0f, 1f);
+            scrollNote.rectTransform.pivot = new Vector2(0f, 0.5f);
+            scrollNote.rectTransform.sizeDelta = new Vector2(240f, 0f);
+            scrollNote.rectTransform.anchoredPosition = new Vector2(8f, 0f);
+
+            var hScrollbar = scrollBarPanel.gameObject.AddComponent<Scrollbar>();
+            hScrollbar.direction = Scrollbar.Direction.LeftToRight;
+            var hScrollbarImage = scrollBarPanel.GetComponent<Image>();
+            if (hScrollbarImage != null)
+            {
+                hScrollbarImage.color = new Color(0.1f, 0.16f, 0.28f, 0.94f);
+            }
+
+            var slidingArea = CreatePanel(scrollBarPanel, new Color(0f, 0f, 0f, 0f));
+            slidingArea.anchorMin = new Vector2(0f, 0f);
+            slidingArea.anchorMax = new Vector2(1f, 1f);
+            slidingArea.offsetMin = new Vector2(260f, 3f);
+            slidingArea.offsetMax = new Vector2(-8f, -3f);
+            slidingArea.GetComponent<Image>().raycastTarget = false;
+
+            var handle = CreatePanel(slidingArea, new Color(0.58f, 0.66f, 0.9f, 0.95f));
+            handle.anchorMin = new Vector2(0f, 0f);
+            handle.anchorMax = new Vector2(0f, 1f);
+            handle.pivot = new Vector2(0f, 0.5f);
+            handle.sizeDelta = new Vector2(120f, 0f);
+            handle.anchoredPosition = Vector2.zero;
+            var handleImage = handle.GetComponent<Image>();
+            if (handleImage != null)
+            {
+                handleImage.raycastTarget = true;
+            }
+
+            hScrollbar.handleRect = handle;
+            hScrollbar.targetGraphic = handleImage;
+            rootScroller.horizontalScrollbar = hScrollbar;
 
             _dragLayer = CreatePanel(canvasGo.transform, new Color(0f, 0f, 0f, 0f));
             _dragLayer.anchorMin = Vector2.zero;
@@ -3451,6 +3525,10 @@ namespace MnemosyneArcana.Prototype
                 : Mathf.Max(700f, screenH - 28f);
             _leftColLayout.minHeight = targetColHeight;
             _rightColLayout.minHeight = targetColHeight;
+            if (_rootContentLayoutElement != null)
+            {
+                _rootContentLayoutElement.minWidth = _leftColLayout.minWidth + _rightColLayout.minWidth + 180f;
+            }
             if (_quizModalLayoutElement != null)
             {
                 _quizModalLayoutElement.minHeight = _isLandscapeLayout

@@ -17,6 +17,28 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R17 測試用橫向捲動軸
+
+- 目標：提高手機橫向版面對位測試效率（暫時保留測試工具）
+- 完成內容：
+  - 主內容區改為 `ScrollRect` 橫向捲動
+  - 新增底部 `Scrollbar` 與提示文案「測試用橫向捲動軸（正式版移除）」
+  - 依左右欄最小寬度動態設定 content 寬，確保可捲動
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity Console `error` = 0
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r17-horizontal-scrollbar-1.png`
+- 風險/阻塞：
+  - 正式版若忘記移除測試軸會影響最終觀感
+- 下一步：
+  - 加上測試功能開關，打包正式版時可一鍵關閉
+
+---
+
 ## 交接記錄（2026-02-19）- S10-R16 手牌區下移到底部
 
 - 目標：對齊 Balatro 手機版主戰鬥版面（手牌在底部、牌桌在中段）

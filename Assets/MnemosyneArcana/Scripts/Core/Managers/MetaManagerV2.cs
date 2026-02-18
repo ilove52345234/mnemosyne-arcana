@@ -296,6 +296,11 @@ namespace MnemosyneArcana.Core.Managers
                     case "BLD_02": snapshot.NurtureCandidateExtraCount += 1; break;
                     case "BLD_03A": snapshot.Lv1To2TrainingDiscount += 1; break;
                     case "BLD_03B": snapshot.Lv2To3TrainingDiscount += 1; break;
+                    case "BLD_06A": snapshot.SenseOfferWeightBonusRate += 0.08f; break;
+                    case "BLD_06B": snapshot.AffixToolWeightBonusRate += 0.12f; break;
+                    case "BLD_07": snapshot.NurtureLockCarrySlots += 1; break;
+                    case "BLD_10A": snapshot.FirstPackGuaranteeMode = PackGuaranteeMode.LearningTool; break;
+                    case "BLD_10B": snapshot.FirstPackGuaranteeMode = PackGuaranteeMode.BuildTool; break;
 
                     case "MAS_01": snapshot.Lv4CardFlatChipBonus += 2; break;
                     case "MAS_02": snapshot.FirstTwoLv4CardsAdditiveMultBonus += 1; break;
@@ -305,6 +310,13 @@ namespace MnemosyneArcana.Core.Managers
                     case "MAS_10A": snapshot.MasteryContractLpBonusRate += 0.15f; break;
                     case "MAS_10B": snapshot.MasteryContractRequirementReduction += 1; break;
                     case "MAS_08": snapshot.IgnoreFirstLv4WrongHandMultPenalty = true; break;
+                    case "MAS_07": snapshot.BossAllCorrectExtraLv4UpgradeCount += 1; break;
+                    case "MAS_09": snapshot.FirstLv4PlayContractProgressBonus += 1; break;
+                    case "MAS_11": snapshot.MasteryRunLpBonusOnEightLv4 += 2; break;
+                    case "MAS_12":
+                        snapshot.MasterySettlementLpPerThreeLv4 += 1;
+                        snapshot.MasterySettlementLpBonusCap = Math.Max(snapshot.MasterySettlementLpBonusCap, 4);
+                        break;
                 }
             }
 
@@ -319,6 +331,39 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             return Math.Max(0, effects.PerfectRunLpBonus);
+        }
+
+        public int GetContractProgressBonusOnFirstLv4Play(bool isFirstLv4PlayInRun, CurriculumEffectSnapshot effects)
+        {
+            if (!isFirstLv4PlayInRun || effects == null)
+            {
+                return 0;
+            }
+
+            return Math.Max(0, effects.FirstLv4PlayContractProgressBonus);
+        }
+
+        public int GetMasteryRunLpBonus(int lv4PlaysInRun, bool alreadyGrantedThisRun, CurriculumEffectSnapshot effects)
+        {
+            if (effects == null || alreadyGrantedThisRun || lv4PlaysInRun < 8)
+            {
+                return 0;
+            }
+
+            return Math.Max(0, effects.MasteryRunLpBonusOnEightLv4);
+        }
+
+        public int GetMasterySettlementLpBonus(int lv4PlayedCount, CurriculumEffectSnapshot effects)
+        {
+            if (effects == null || lv4PlayedCount <= 0 || effects.MasterySettlementLpPerThreeLv4 <= 0)
+            {
+                return 0;
+            }
+
+            var blocks = lv4PlayedCount / 3;
+            var bonus = blocks * effects.MasterySettlementLpPerThreeLv4;
+            var cap = effects.MasterySettlementLpBonusCap > 0 ? effects.MasterySettlementLpBonusCap : int.MaxValue;
+            return Math.Max(0, Math.Min(bonus, cap));
         }
 
         public ServiceResult<LexiconUnlockRequirement> GetLexiconUnlockRequirement(

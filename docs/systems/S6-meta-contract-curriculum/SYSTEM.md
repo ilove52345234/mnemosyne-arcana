@@ -34,13 +34,20 @@
 - 已完成 Batch-4：
   - FLU 高體感節點：免費重答（FLU_04）、連錯保底門檻調整（FLU_05）、全對 LP bonus（FLU_07）、連對效果延長（FLU_09）已接入運行 API。
   - BLD 高體感節點：下一次刷新類別預覽（BLD_01）、候選槽位 +1（BLD_02）、訓練折扣（BLD_03A/03B）已接入商店 API。
+- 已完成 Batch-5：
+  - BLD 進階商店效果：語感權重加成（BLD_06A）、指定機制詞條權重加成（BLD_06B）、養成鎖定帶出槽（BLD_07）、首包保底型別（BLD_10A/10B）已接入商店/Meta API。
+  - MAS 進階成長效果：Boss 全對額外 Lv4 升級次數（MAS_07）、首張 Lv4 契約進度加成（MAS_09）、單局 Lv4 次數里程 LP（MAS_11）、結算 Lv4 次數區段 LP（MAS_12）已接入 Learning/Meta API。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18，重啟 S6）：驗測完成，`Done` 待你決策。
+- 驗測結論（2026-02-18，重啟 S6）：Batch-5 已驗測通過，S6 仍為 `In Progress`（尚有未入場節點效果）。
 - 三模型對應：
   - `M-Low`：`MetaManagerTests`（含 invalid input、mutex/prereq fail 等邊界；18/18）。
   - `M-Mid`：`UserStoryAcceptanceTests.US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh`（契約生成與刷新可預測）。
   - `M-High`：`UserStoryAcceptanceTests.US11_CurriculumNodeMutexAndPrereqAreEnforced` + `PlayableLoopUseCaseTests.UseCase_CompleteRunAndSettleMeta_ContractRatioWithin45Percent`（課程樹守門＋整局結算 cap）。
+- 本輪 Batch-5 對應驗測：
+  - `M-Low`：`MetaManagerTests`（30/30）、`ShopManagerTests`（17/17）、`LearningManagerTests`（16/16）。
+  - `M-Mid`：`UserStoryAcceptanceTests.US10_ContractGenerationIsDeterministicAndSupportsSingleRefresh`（1/1）。
+  - `M-High`：`UserStoryAcceptanceTests.US11_CurriculumNodeMutexAndPrereqAreEnforced`（1/1） + `PlayableLoopUseCaseTests.UseCase_CompleteRunAndSettleMeta_ContractRatioWithin45Percent`（1/1）。
 - 失敗/邊界案例：
   - `MetaManagerTests.TryUnlockNode_MutexConflict_ReturnsStateConflict`
   - `MetaManagerTests.SettleRun_NullRunResult_ReturnsInvalidInput`
@@ -73,12 +80,20 @@
   - `788a39b266914d80a87716052eaa5237`（US10：1/1）
   - `2a9a379e57674c579b6801b1dd20b709`（US11：1/1）
   - `dcf2f433b3a14512b27506b461b1d00e`（PlayableLoop Meta 結算：1/1）
+- 本輪重跑證據（MCP job，2026-02-18，Batch-5）：
+  - `4571e04a11434ea9a8da64ac4c174df6`（MetaManagerTests：30/30）
+  - `7194e6ab373747fcaad95cf662d10d07`（ShopManagerTests：17/17）
+  - `037ab385d0e64e6386c00718932bf895`（LearningManagerTests：16/16）
+  - `ad69bfaa6c5c411799eea33ef7816a4b`（US10：1/1）
+  - `a4a067ee6ac8407d8b7269c537c8242d`（US11：1/1）
+  - `42eb6672a03a46108357fc9778bedcb9`（PlayableLoop Meta 結算：1/1）
 - 本輪設計問題：
-1. 雖已完成 Batch-4，仍有部分節點效果未入場（例：FLU_12、LEX_04/05/06A/06B/07/08/12、BLD_06A/06B/07/10A/10B/11/12、MAS_04/05/07/09/10A/11/12）。
+1. 雖已完成 Batch-5，仍有部分節點效果未入場（例：FLU_12、LEX_04/05/06A/06B/07/08/12、BLD_11/12、MAS_04/05/10A）。
+2. MAS_11/MAS_12 目前只提供計算 API，尚未綁定實際 run 結算狀態機事件點，存在「規格有、流程未觸發」風險。
 - 調整建議：
-1. 進入 S6-Effect 第五批：優先補 BLD_06/07/10/11 與 MAS_07/09/10/11 的回合內可感知效果。
+1. 進入 S6-Effect 第六批：優先補 MAS_11/MAS_12 的實際結算掛點與 BLD_11/12 的回合內觸發鏈路。
 2. 新增「節點效果覆蓋率」指標（已聚合/已入場/已驗測）作為 S6 Done 必要條件。
-3. 契約 LP cap（45%）持續維持不變，先以完成率與需求側調整體感。
+3. 契約 LP cap（45%）持續維持不變，先完成入場覆蓋再做數值微調。
 
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
@@ -89,3 +104,4 @@
 - 2026-02-18：完成 Batch-2（詞庫解鎖門檻、滴詞權重、契約需求減免）與對應測試，`MetaManagerTests` 擴充為 25/25。
 - 2026-02-18：完成 Batch-3（滴詞品質偏向、課程卡 LP 返還、MAS_08 Boss 特化）與對應測試，`MetaManagerTests` 擴充為 26/26。
 - 2026-02-18：完成 Batch-4（FLU_04/05/07/09、BLD_01/02/03A/03B）效果入場與測試，`MetaManagerTests` 擴充為 27/27。
+- 2026-02-18：完成 Batch-5（BLD_06A/06B/07/10A/10B、MAS_07/09/11/12）效果入場與測試，`MetaManagerTests` 擴充為 30/30，`ShopManagerTests` 擴充為 17/17，`LearningManagerTests` 擴充為 16/16。

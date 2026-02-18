@@ -190,6 +190,11 @@ namespace MnemosyneArcana.Core.Managers
             return System.Math.Max(0, baseDuration + effects.StreakBonusDurationExtraTurns);
         }
 
+        public int GetBossAllCorrectExtraLv4UpgradeCount(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0, effects?.BossAllCorrectExtraLv4UpgradeCount ?? 0);
+        }
+
         public BossStreakBonus GetBossStreakBonus(int consecutiveCorrect)
         {
             var isStreakBonus = consecutiveCorrect > 0 && consecutiveCorrect % 3 == 0;

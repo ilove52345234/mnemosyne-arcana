@@ -315,11 +315,17 @@ namespace MnemosyneArcana.Tests.EditMode
         {
             var result = _meta.GetCurriculumEffects(new MetaProgress
             {
-                CurriculumNodes = new[] { "FLU_01", "FLU_04", "FLU_05", "FLU_07", "FLU_08", "FLU_09", "BLD_01", "BLD_02", "BLD_03A", "BLD_04", "MAS_01", "MAS_03A", "LEX_09", "LEX_03A", "BLD_09", "MAS_08" }
+                CurriculumNodes = new[]
+                {
+                    "FLU_01", "FLU_04", "FLU_05", "FLU_07", "FLU_08", "FLU_09",
+                    "BLD_01", "BLD_02", "BLD_03A", "BLD_04", "BLD_06A", "BLD_06B", "BLD_07", "BLD_09", "BLD_10A",
+                    "MAS_01", "MAS_03A", "MAS_07", "MAS_08", "MAS_09", "MAS_11", "MAS_12",
+                    "LEX_09", "LEX_03A"
+                }
             });
 
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(16, result.Value.UnlockedNodeCount);
+            Assert.AreEqual(24, result.Value.UnlockedNodeCount);
             Assert.AreEqual(0.2f, result.Value.Lv1Lv2TimeBonusSec, 0.0001f);
             Assert.AreEqual(1, result.Value.RetryCostDiscount);
             Assert.AreEqual(2, result.Value.FirstShopRerollDiscount);
@@ -336,6 +342,15 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(1, result.Value.NextRefreshPreviewCategoryCount);
             Assert.AreEqual(1, result.Value.NurtureCandidateExtraCount);
             Assert.AreEqual(1, result.Value.Lv1To2TrainingDiscount);
+            Assert.AreEqual(0.08f, result.Value.SenseOfferWeightBonusRate, 0.0001f);
+            Assert.AreEqual(0.12f, result.Value.AffixToolWeightBonusRate, 0.0001f);
+            Assert.AreEqual(1, result.Value.NurtureLockCarrySlots);
+            Assert.AreEqual(PackGuaranteeMode.LearningTool, result.Value.FirstPackGuaranteeMode);
+            Assert.AreEqual(1, result.Value.BossAllCorrectExtraLv4UpgradeCount);
+            Assert.AreEqual(1, result.Value.FirstLv4PlayContractProgressBonus);
+            Assert.AreEqual(2, result.Value.MasteryRunLpBonusOnEightLv4);
+            Assert.AreEqual(1, result.Value.MasterySettlementLpPerThreeLv4);
+            Assert.AreEqual(4, result.Value.MasterySettlementLpBonusCap);
         }
 
         [Test]
@@ -436,6 +451,50 @@ namespace MnemosyneArcana.Tests.EditMode
 
             Assert.AreEqual(1, granted);
             Assert.AreEqual(0, blocked);
+        }
+
+        [Test]
+        public void GetContractProgressBonusOnFirstLv4Play_WithMas09_OnlyFirstPlayGetsBonus()
+        {
+            var effects = new CurriculumEffectSnapshot { FirstLv4PlayContractProgressBonus = 1 };
+
+            var granted = _meta.GetContractProgressBonusOnFirstLv4Play(isFirstLv4PlayInRun: true, effects);
+            var blocked = _meta.GetContractProgressBonusOnFirstLv4Play(isFirstLv4PlayInRun: false, effects);
+
+            Assert.AreEqual(1, granted);
+            Assert.AreEqual(0, blocked);
+        }
+
+        [Test]
+        public void GetMasteryRunLpBonus_WithMas11_RequiresEightLv4AndSingleGrant()
+        {
+            var effects = new CurriculumEffectSnapshot { MasteryRunLpBonusOnEightLv4 = 2 };
+
+            var underThreshold = _meta.GetMasteryRunLpBonus(lv4PlaysInRun: 7, alreadyGrantedThisRun: false, effects);
+            var granted = _meta.GetMasteryRunLpBonus(lv4PlaysInRun: 8, alreadyGrantedThisRun: false, effects);
+            var blocked = _meta.GetMasteryRunLpBonus(lv4PlaysInRun: 9, alreadyGrantedThisRun: true, effects);
+
+            Assert.AreEqual(0, underThreshold);
+            Assert.AreEqual(2, granted);
+            Assert.AreEqual(0, blocked);
+        }
+
+        [Test]
+        public void GetMasterySettlementLpBonus_WithMas12_AppliesPerThreeAndCap()
+        {
+            var effects = new CurriculumEffectSnapshot
+            {
+                MasterySettlementLpPerThreeLv4 = 1,
+                MasterySettlementLpBonusCap = 4
+            };
+
+            var noBlock = _meta.GetMasterySettlementLpBonus(lv4PlayedCount: 2, effects);
+            var twoBlocks = _meta.GetMasterySettlementLpBonus(lv4PlayedCount: 6, effects);
+            var capped = _meta.GetMasterySettlementLpBonus(lv4PlayedCount: 15, effects);
+
+            Assert.AreEqual(0, noBlock);
+            Assert.AreEqual(2, twoBlocks);
+            Assert.AreEqual(4, capped);
         }
 
         private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()

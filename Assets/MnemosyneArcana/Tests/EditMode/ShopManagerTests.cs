@@ -257,5 +257,47 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(4, lv2To3);
             Assert.AreEqual(3, lv0To1);
         }
+
+        [Test]
+        public void GetEffectiveOfferWeight_WithBld06AAnd06B_AppliesCategoryBonuses()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                SenseOfferWeightBonusRate = 0.08f,
+                AffixToolWeightBonusRate = 0.12f
+            };
+
+            var senseWeight = manager.GetEffectiveOfferWeight("SENSE_POS_RADAR", ante: 6, effects);
+            var affixWeight = manager.GetEffectiveOfferWeight("AFFIX_GOLD_PROCESS", ante: 6, effects);
+            var otherAffixWeight = manager.GetEffectiveOfferWeight("AFFIX_PREFIX_RE", ante: 6, effects);
+
+            Assert.AreEqual(12, senseWeight);
+            Assert.AreEqual(13, affixWeight);
+            Assert.AreEqual(18, otherAffixWeight);
+        }
+
+        [Test]
+        public void GetNurtureCarryLockSlots_WithBld07_ReturnsAdditionalCarrySlot()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot { NurtureLockCarrySlots = 1 };
+
+            var slots = manager.GetNurtureCarryLockSlots(effects);
+
+            Assert.AreEqual(1, slots);
+        }
+
+        [Test]
+        public void GetFirstPackGuaranteeMode_WithBld10_ReturnsConfiguredGuarantee()
+        {
+            var manager = new ShopManagerV2();
+            var learning = new CurriculumEffectSnapshot { FirstPackGuaranteeMode = PackGuaranteeMode.LearningTool };
+            var build = new CurriculumEffectSnapshot { FirstPackGuaranteeMode = PackGuaranteeMode.BuildTool };
+
+            Assert.AreEqual(PackGuaranteeMode.LearningTool, manager.GetFirstPackGuaranteeMode(learning));
+            Assert.AreEqual(PackGuaranteeMode.BuildTool, manager.GetFirstPackGuaranteeMode(build));
+            Assert.AreEqual(PackGuaranteeMode.None, manager.GetFirstPackGuaranteeMode(null));
+        }
     }
 }

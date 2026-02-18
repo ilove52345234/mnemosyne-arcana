@@ -26,6 +26,7 @@ namespace MnemosyneArcana.Core.Contracts
     public enum ShopOfferCategory { Sense, Material, Affix, Course }
     public enum WrongAnswerChoice { AcceptLoss, RetryWithCost, Gamble }
     public enum RunDifficultyProfile { Relaxed, Standard, Challenging }
+    public enum PackGuaranteeMode { None, LearningTool, BuildTool }
 
     public sealed class PlayedCard
     {
@@ -214,6 +215,10 @@ namespace MnemosyneArcana.Core.Contracts
         public int NurtureCandidateExtraCount { get; set; }
         public int Lv1To2TrainingDiscount { get; set; }
         public int Lv2To3TrainingDiscount { get; set; }
+        public float SenseOfferWeightBonusRate { get; set; }
+        public float AffixToolWeightBonusRate { get; set; }
+        public int NurtureLockCarrySlots { get; set; }
+        public PackGuaranteeMode FirstPackGuaranteeMode { get; set; }
 
         // MAS
         public int Lv4CardFlatChipBonus { get; set; }
@@ -224,6 +229,11 @@ namespace MnemosyneArcana.Core.Contracts
         public float MasteryContractLpBonusRate { get; set; }
         public int MasteryContractRequirementReduction { get; set; }
         public bool IgnoreFirstLv4WrongHandMultPenalty { get; set; }
+        public int BossAllCorrectExtraLv4UpgradeCount { get; set; }
+        public int FirstLv4PlayContractProgressBonus { get; set; }
+        public int MasteryRunLpBonusOnEightLv4 { get; set; }
+        public int MasterySettlementLpPerThreeLv4 { get; set; }
+        public int MasterySettlementLpBonusCap { get; set; }
     }
 
     public sealed class LexiconUnlockRequirement

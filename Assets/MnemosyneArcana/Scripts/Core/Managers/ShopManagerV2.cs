@@ -52,6 +52,10 @@ namespace MnemosyneArcana.Core.Managers
                 .Select(item =>
                 {
                     var anteWeight = ResolveAnteWeight(item.Category, item.BaseWeight, ante);
+                    if (effects != null)
+                    {
+                        anteWeight = ApplyEffectWeight(item.Id, item.Category, anteWeight, effects);
+                    }
                     return (item, weight: anteWeight);
                 })
                 .Where(x => x.weight > 0)
@@ -136,6 +140,33 @@ namespace MnemosyneArcana.Core.Managers
             return System.Math.Max(1, baseCost - discount);
         }
 
+        public int GetNurtureCarryLockSlots(CurriculumEffectSnapshot effects)
+        {
+            return System.Math.Max(0, effects?.NurtureLockCarrySlots ?? 0);
+        }
+
+        public PackGuaranteeMode GetFirstPackGuaranteeMode(CurriculumEffectSnapshot effects)
+        {
+            return effects?.FirstPackGuaranteeMode ?? PackGuaranteeMode.None;
+        }
+
+        public int GetEffectiveOfferWeight(string offerId, int ante, CurriculumEffectSnapshot effects)
+        {
+            var item = Pool.FirstOrDefault(x => x.Id == offerId);
+            if (string.IsNullOrWhiteSpace(item.Id))
+            {
+                return 0;
+            }
+
+            var weight = ResolveAnteWeight(item.Category, item.BaseWeight, ante);
+            if (effects != null)
+            {
+                weight = ApplyEffectWeight(item.Id, item.Category, weight, effects);
+            }
+
+            return System.Math.Max(0, weight);
+        }
+
         private static int ResolveAnteWeight(ShopOfferCategory category, int baseWeight, int ante)
         {
             // Ante 1-2: 只出現機制與基礎養成，不出課程卡
@@ -172,6 +203,24 @@ namespace MnemosyneArcana.Core.Managers
                 ShopOfferCategory.Material => baseWeight + 1,
                 _ => baseWeight
             };
+        }
+
+        private static int ApplyEffectWeight(string offerId, ShopOfferCategory category, int currentWeight, CurriculumEffectSnapshot effects)
+        {
+            var weight = currentWeight;
+            if (category == ShopOfferCategory.Sense && effects.SenseOfferWeightBonusRate > 0f)
+            {
+                weight = (int)System.Math.Max(1, System.Math.Floor(weight * (1f + effects.SenseOfferWeightBonusRate)));
+            }
+
+            if (category == ShopOfferCategory.Affix &&
+                offerId == "AFFIX_GOLD_PROCESS" &&
+                effects.AffixToolWeightBonusRate > 0f)
+            {
+                weight = (int)System.Math.Max(1, System.Math.Floor(weight * (1f + effects.AffixToolWeightBonusRate)));
+            }
+
+            return weight;
         }
 
         private static IReadOnlyList<ShopOffer> GenerateBossCourseOffers(System.Random random)

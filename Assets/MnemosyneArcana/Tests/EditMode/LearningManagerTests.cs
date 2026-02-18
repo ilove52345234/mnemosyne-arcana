@@ -221,5 +221,16 @@ namespace MnemosyneArcana.Tests.EditMode
 
             Assert.AreEqual(2, duration);
         }
+
+        [Test]
+        public void GetBossAllCorrectExtraLv4UpgradeCount_WithMas07_ReturnsOne()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { BossAllCorrectExtraLv4UpgradeCount = 1 };
+
+            var count = manager.GetBossAllCorrectExtraLv4UpgradeCount(effects);
+
+            Assert.AreEqual(1, count);
+        }
     }
 }

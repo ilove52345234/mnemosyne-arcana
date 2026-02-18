@@ -8,6 +8,8 @@ namespace MnemosyneArcana.Core.Managers
     {
         private const int OfferSlots = 5;
         private const int BossCourseSlots = 2;
+        private const int RerollBaseCost = 1;
+        private const int RerollCostStep = 1;
 
         private static readonly IReadOnlyList<(string Id, ShopOfferCategory Category, int MinPrice, int MaxPrice, int BaseWeight)> Pool =
             new List<(string Id, ShopOfferCategory Category, int MinPrice, int MaxPrice, int BaseWeight)>
@@ -186,6 +188,16 @@ namespace MnemosyneArcana.Core.Managers
                 OfferId = offer.OfferId,
                 Error = ErrorCode.None
             });
+        }
+
+        public ServiceResult<int> GetRerollCost(int rerollCount)
+        {
+            if (rerollCount < 0)
+            {
+                return ServiceResult<int>.Fail(ErrorCode.InvalidInput);
+            }
+
+            return ServiceResult<int>.Ok(RerollBaseCost + rerollCount * RerollCostStep);
         }
     }
 }

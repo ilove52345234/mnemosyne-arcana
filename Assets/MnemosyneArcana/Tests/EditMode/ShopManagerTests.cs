@@ -108,5 +108,55 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(ErrorCode.StateConflict, result.Value.Error);
             Assert.AreEqual(3, result.Value.RemainingMoney);
         }
+
+        [Test]
+        public void GetRerollCost_TwentyRolls_IsStrictlyIncreasing()
+        {
+            var manager = new ShopManagerV2();
+            var previous = 0;
+
+            for (var i = 0; i < 20; i++)
+            {
+                var cost = manager.GetRerollCost(i);
+                Assert.IsTrue(cost.IsSuccess);
+                Assert.Greater(cost.Value, previous);
+                previous = cost.Value;
+            }
+        }
+
+        [Test]
+        public void RerollEconomy_Budget80_CannotSustainTwentyRollsAndLosesBuyWindows()
+        {
+            var manager = new ShopManagerV2();
+            var money = 80;
+            var performedRerolls = 0;
+            var canBuyAnyOfferRounds = 0;
+
+            for (var i = 0; i < 20; i++)
+            {
+                var rerollCost = manager.GetRerollCost(i);
+                Assert.IsTrue(rerollCost.IsSuccess);
+
+                if (money < rerollCost.Value)
+                {
+                    break;
+                }
+
+                money -= rerollCost.Value;
+                performedRerolls++;
+
+                var offers = manager.GenerateOffers(ante: 6, seed: 9000 + i, isBossShop: false);
+                Assert.IsTrue(offers.IsSuccess);
+
+                if (offers.Value.Any(x => x.Price <= money))
+                {
+                    canBuyAnyOfferRounds++;
+                }
+            }
+
+            Assert.Less(performedRerolls, 20);
+            Assert.GreaterOrEqual(performedRerolls, 8);
+            Assert.Less(canBuyAnyOfferRounds, performedRerolls);
+        }
     }
 }

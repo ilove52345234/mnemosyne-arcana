@@ -1,0 +1,56 @@
+# S10 UI 對齊追蹤（Balatro Mobile）
+
+## 目的
+- 作為 S10 手機版 UI 對齊的單一記錄檔。
+- 每一輪循環結束（`Play -> 截圖 -> 對比 -> 調整`）都更新本檔，並推送遠端。
+
+## 對齊量化標準（0-100）
+- `Layout`（30）：區塊層次、主次視覺、留白節奏。
+- `Readability`（25）：字級、資訊密度、手機可讀性。
+- `Interaction`（25）：流程分頁、操作反饋、拖曳可理解性。
+- `Polish`（20）：卡牌質感、陰影/邊框、色彩一致性。
+
+`總分 = Layout + Readability + Interaction + Polish`
+
+## 每輪固定更新欄位
+- 輪次編號
+- 截圖檔案路徑
+- 當前分數（四項分解 + 總分）
+- 本輪修改
+- 未解決問題（自動延到下一輪）
+- 下一輪優先事項
+
+## 迭代紀錄
+
+### Round R6（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r6-1.png`
+  - `Assets/Screenshots/S10-auto-loop-r6-2.png`
+  - `Assets/Screenshots/S10-auto-loop-r6-4.png`
+  - `Assets/Screenshots/S10-auto-loop-r6-5.png`
+  - `Assets/Screenshots/S10-auto-loop-r6-6.png`
+- Score:
+  - Layout: 22/30
+  - Readability: 18/25
+  - Interaction: 17/25
+  - Polish: 11/20
+  - Total: 68/100
+- 本輪修改:
+  - 補上 `CanvasScaler` 參考解析度與 match 策略（手機比例縮放穩定）。
+  - 手機模式狀態欄文案精簡。
+  - 側欄資訊卡改短標題（分數/節奏/資源）。
+  - 卡牌手機文案精簡（單字 + Lv）且字級提高。
+  - `Mult` 在手機模式放大，已上桌文案精簡。
+- 未解決問題:
+  - 卡牌視覺質感仍偏平（距離 Balatro mobile 風格仍有落差）。
+  - 拖曳/目標區互動反饋仍不夠強。
+- 下一輪優先:
+  - 強化卡牌材質層次（框線、陰影、色階）。
+  - 增加拖曳目標高亮與放置成功反饋。
+  - 進一步調整主次區塊視覺權重。
+
+## 執行規範（每輪結束必做）
+1. 更新本檔最新輪次紀錄。
+2. 更新 `docs/systems/S10-ui-ux/SYSTEM.md` 的「更新紀錄」一行摘要。
+3. 執行必要驗證（至少確認可編譯，若有測試則記錄 job id）。
+4. `git add` 相關檔案、`git commit`、`git push`。

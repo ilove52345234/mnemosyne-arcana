@@ -55,7 +55,7 @@
 | S7 Final/Endless | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S8 Telemetry/Observability | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S9 NFR/Quality | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
-| S10 UI/UX | In Progress | Done | Done | In Progress | In Progress | 2026-02-18 | 重新規劃正式可玩 UI（移除調參面板、完成牌列操作流） |
+| S10 UI/UX | In Progress | Done | Done | Done | Done (round-3) | 2026-02-19 | 依 `ALIGNMENT_TRACKER.md` 逐輪對齊並於每輪結束 push |
 
 ## 更新規範
 1. 每完成一輪系統驗測，先更新對應 `docs/systems/Sx-*/SYSTEM.md` 的第 4/5 區塊。

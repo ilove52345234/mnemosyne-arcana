@@ -17,6 +17,29 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10 對齊追蹤機制建立
+
+- 目標：建立 S10 UI 對齊的固定記錄與提交流程
+- 完成內容：
+  - 新增 `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - 定義對齊分數模型（Layout/Readability/Interaction/Polish）
+  - 新增每輪必填欄位與「每輪結束必做」流程（更新、驗證、commit、push）
+  - 在 `docs/systems/S10-ui-ux/SYSTEM.md` 增加對齊追蹤章節與更新紀錄
+  - 在 `docs/PROGRESS_OVERVIEW.md` 更新 S10 下一步為追蹤檔驅動
+- 變更檔案：
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/PROGRESS_OVERVIEW.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - 文件新增與連結完成，可作為每輪固定更新入口
+- 風險/阻塞：
+  - 無
+- 下一步：
+  - 每輪 UI 對齊完成後同步更新追蹤檔並 push
+
+---
+
 ## 交接記錄（2026-02-12）- 新專案文件體系建立
 
 - 目標：建立可交接、可開發的規格與架構文檔體系
@@ -1207,3 +1230,22 @@
   - 目前 UI 程式仍有開發按鈕，需進入 round-3 實作才能完成產品目標。
 - 下一步：
   - 依新規劃實作 `PlayerMode` 及 UI 版面重排，再跑 S10 round-3 驗測。
+
+## 交接記錄（2026-02-18）- S10 round-3 第一輪完成（流程重排 + M7）
+
+- 目標：承接 S10 正式可玩 UI 重規劃，完成第一輪 round-3 實作與驗測。
+- 完成內容：
+  - `PrototypeCardGameUiController`：調整玩家主流程區塊順序，將答題區後接核心操作列，強化「選牌/答題/出牌」連續性。
+  - `S10UiLocalizationTests`：
+    - 新增 `S10_M7_PlayerMode_KeepsFormalCoreSections`（玩家模式核心區塊與操作按鈕保留）。
+    - 更新 `S10_M2` 驗測語意為「狀態與局外資訊繁中」以符合正式版 PlayerMode。
+  - 文件回填：
+    - `docs/baseline/17-test-matrix.md` 新增 `TC-S10-006`，並更新 `TC-S10-002` 描述。
+    - `docs/systems/S10-ui-ux/SYSTEM.md` 補 round-3 證據與調整建議。
+    - `docs/PROGRESS_OVERVIEW.md`：S10 更新為 `Implementation=Done`、`Verification=Done (round-3)`，狀態維持 `In Progress` 等你決策。
+- 驗測結果：
+  - Unity MCP EditMode：job `1e07630612ee4288980084521bdc4837`（`7/7 passed`）。
+- 風險/阻塞：
+  - 無阻塞；目前主要為 UX 細節優化風險（主要/次要按鈕層級可再微調）。
+- 下一步：
+  - 等你決策是否將 S10 由 `In Progress` 更新為 `Done`。

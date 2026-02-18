@@ -22,6 +22,25 @@
 
 ## 迭代紀錄
 
+### Round R8（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r8-1.png`
+- Score:
+  - Layout: 24/30
+  - Readability: 20/25
+  - Interaction: 17/25
+  - Polish: 12/20
+  - Total: 73/100
+- 本輪修改:
+  - UI 縮放基準改為手機橫向：`CanvasScaler.referenceResolution = 2400x1080`，`matchWidthOrHeight = 1.0`。
+  - 響應式新增 `landscape` 分支，側欄寬度與高度策略改為橫向優先。
+  - 直式大高度下限（700）改為橫向最小高度（360）避免橫向壓縮時失真。
+- 未解決問題:
+  - 目前測得截圖仍為直式 Game 視窗，因此尚未完整驗證橫向排版成效。
+- 下一輪優先:
+  - 以橫向比例（20:9 或 19.5:9 landscape）重新截圖驗證。
+  - 依橫向結果再微調側欄寬度與主區塊節奏。
+
 ### Round R7（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r7-1.png`

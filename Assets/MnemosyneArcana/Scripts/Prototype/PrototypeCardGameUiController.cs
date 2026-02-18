@@ -158,6 +158,7 @@ namespace MnemosyneArcana.Prototype
         private RectTransform _sidebarLogPanel;
         private RectTransform _sidebarStackPanel;
         private bool _isCompactMobileLayout;
+        private bool _isLandscapeLayout;
         private RectTransform _handContainer;
         private RectTransform _playZoneContainer;
         private RectTransform _playZoneCardsContainer;
@@ -371,8 +372,9 @@ namespace MnemosyneArcana.Prototype
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.referenceResolution = new Vector2(720f, 1560f);
-            scaler.matchWidthOrHeight = 0.5f;
+            // Mobile baseline is landscape (Balatro-like): use height-matched scaling.
+            scaler.referenceResolution = new Vector2(2400f, 1080f);
+            scaler.matchWidthOrHeight = 1f;
             canvasGo.AddComponent<GraphicRaycaster>();
 
             BuildThemeBackground(canvasGo.transform);
@@ -3014,16 +3016,31 @@ namespace MnemosyneArcana.Prototype
             }
 
             var screenW = Screen.width;
+            var screenH = Screen.height;
             var shortSide = Mathf.Min(Screen.width, Screen.height);
             var compactMobile = shortSide <= 430;
+            _isLandscapeLayout = screenW >= screenH;
             _isCompactMobileLayout = compactMobile;
             if (_playFillerLayoutElement != null)
             {
-                _playFillerLayoutElement.preferredHeight = compactMobile ? 52f : 64f;
+                _playFillerLayoutElement.preferredHeight = _isLandscapeLayout
+                    ? (compactMobile ? 40f : 52f)
+                    : (compactMobile ? 52f : 64f);
             }
             if (_playerMode)
             {
-                if (compactMobile)
+                if (_isLandscapeLayout && compactMobile)
+                {
+                    _rightColLayout.minWidth = 90;
+                    _rightColLayout.preferredWidth = 102;
+                    _rightColLayout.flexibleWidth = 0.3f;
+                    _leftColLayout.minWidth = 640;
+                    if (_sidebarLogPanel != null) _sidebarLogPanel.gameObject.SetActive(false);
+                    if (_sidebarRunInfoPanel != null) _sidebarRunInfoPanel.gameObject.SetActive(false);
+                    if (_sidebarMetaPanel != null) _sidebarMetaPanel.gameObject.SetActive(false);
+                    if (_sidebarStackPanel != null) _sidebarStackPanel.gameObject.SetActive(true);
+                }
+                else if (compactMobile)
                 {
                     _rightColLayout.minWidth = 84;
                     _rightColLayout.preferredWidth = 96;
@@ -3083,7 +3100,9 @@ namespace MnemosyneArcana.Prototype
                 _leftColLayout.minWidth = screenW < 900 ? 460 : (screenW < 1200 ? 560 : 780);
             }
 
-            var targetColHeight = Mathf.Max(700f, Screen.height - 28f);
+            var targetColHeight = _isLandscapeLayout
+                ? Mathf.Max(360f, screenH - 20f)
+                : Mathf.Max(700f, screenH - 28f);
             _leftColLayout.minHeight = targetColHeight;
             _rightColLayout.minHeight = targetColHeight;
             if (_playPageLayoutElement != null)

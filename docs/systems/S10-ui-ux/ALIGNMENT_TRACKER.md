@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R16（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r16-hand-bottom-1.png`
+- Score:
+  - Layout: 27/30
+  - Readability: 22/25
+  - Interaction: 24/25
+  - Polish: 14/20
+  - Total: 87/100
+- 本輪修改:
+  - 版面層級改為 Balatro 手機方向：手牌列下移到底部、牌桌區維持中段。
+  - 不改互動邏輯（拖曳/點選/出牌流程維持），僅調整 UI sibling 順序。
+- 未解決問題:
+  - 目前只完成靜態佈局對齊，動畫節奏（手牌進場/出牌前導）仍需補齊。
+- 下一輪優先:
+  - 將手牌底部區加入更明確的視覺框與陰影層級。
+  - 補答題 modal 與出牌前導動畫銜接。
+
 ### Round R15（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r15-modal-1.png`

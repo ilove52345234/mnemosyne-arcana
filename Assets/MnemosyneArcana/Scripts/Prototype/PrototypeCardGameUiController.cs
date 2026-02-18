@@ -166,6 +166,7 @@ namespace MnemosyneArcana.Prototype
         private Text _bottomDeckText;
         private Text _bottomDiscardText;
         private Text _bottomHintText;
+        private Text _handSectionTitleText;
         private LayoutElement _playFillerLayoutElement;
         private LayoutElement _playPageLayoutElement;
         private RectTransform _playPageContainer;
@@ -551,7 +552,7 @@ namespace MnemosyneArcana.Prototype
                 slotText.rectTransform.offsetMax = Vector2.zero;
             }
 
-            CreateText(leftCol, "手牌（可拖曳到牌桌區，或點擊快速上桌）", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
+            _handSectionTitleText = CreateText(leftCol, "手牌（可拖曳到牌桌區，或點擊快速上桌）", 17, TextAnchor.MiddleLeft, FontStyle.Bold);
             _handContainer = CreatePanel(leftCol, new Color(0.03f, 0.05f, 0.1f, 0.95f));
             _handContainer.gameObject.AddComponent<LayoutElement>().minHeight = 218;
             var handLayout = _handContainer.gameObject.AddComponent<HorizontalLayoutGroup>();
@@ -814,6 +815,13 @@ namespace MnemosyneArcana.Prototype
             _bottomHintText.rectTransform.offsetMin = new Vector2(8f, 6f);
             _bottomHintText.rectTransform.offsetMax = new Vector2(-8f, -24f);
             _bottomHintText.color = new Color(0.66f, 0.72f, 0.9f, 0.85f);
+
+            // Balatro-like hierarchy: table in middle, hand row near bottom.
+            if (_handSectionTitleText != null && _handContainer != null)
+            {
+                _handSectionTitleText.transform.SetSiblingIndex(leftCol.childCount - 2);
+                _handContainer.SetSiblingIndex(leftCol.childCount - 1);
+            }
 
             var actionRow3 = CreateRow(_shopPageContainer, 52);
             CreateButton(actionRow3, "生成商店商品", GenerateShopOffers);

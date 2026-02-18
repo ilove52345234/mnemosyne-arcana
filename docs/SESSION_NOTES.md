@@ -17,6 +17,27 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R16 手牌區下移到底部
+
+- 目標：對齊 Balatro 手機版主戰鬥版面（手牌在底部、牌桌在中段）
+- 完成內容：
+  - 將「手牌標題 + 手牌容器」重排至左欄底部層級
+  - 保持現有拖曳、點選、答題、出牌邏輯不變
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity Console `error` = 0
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r16-hand-bottom-1.png`
+- 風險/阻塞：
+  - 目前為靜態層級對齊，動態節奏感仍不足
+- 下一步：
+  - 補手牌區視覺框線/陰影層次，並加入進場與切題動畫
+
+---
+
 ## 交接記錄（2026-02-19）- S10-R15 答題頁中央 Modal 舞台重構
 
 - 目標：把答題區從平面區塊改成中央舞台，接近 Balatro 行為節奏

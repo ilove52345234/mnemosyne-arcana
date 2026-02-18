@@ -18,7 +18,7 @@
 - 已落地升級成長值與答錯懲罰整合。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18）：`Done`（符合當前 S2 門檻）。
+- 驗測結論（2026-02-18，重啟 S2）：驗測完成，`Done` 待你決策。
 - 三模型對應：
   - `M-Low`：`ScoringFormulaTests.EvaluateHand_AppliesWrongAnswerPenalty`（答錯降益、倍率下限保護）。
   - `M-Mid`：`ScoringHandTypeTests.EvaluateHand_A_N_V_IsGrammarChain`、`...ThreePlusTwoPos_IsFullHouse`（常見牌型判定）。
@@ -29,6 +29,11 @@
 - 證據（MCP job）：
   - `f50a4925d23d42bfb5c0a7b61156d052`（ScoringHandTypeTests：6/6）
   - `fb3e219b58fc417fa3c89d0f57905193`（ScoringFormulaTests：3/3）
+- 重跑證據（MCP job，2026-02-18）：
+  - `d982086b91be4724a2592a7d6e362b06`（ScoringHandTypeTests：6/6）
+  - `82a50f25a0f24254ba78c41ee094bdba`（ScoringFormulaTests：3/3）
+- 本輪設計問題：
+1. 本輪未觀察到新的設計問題（公式一致性、牌型優先序、懲罰下限皆符合規格）。
 - 調整建議（小幅）：
 1. 若同族系牌型在實戰出現率偏低，可微升同族對/同族三成長值 1 級差距（先 +5 chips 級距試探）。
 2. 若高端 build 分數膨脹過快，優先壓乘算因子來源，不直接砍基礎牌型值。
@@ -37,3 +42,4 @@
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
 - 2026-02-18：完成 S2 首輪行為驗測，達成 Done 門檻（Low/Mid/High + boundary case + job evidence）。
+- 2026-02-18：依新規則重啟 S2 驗測，補充「本輪設計問題/調整建議/待你決策 Done」與重跑證據。

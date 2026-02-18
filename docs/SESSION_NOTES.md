@@ -17,6 +17,28 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R15 答題頁中央 Modal 舞台重構
+
+- 目標：把答題區從平面區塊改成中央舞台，接近 Balatro 行為節奏
+- 完成內容：
+  - `答題頁` 重排為中央 `modal`：上方資訊列（題型/進度）+ 焦點卡 + 題型容器 + 操作列
+  - 保留既有答題/出牌狀態機與邏輯，只調整 UI 容器與視覺層級
+  - `UpdateResponsiveLayout()` 新增 modal 高度、焦點卡高度、焦點字級自適應
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity Console `error` = 0
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r15-modal-1.png`
+- 風險/阻塞：
+  - 尚未加入 modal 進出場動畫，節奏感未達最終目標
+- 下一步：
+  - R16 補齊 modal 動態（進場/切題/翻牌前導）與 CTA 視覺層級調整
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 M3.2 一鍵演示翻牌落地
 
 - 目標：提供穩定可重現的翻牌演示流程，支援持續截圖循環

@@ -197,6 +197,9 @@ namespace MnemosyneArcana.Prototype
         private Text _toggleTuningButtonText;
         private readonly List<Button> _quizOptionButtons = new List<Button>();
         private readonly List<Text> _quizOptionTexts = new List<Text>();
+        private RectTransform _quizModalPanel;
+        private LayoutElement _quizModalLayoutElement;
+        private LayoutElement _quizFocusCardLayoutElement;
         private RectTransform _quizFocusCardPanel;
         private Text _quizFocusCardText;
         private Text _quizModeText;
@@ -619,17 +622,47 @@ namespace MnemosyneArcana.Prototype
 
             _quizPageContainer = CreatePanel(leftCol, new Color(0f, 0f, 0f, 0f));
             var quizPageLayout = _quizPageContainer.gameObject.AddComponent<VerticalLayoutGroup>();
-            quizPageLayout.spacing = 8;
-            quizPageLayout.padding = new RectOffset(0, 0, 0, 0);
+            quizPageLayout.spacing = 10;
+            quizPageLayout.padding = new RectOffset(0, 0, 2, 2);
             quizPageLayout.childControlWidth = true;
             quizPageLayout.childControlHeight = true;
             quizPageLayout.childForceExpandWidth = true;
             quizPageLayout.childForceExpandHeight = false;
             _quizPageContainer.gameObject.AddComponent<LayoutElement>().minHeight = 0;
 
-            _quizFocusCardPanel = CreatePanel(_quizPageContainer, new Color(0.09f, 0.12f, 0.2f, 0.98f));
-            var quizFocusLe = _quizFocusCardPanel.gameObject.AddComponent<LayoutElement>();
-            quizFocusLe.minHeight = 148;
+            var quizStageHint = CreateText(_quizPageContainer, "答題舞台（逐張作答 -> 再出牌翻牌）", 12, TextAnchor.MiddleLeft, FontStyle.Bold);
+            quizStageHint.color = new Color(0.78f, 0.84f, 0.98f, 0.92f);
+
+            _quizModalPanel = CreatePanel(_quizPageContainer, new Color(0.05f, 0.08f, 0.15f, 0.97f));
+            _quizModalLayoutElement = _quizModalPanel.gameObject.AddComponent<LayoutElement>();
+            _quizModalLayoutElement.minHeight = 350;
+            _quizModalLayoutElement.flexibleHeight = 1f;
+            var quizModalOutline = _quizModalPanel.gameObject.AddComponent<Outline>();
+            quizModalOutline.effectColor = new Color(0.62f, 0.74f, 1f, 0.2f);
+            quizModalOutline.effectDistance = new Vector2(2f, -2f);
+            var quizModalLayout = _quizModalPanel.gameObject.AddComponent<VerticalLayoutGroup>();
+            quizModalLayout.spacing = 8;
+            quizModalLayout.padding = new RectOffset(10, 10, 10, 10);
+            quizModalLayout.childControlWidth = true;
+            quizModalLayout.childControlHeight = true;
+            quizModalLayout.childForceExpandWidth = true;
+            quizModalLayout.childForceExpandHeight = false;
+
+            var quizMetaBar = CreatePanel(_quizModalPanel, new Color(0.12f, 0.16f, 0.26f, 0.95f));
+            quizMetaBar.gameObject.AddComponent<LayoutElement>().minHeight = 58;
+            var quizMetaLayout = quizMetaBar.gameObject.AddComponent<VerticalLayoutGroup>();
+            quizMetaLayout.spacing = 4;
+            quizMetaLayout.padding = new RectOffset(8, 8, 6, 6);
+            quizMetaLayout.childControlWidth = true;
+            quizMetaLayout.childControlHeight = true;
+            quizMetaLayout.childForceExpandWidth = true;
+            quizMetaLayout.childForceExpandHeight = false;
+            _quizModeText = CreateText(quizMetaBar, "題型：待命", 13, TextAnchor.MiddleLeft, FontStyle.Bold);
+            _quizStatusText = CreateText(quizMetaBar, "尚未開始答題。", 13, TextAnchor.MiddleLeft, FontStyle.Normal);
+
+            _quizFocusCardPanel = CreatePanel(_quizModalPanel, new Color(0.09f, 0.12f, 0.2f, 0.98f));
+            _quizFocusCardLayoutElement = _quizFocusCardPanel.gameObject.AddComponent<LayoutElement>();
+            _quizFocusCardLayoutElement.minHeight = 164;
             var quizFocusOutline = _quizFocusCardPanel.gameObject.AddComponent<Outline>();
             quizFocusOutline.effectColor = new Color(0.65f, 0.76f, 1f, 0.28f);
             quizFocusOutline.effectDistance = new Vector2(2f, -2f);
@@ -640,7 +673,7 @@ namespace MnemosyneArcana.Prototype
             _quizFocusCardText.rectTransform.offsetMax = new Vector2(-10, -10);
             _quizFocusCardText.color = new Color(0.92f, 0.96f, 1f, 1f);
 
-            var quizPanel = CreatePanel(_quizPageContainer, new Color(0.06f, 0.08f, 0.15f, 0.96f));
+            var quizPanel = CreatePanel(_quizModalPanel, new Color(0.06f, 0.08f, 0.15f, 0.96f));
             var quizPanelElement = quizPanel.gameObject.AddComponent<LayoutElement>();
             quizPanelElement.minHeight = 186;
             quizPanelElement.flexibleHeight = 1f;
@@ -651,9 +684,6 @@ namespace MnemosyneArcana.Prototype
             quizLayout.childControlHeight = true;
             quizLayout.childForceExpandWidth = true;
             quizLayout.childForceExpandHeight = false;
-            CreateText(quizPanel, "答題區（中間焦點卡 + 題型容器）", 14, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _quizModeText = CreateText(quizPanel, "題型：待命", 13, TextAnchor.MiddleLeft, FontStyle.Bold);
-            _quizStatusText = CreateText(quizPanel, "尚未開始答題。", 13, TextAnchor.MiddleLeft, FontStyle.Normal);
             _quizPromptText = CreateText(quizPanel, "請先把卡牌拖到牌桌區，再按「開始答題並出牌」。", 13, TextAnchor.UpperLeft, FontStyle.Normal);
             _quizPromptText.gameObject.AddComponent<LayoutElement>().minHeight = 42;
 
@@ -723,7 +753,7 @@ namespace MnemosyneArcana.Prototype
             CreateButton(actionRow2, "前往下一關", AdvanceAfterShop);
             CreateButton(actionRow2, "重開本局", StartRun);
 
-            var quizActionRow = CreateRow(_quizPageContainer, 52);
+            var quizActionRow = CreateRow(_quizModalPanel, 52);
             CreateButton(quizActionRow, "開始答題並出牌", StartQuizAndPlay);
             CreateButton(quizActionRow, "返回出牌頁", delegate { SetMainPage(0); });
             CreateButton(quizActionRow, "一鍵演示翻牌", StartForceRevealDemo);
@@ -3413,6 +3443,26 @@ namespace MnemosyneArcana.Prototype
                 : Mathf.Max(700f, screenH - 28f);
             _leftColLayout.minHeight = targetColHeight;
             _rightColLayout.minHeight = targetColHeight;
+            if (_quizModalLayoutElement != null)
+            {
+                _quizModalLayoutElement.minHeight = _isLandscapeLayout
+                    ? (compactMobile ? 336f : 360f)
+                    : (compactMobile ? 420f : 500f);
+            }
+
+            if (_quizFocusCardLayoutElement != null)
+            {
+                _quizFocusCardLayoutElement.minHeight = _isLandscapeLayout
+                    ? (compactMobile ? 128f : 152f)
+                    : (compactMobile ? 162f : 188f);
+            }
+
+            if (_quizFocusCardText != null)
+            {
+                _quizFocusCardText.fontSize = _isLandscapeLayout
+                    ? (compactMobile ? 20 : 23)
+                    : (compactMobile ? 23 : 26);
+            }
             if (_playPageLayoutElement != null)
             {
                 _playPageLayoutElement.preferredHeight = -1f;

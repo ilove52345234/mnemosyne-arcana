@@ -22,6 +22,25 @@
 
 ## 迭代紀錄
 
+### Round R15（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r15-modal-1.png`
+- Score:
+  - Layout: 26/30
+  - Readability: 22/25
+  - Interaction: 24/25
+  - Polish: 14/20
+  - Total: 86/100
+- 本輪修改:
+  - 答題頁重構為中央 `modal` 舞台：題型/進度、焦點卡、題型容器、操作列收斂到同一區塊。
+  - 新增舞台提示文案，降低主畫面與答題畫面的語義混淆。
+  - 響應式新增 modal 高度與焦點卡高度/字級規則，改善手機橫向可讀性。
+- 未解決問題:
+  - modal 動態進出場動畫尚未加上，視覺節奏仍偏靜態。
+- 下一輪優先:
+  - 補 `modal` 進出場與題目切換動態（淡入 + 位移 + 卡片翻面前導）。
+  - 把答題流程 CTA 層級再拉開（主按鈕更突出，返回按鈕次要化）。
+
 ### Round R14（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r14-reveal-demo-1.png`

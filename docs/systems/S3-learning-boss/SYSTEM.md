@@ -23,7 +23,7 @@
 - 已完成 Boss 升階、連對獎勵與全對升級。
 
 ## 4. 驗測報告與調整建議
-- 驗測結論（2026-02-18）：`Done`（符合當前 S3 門檻）。
+- 驗測結論（2026-02-18，重啟 S3）：驗測完成，`Done` 待你決策。
 - 三模型對應：
   - `M-Low`：`LearningManagerTests.ApplyAnswer_Lv3Wrong_AppliesPenaltyAndNoLevelUp` + `ResolveWrongAnswerChoice_AcceptLoss_KeepsMoneyAndPenalty`。
   - `M-Mid`：`LearningManagerTests.ApplyAnswer_Lv0Correct_UsesLv0BehaviorAndLevelsUp` + `...RetryWithCost_SpendsTwo`。
@@ -36,6 +36,12 @@
   - `50345a33123740d18bd0d0e337af7a50`（LearningManagerTests：9/9）
   - `7251ce2f9e3a4b5aafd8eb9b976f1d52`（BossLearningTests：14/14）
   - `1d2d6da66d75418687e8d6401009feb3`（US12：1/1）
+- 重跑證據（MCP job，2026-02-18）：
+  - `a5a10c0225de40849765a9c45b69e128`（LearningManagerTests：9/9）
+  - `96c09a2b8de74482b33a3ed16c2f6c7b`（BossLearningTests：14/14）
+  - `85833e512ec948bcbb60c354747122f9`（US12：1/1）
+- 本輪設計問題：
+1. 本輪未觀察到新的設計問題（等級行為、三選一決策、Boss 升階與全對獎勵均符合規格）。
 - 調整建議（小幅）：
 1. 若新手連錯率過高，可先提高 Lv1/Lv2 題型寬限（+0.2s）而不是降低懲罰倍率。
 2. 若 Boss 關難度突刺，優先調整「連對 x2 觸發頻率」或 Boss 題型升階比例，不動核心等級規則。
@@ -44,3 +50,4 @@
 ## 5. 更新紀錄
 - 2026-02-18：改為系統自洽文件，不再使用跨文件引用描述。
 - 2026-02-18：完成 S3 首輪行為驗測，達成 Done 門檻（Low/Mid/High + boundary case + job evidence）。
+- 2026-02-18：依新規則重啟 S3 驗測，補充「本輪設計問題/調整建議/待你決策 Done」與重跑證據。

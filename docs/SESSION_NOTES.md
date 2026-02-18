@@ -17,6 +17,28 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-R18 P0 答題舞台動態補齊
+
+- 目標：推進 P0 流程節奏，讓「開始答題」與「逐題切換」有可感知動態
+- 完成內容：
+  - 新增答題舞台進場協程：先淡入 modal，再進入第一題
+  - 新增每題切換脈衝：焦點卡縮放+透明度短動畫
+  - `ResetQuizState` / `CompleteQuizAndPlay` 加入動畫協程回收，避免狀態殘留
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity Console `error` = 0
+  - 截圖：`Assets/Screenshots/S10-auto-loop-r18-quiz-stage-animation-1.png`
+- 風險/阻塞：
+  - 答題完成到出卡的過場仍較硬切
+- 下一步：
+  - 補 `QuizCompleted -> CastAnimationQueue` 轉場提示與 CTA 鎖定動畫
+
+---
+
 ## 交接記錄（2026-02-19）- S10-R17 測試用橫向捲動軸
 
 - 目標：提高手機橫向版面對位測試效率（暫時保留測試工具）

@@ -22,6 +22,24 @@
 
 ## 迭代紀錄
 
+### Round R18（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r18-quiz-stage-animation-1.png`
+- Score:
+  - Layout: 27/30
+  - Readability: 22/25
+  - Interaction: 25/25
+  - Polish: 15/20
+  - Total: 89/100
+- 本輪修改:
+  - P0 主線：答題舞台加入進場淡入（`QuizFocusIn`）與每題切換脈衝動態。
+  - 答題開始改為「進場動畫 -> 顯示第一題」，切題時焦點卡做輕量縮放/透明度轉場。
+  - 答題重置與完成時加入動畫狀態回收，避免殘留轉場狀態。
+- 未解決問題:
+  - 出牌前導與翻牌揭露仍偏原型感，尚未接更完整的節奏動畫。
+- 下一輪優先:
+  - 補 `答題完成 -> 出卡` 的過渡過場（主 CTA 鎖定 + 中央提示動態）。
+
 ### Round R17（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r17-horizontal-scrollbar-1.png`

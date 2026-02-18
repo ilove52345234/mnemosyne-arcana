@@ -202,6 +202,8 @@ namespace MnemosyneArcana.Prototype
         private RectTransform _quizModalPanel;
         private LayoutElement _quizModalLayoutElement;
         private LayoutElement _quizFocusCardLayoutElement;
+        private CanvasGroup _quizModalCanvasGroup;
+        private CanvasGroup _quizFocusCardCanvasGroup;
         private RectTransform _quizFocusCardPanel;
         private Text _quizFocusCardText;
         private Text _quizModeText;
@@ -280,6 +282,8 @@ namespace MnemosyneArcana.Prototype
         private Coroutine _modelValidationCoroutine;
         private Coroutine _modelBatchValidationCoroutine;
         private Coroutine _forceRevealDemoCoroutine;
+        private Coroutine _quizFocusInCoroutine;
+        private Coroutine _quizQuestionPulseCoroutine;
         private bool _holdRevealForCapture;
 
         internal bool IsCardInteractionLocked => _isPlayingCardAnim || _isCastFlowInputLocked || _isQuizRunning;
@@ -712,6 +716,8 @@ namespace MnemosyneArcana.Prototype
             _quizModalLayoutElement = _quizModalPanel.gameObject.AddComponent<LayoutElement>();
             _quizModalLayoutElement.minHeight = 350;
             _quizModalLayoutElement.flexibleHeight = 1f;
+            _quizModalCanvasGroup = _quizModalPanel.gameObject.AddComponent<CanvasGroup>();
+            _quizModalCanvasGroup.alpha = 1f;
             var quizModalOutline = _quizModalPanel.gameObject.AddComponent<Outline>();
             quizModalOutline.effectColor = new Color(0.62f, 0.74f, 1f, 0.2f);
             quizModalOutline.effectDistance = new Vector2(2f, -2f);
@@ -738,6 +744,8 @@ namespace MnemosyneArcana.Prototype
             _quizFocusCardPanel = CreatePanel(_quizModalPanel, new Color(0.09f, 0.12f, 0.2f, 0.98f));
             _quizFocusCardLayoutElement = _quizFocusCardPanel.gameObject.AddComponent<LayoutElement>();
             _quizFocusCardLayoutElement.minHeight = 164;
+            _quizFocusCardCanvasGroup = _quizFocusCardPanel.gameObject.AddComponent<CanvasGroup>();
+            _quizFocusCardCanvasGroup.alpha = 1f;
             var quizFocusOutline = _quizFocusCardPanel.gameObject.AddComponent<Outline>();
             quizFocusOutline.effectColor = new Color(0.65f, 0.76f, 1f, 0.28f);
             quizFocusOutline.effectDistance = new Vector2(2f, -2f);
@@ -1569,6 +1577,18 @@ namespace MnemosyneArcana.Prototype
 
         private void ResetQuizState(string statusText)
         {
+            if (_quizFocusInCoroutine != null)
+            {
+                StopCoroutine(_quizFocusInCoroutine);
+                _quizFocusInCoroutine = null;
+            }
+
+            if (_quizQuestionPulseCoroutine != null)
+            {
+                StopCoroutine(_quizQuestionPulseCoroutine);
+                _quizQuestionPulseCoroutine = null;
+            }
+
             _isQuizRunning = false;
             _isCastFlowInputLocked = false;
             _cardQuizCastPhase = CardQuizCastPhase.HandSelect;
@@ -1597,6 +1617,21 @@ namespace MnemosyneArcana.Prototype
             if (_quizFocusCardText != null)
             {
                 _quizFocusCardText.text = "待命中";
+            }
+
+            if (_quizModalCanvasGroup != null)
+            {
+                _quizModalCanvasGroup.alpha = 1f;
+            }
+
+            if (_quizFocusCardCanvasGroup != null)
+            {
+                _quizFocusCardCanvasGroup.alpha = 1f;
+            }
+
+            if (_quizFocusCardPanel != null)
+            {
+                _quizFocusCardPanel.localScale = Vector3.one;
             }
 
             for (var i = 0; i < _quizOptionButtons.Count; i++)
@@ -2631,12 +2666,17 @@ namespace MnemosyneArcana.Prototype
             _quizCardCorrectness.Clear();
             _quizCursor = 0;
             _quizCorrectCount = 0;
+            _quizCurrentCorrectOptionIndex = -1;
             _isQuizRunning = true;
             SetCardQuizCastPhase(CardQuizCastPhase.CastIntentLocked);
             SetCardQuizCastPhase(CardQuizCastPhase.QuizFocusIn);
             AddLog(string.Format("開始答題，共 {0} 題。", _quizCardIndexes.Count));
             SetMainPage(2);
-            PresentNextQuizQuestion();
+            if (_quizFocusInCoroutine != null)
+            {
+                StopCoroutine(_quizFocusInCoroutine);
+            }
+            _quizFocusInCoroutine = StartCoroutine(PlayQuizFocusInThenPresentQuestion());
         }
 
         private void PresentNextQuizQuestion()
@@ -2751,6 +2791,7 @@ namespace MnemosyneArcana.Prototype
                 if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = false;
                 if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = false;
                 if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = false;
+                PlayQuizQuestionPulse();
                 return;
             }
 
@@ -2768,6 +2809,7 @@ namespace MnemosyneArcana.Prototype
                 if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = false;
                 if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = false;
                 if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = false;
+                PlayQuizQuestionPulse();
                 return;
             }
 
@@ -2778,6 +2820,108 @@ namespace MnemosyneArcana.Prototype
             if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = true;
             if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = true;
             if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = true;
+            PlayQuizQuestionPulse();
+        }
+
+        private IEnumerator PlayQuizFocusInThenPresentQuestion()
+        {
+            if (_quizModalCanvasGroup == null)
+            {
+                PresentNextQuizQuestion();
+                _quizFocusInCoroutine = null;
+                yield break;
+            }
+
+            _quizModalCanvasGroup.alpha = 0f;
+            if (_quizFocusCardCanvasGroup != null)
+            {
+                _quizFocusCardCanvasGroup.alpha = 0.7f;
+            }
+
+            if (_quizFocusCardPanel != null)
+            {
+                _quizFocusCardPanel.localScale = new Vector3(0.97f, 0.97f, 1f);
+            }
+
+            const float duration = 0.2f;
+            var start = Time.unscaledTime;
+            while (Time.unscaledTime - start < duration)
+            {
+                var t = Mathf.Clamp01((Time.unscaledTime - start) / duration);
+                var eased = 1f - Mathf.Pow(1f - t, 3f);
+                _quizModalCanvasGroup.alpha = Mathf.Lerp(0f, 1f, eased);
+                if (_quizFocusCardCanvasGroup != null)
+                {
+                    _quizFocusCardCanvasGroup.alpha = Mathf.Lerp(0.7f, 1f, eased);
+                }
+
+                if (_quizFocusCardPanel != null)
+                {
+                    _quizFocusCardPanel.localScale = Vector3.Lerp(new Vector3(0.97f, 0.97f, 1f), Vector3.one, eased);
+                }
+
+                yield return null;
+            }
+
+            _quizModalCanvasGroup.alpha = 1f;
+            if (_quizFocusCardCanvasGroup != null)
+            {
+                _quizFocusCardCanvasGroup.alpha = 1f;
+            }
+
+            if (_quizFocusCardPanel != null)
+            {
+                _quizFocusCardPanel.localScale = Vector3.one;
+            }
+
+            PresentNextQuizQuestion();
+            _quizFocusInCoroutine = null;
+        }
+
+        private void PlayQuizQuestionPulse()
+        {
+            if (_quizQuestionPulseCoroutine != null)
+            {
+                StopCoroutine(_quizQuestionPulseCoroutine);
+            }
+
+            _quizQuestionPulseCoroutine = StartCoroutine(PlayQuizQuestionPulseRoutine());
+        }
+
+        private IEnumerator PlayQuizQuestionPulseRoutine()
+        {
+            if (_quizFocusCardPanel == null)
+            {
+                _quizQuestionPulseCoroutine = null;
+                yield break;
+            }
+
+            var fromScale = new Vector3(0.975f, 0.975f, 1f);
+            var toScale = Vector3.one;
+            var fromAlpha = 0.72f;
+            var toAlpha = 1f;
+            const float duration = 0.14f;
+            var start = Time.unscaledTime;
+            while (Time.unscaledTime - start < duration)
+            {
+                var t = Mathf.Clamp01((Time.unscaledTime - start) / duration);
+                var eased = 1f - Mathf.Pow(1f - t, 3f);
+                _quizFocusCardPanel.localScale = Vector3.Lerp(fromScale, toScale, eased);
+                if (_quizFocusCardCanvasGroup != null)
+                {
+                    _quizFocusCardCanvasGroup.alpha = Mathf.Lerp(fromAlpha, toAlpha, eased);
+                }
+
+                yield return null;
+            }
+
+            _quizFocusCardPanel.localScale = Vector3.one;
+            if (_quizFocusCardCanvasGroup != null)
+            {
+                _quizFocusCardCanvasGroup.alpha = 1f;
+            }
+
+            _quizQuestionPulseCoroutine = null;
         }
 
         private void OnQuizOptionSelected(int optionIndex)
@@ -2826,6 +2970,22 @@ namespace MnemosyneArcana.Prototype
 
         private void CompleteQuizAndPlay()
         {
+            if (_quizQuestionPulseCoroutine != null)
+            {
+                StopCoroutine(_quizQuestionPulseCoroutine);
+                _quizQuestionPulseCoroutine = null;
+            }
+
+            if (_quizFocusCardPanel != null)
+            {
+                _quizFocusCardPanel.localScale = Vector3.one;
+            }
+
+            if (_quizFocusCardCanvasGroup != null)
+            {
+                _quizFocusCardCanvasGroup.alpha = 1f;
+            }
+
             _isQuizRunning = false;
             SetCardQuizCastPhase(CardQuizCastPhase.QuizCompleted);
             if (_quizStatusText != null)

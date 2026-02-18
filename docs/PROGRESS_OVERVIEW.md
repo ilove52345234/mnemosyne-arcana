@@ -9,6 +9,8 @@
 - `Done`：已滿足本檔「Done 量化門檻」且證據完整。
 - `Blocked`：因外部阻塞無法推進（需記錄阻塞原因與解除條件）。
 
+> 決策規則：`Done` 必須由你（產品決策者）明確確認；系統方可正式標記 `Done`。
+
 ## Done 量化門檻（硬指標）
 
 ### A. 欄位級門檻
@@ -30,6 +32,10 @@
   2) `SYSTEM.md` 第 4 節含「結果 + 參數建議」。
   3) `SYSTEM.md` 第 5 節有最近一次更新日期。
   4) 本表 `Last Update` 為最近更新日期，`Next Action` 可留空或標記 `Monitor`。
+  5) 每輪測試後已明確列出：
+     - 本輪觀察到的設計問題（可為 0 項，但需明確寫「本輪未觀察到設計問題」）
+     - 對應調整建議（可選方案與影響）
+  6) 你明確回覆同意該系統 `Done`。
 
 ### C. Blocked 管理門檻
 
@@ -40,7 +46,7 @@
 
 | System | Status | Design | Spec | Implementation | Verification | Last Update | Next Action |
 |---|---|---|---|---|---|---|---|
-| S1 Run/Blind | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
+| S1 Run/Blind | In Progress | Done | Done | Done | Done（待你決策） | 2026-02-18 | 等待你確認是否標記 Done |
 | S2 Scoring/HandType | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S3 Learning/Boss | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
 | S4 Gate/Recovery/Demotion | Done | Done | Done | Done | Done | 2026-02-18 | Monitor |
@@ -55,3 +61,7 @@
 2. 再更新本檔 `Verification`、`Last Update`、`Next Action`。
 3. 狀態僅使用：Todo / In Progress / Done / Blocked。
 4. 任何欄位標記 `Done` 前，必須逐條檢查本檔 Done 量化門檻。
+5. 每輪測試回報格式固定包含：
+   - 設計問題清單
+   - 調整建議清單
+   - 等待你決策（是否接受建議、是否可標 Done）

@@ -14,7 +14,7 @@
 
 **Files:**
 - Create: `Assets/MnemosyneArcana/Tests/EditMode/S7FinalGateValidationTests.cs`
-- Modify: `docs/17-test-matrix.md`
+- Modify: `docs/baseline/17-test-matrix.md`
 
 Steps:
 1. Write failing tests for `S7-M1/M2/M3` using `EvaluateFinalMasteryGate`.
@@ -48,7 +48,7 @@ Steps:
 **Files:**
 - Modify: `docs/verification/02-design-doc-coverage-matrix.md`
 - Modify: `docs/verification/03-final-verification-report-template.md`
-- Modify: `docs/25-gate-model-sweep-report-2026-02-17.md`
+- Modify: `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
 - Modify: `docs/SESSION_NOTES.md`
 
 Steps:

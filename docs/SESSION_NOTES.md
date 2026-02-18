@@ -26,7 +26,7 @@
   - 建立 scripts/schema 基礎（config 驗證與測試入口）
 - 變更檔案：
   - `README.md`
-  - `docs/00-project-vision.md` ~ `docs/18-api-and-domain-types.md`
+  - `docs/baseline/00-project-vision.md` ~ `docs/baseline/18-api-and-domain-types.md`
   - `scripts/*`
   - `docs/schemas/*`
 - 驗證結果：文件存在、連結與目錄結構可讀
@@ -96,8 +96,8 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/ScoringManagerV2.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/ScoringFormulaTests.cs`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -127,9 +127,9 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/RunManagerV2.cs`
   - `Assets/MnemosyneArcana/Scripts/Core/Runtime/RuntimeContracts.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/RunFlowTests.cs`
-  - `docs/10-runtime-state-and-event-contracts.md`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/10-runtime-state-and-event-contracts.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -153,8 +153,8 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/ShopManagerV2.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/ShopManagerTests.cs`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -181,8 +181,8 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Contracts/DomainModels.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/LearningManagerTests.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/ManagerStubTests.cs`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -209,8 +209,8 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Contracts/ServiceInterfaces.cs`
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/LearningManagerV2.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/LearningManagerTests.cs`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -242,8 +242,8 @@
   - `Assets/MnemosyneArcana/Tests/EditMode/DecayManagerTests.cs`
   - `docs/plans/2026-02-14-m2-03-decay-rules-design.md`
   - `docs/plans/2026-02-14-m2-03-decay-rules.md`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -271,8 +271,8 @@
   - `Assets/MnemosyneArcana/Tests/EditMode/BossLearningTests.cs`
   - `docs/plans/2026-02-14-m2-04-boss-learning-design.md`
   - `docs/plans/2026-02-14-m2-04-boss-learning.md`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
 - 驗證結果：
@@ -318,14 +318,14 @@
     - `2026-02-14-m2-03-decay-rules.md`
     - `2026-02-14-m2-04-boss-learning.md`
     - `2026-02-14-m3-01-03-meta-progression.md`
-  - 新增全專案分析文件：`docs/20-project-analysis-2026-02-14.md`
+  - 新增全專案分析文件：`docs/baseline/20-project-analysis-2026-02-14.md`
   - 同步更新階段文件：`README.md`、`docs/PROJECT_EXECUTION_PLAN.md`
   - 風險清單補充：Unity 授權阻塞與規格漂移風險（R-007、R-008）
 - 變更檔案：
   - `README.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
-  - `docs/11-risk-register-and-decision-log.md`
-  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/baseline/11-risk-register-and-decision-log.md`
+  - `docs/baseline/20-project-analysis-2026-02-14.md`
   - `docs/plans/2026-02-14-m2-03-decay-rules.md`
   - `docs/plans/2026-02-14-m2-04-boss-learning.md`
   - `docs/plans/2026-02-14-m3-01-03-meta-progression.md`
@@ -357,8 +357,8 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/MetaManagerV2.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/MetaManagerTests.cs`
   - `README.md`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -380,11 +380,11 @@
   - `scripts/validate_configs.py` 加入詞庫品質守門：
     - 總數、tier 數量、詞性覆蓋、元素覆蓋
     - difficulty 與 baseChips 合法範圍
-  - `docs/16-config-governance.md` 補上 M4-01 基線規則
+  - `docs/baseline/16-config-governance.md` 補上 M4-01 基線規則
 - 變更檔案：
   - `configs/word_entries.v2.json`
   - `scripts/validate_configs.py`
-  - `docs/16-config-governance.md`
+  - `docs/baseline/16-config-governance.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -413,8 +413,8 @@
 - 變更檔案：
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/ShopManagerV2.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/ShopManagerTests.cs`
-  - `docs/15-balance-source-of-truth.md`
-  - `docs/17-test-matrix.md`
+  - `docs/baseline/15-balance-source-of-truth.md`
+  - `docs/baseline/17-test-matrix.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -445,10 +445,10 @@
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/RunManagerV2.cs`
   - `Assets/MnemosyneArcana/Scripts/Core/Runtime/RuntimeContracts.cs`
   - `Assets/MnemosyneArcana/Tests/EditMode/RunFlowTests.cs`
-  - `docs/10-runtime-state-and-event-contracts.md`
-  - `docs/15-balance-source-of-truth.md`
-  - `docs/17-test-matrix.md`
-  - `docs/18-api-and-domain-types.md`
+  - `docs/baseline/10-runtime-state-and-event-contracts.md`
+  - `docs/baseline/15-balance-source-of-truth.md`
+  - `docs/baseline/17-test-matrix.md`
+  - `docs/baseline/18-api-and-domain-types.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -463,7 +463,7 @@
 
 - 目標：產出 M4 首輪平衡總結，作為進入 Alpha Gate 的決策依據
 - 完成內容：
-  - 新增 `docs/21-m4-first-balance-report.md`
+  - 新增 `docs/baseline/21-m4-first-balance-report.md`
   - 彙整 M4-01~03 的可量化結果：
     - 詞庫分布與覆蓋率
     - 商店權重與價格帶
@@ -471,7 +471,7 @@
   - 列出 Alpha 前風險與建議執行順序
   - 更新進度看板：M4 全完成，Alpha Gate 啟動
 - 變更檔案：
-  - `docs/21-m4-first-balance-report.md`
+  - `docs/baseline/21-m4-first-balance-report.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -486,13 +486,13 @@
 
 - 目標：修正 `docs/20` 與看板狀態不一致問題，建立單一可信狀態
 - 完成內容：
-  - 更新 `docs/20-project-analysis-2026-02-14.md` 內容至最新狀態：
+  - 更新 `docs/baseline/20-project-analysis-2026-02-14.md` 內容至最新狀態：
     - `M3` / `M4` 由 Todo 改為 Done
     - `Alpha Gate` 改為 In Progress
     - 移除已完成缺口（如 `TryUnlockNode` 未實作）
     - 將下一步改為 `A-01~A-04` 驗收路徑
 - 變更檔案：
-  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/baseline/20-project-analysis-2026-02-14.md`
   - `docs/SESSION_NOTES.md`
 - 驗證結果：
   - 與 `docs/IMPLEMENTATION_STATUS.md`、`docs/PROJECT_EXECUTION_PLAN.md` 對齊
@@ -506,13 +506,13 @@
 - 目標：把 A-01 回歸執行前的自動化與流程文件準備到可執行狀態
 - 完成內容：
   - 新增 `AlphaRegressionTests`（Ante1-8 通關路徑 + 失敗路徑）
-  - 新增 `docs/22-alpha-a01-regression-checklist.md`（執行步驟、驗收表、阻塞）
+  - 新增 `docs/baseline/22-alpha-a01-regression-checklist.md`（執行步驟、驗收表、阻塞）
   - 更新 `docs/17` 的 Alpha 測試案例 ID
   - 更新 `docs/IMPLEMENTATION_STATUS` 與 `docs/PROJECT_EXECUTION_PLAN`
 - 變更檔案：
   - `Assets/MnemosyneArcana/Tests/EditMode/AlphaRegressionTests.cs`
-  - `docs/22-alpha-a01-regression-checklist.md`
-  - `docs/17-test-matrix.md`
+  - `docs/baseline/22-alpha-a01-regression-checklist.md`
+  - `docs/baseline/17-test-matrix.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
   - `docs/SESSION_NOTES.md`
@@ -534,14 +534,14 @@
   - 執行：
     - `UNITY_PATH='/Applications/Unity/Hub/Editor/2022.3.62f3/Unity.app/Contents/MacOS/Unity' bash scripts/run_editmode_tests.sh`
     - 結果：`[OK] EditMode tests finished.`
-  - 更新 A-01 驗收文件：`docs/22-alpha-a01-regression-checklist.md`
-  - 更新進度文件：`docs/IMPLEMENTATION_STATUS.md`、`docs/PROJECT_EXECUTION_PLAN.md`、`docs/20-project-analysis-2026-02-14.md`
+  - 更新 A-01 驗收文件：`docs/baseline/22-alpha-a01-regression-checklist.md`
+  - 更新進度文件：`docs/IMPLEMENTATION_STATUS.md`、`docs/PROJECT_EXECUTION_PLAN.md`、`docs/baseline/20-project-analysis-2026-02-14.md`
 - 變更檔案：
   - `Assets/MnemosyneArcana/Scripts/Core/Managers/MetaManagerV2.cs`
-  - `docs/22-alpha-a01-regression-checklist.md`
+  - `docs/baseline/22-alpha-a01-regression-checklist.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/PROJECT_EXECUTION_PLAN.md`
-  - `docs/20-project-analysis-2026-02-14.md`
+  - `docs/baseline/20-project-analysis-2026-02-14.md`
   - `docs/SESSION_NOTES.md`
 - 驗證結果：
   - A-01 核心回歸測試通過（Ante1-8 通關與失敗分支）
@@ -617,7 +617,7 @@
 
 - 目標：將「0~10000 詞彙量模型」的卡關、遺忘退回、真學習驗證需求轉為可執行追蹤項目
 - 完成內容：
-  - 新增主文件：`docs/24-vocab-growth-curve-and-gating-plan.md`
+  - 新增主文件：`docs/baseline/24-vocab-growth-curve-and-gating-plan.md`
   - 明確定義 11 段詞彙量模型（M0~M10）
   - 定義 EffectiveVocab 通關門檻（LearnedCount × RetentionRate × RetrievalRate）
   - 定義 Recovery Gate、退回規則與 7 天 1 次退關保護
@@ -628,7 +628,7 @@
     - `A-BAL-03` Boss 主動回憶題守門
     - `A-DATA-01` 學習 telemetry 與告警
 - 變更檔案：
-  - `docs/24-vocab-growth-curve-and-gating-plan.md`
+  - `docs/baseline/24-vocab-growth-curve-and-gating-plan.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/SESSION_NOTES.md`
 - 驗證結果：
@@ -650,12 +650,12 @@
     - M0/M1/M3/M4/M5/M6/M8 卡點符合預期
     - M2、M9 各偏早 1 關
   - 文件同步更新：
-    - `docs/24-vocab-growth-curve-and-gating-plan.md`
-    - `docs/25-gate-model-sweep-report-2026-02-17.md`
+    - `docs/baseline/24-vocab-growth-curve-and-gating-plan.md`
+    - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
     - `docs/IMPLEMENTATION_STATUS.md`
 - 變更檔案：
-  - `docs/24-vocab-growth-curve-and-gating-plan.md`
-  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/baseline/24-vocab-growth-curve-and-gating-plan.md`
+  - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/SESSION_NOTES.md`
 - 驗證結果：
@@ -683,7 +683,7 @@
   - `M9`：由「Ante8 提前失敗」提升為「本輪通關」
 - 變更檔案：
   - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
-  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
   - `docs/SESSION_NOTES.md`
 - 風險/阻塞：
   - `M9` 已達通關，下一輪需校準「通關率區間」避免偏易
@@ -710,7 +710,7 @@
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/SESSION_NOTES.md`
 - 下一步：
-  - 直接執行 `10模型30輪` 並回填統計數據到 `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - 直接執行 `10模型30輪` 並回填統計數據到 `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
 
 ## 交接記錄（2026-02-17）- 十模型 30 輪實測完成（首版分佈）
 
@@ -725,7 +725,7 @@
   - 高段 M9 已達可通關，但通關率過高，需回調避免偏易
 - 變更檔案：
   - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
-  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
   - `docs/SESSION_NOTES.md`
 - 下一步：
   - 目標將 M9 通關率從 100% 回調至設計區間（建議先試 30%~60%）
@@ -743,7 +743,7 @@
   - Unity MCP EditMode：`118/118 passed`
 - 變更檔案：
   - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
-  - `docs/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
   - `docs/IMPLEMENTATION_STATUS.md`
   - `docs/SESSION_NOTES.md`
 
@@ -810,8 +810,8 @@
     - `GetTenModelProfiles()` 中 `M9 Mastery: 0.98 -> 1.00`
     - 目的：讓高端模型可在流程層覆蓋 `100%+7天` True Clear
   - 文件回填：
-    - `docs/17-test-matrix.md` 新增 `TC-S7-001~004`
-    - `docs/25-gate-model-sweep-report-2026-02-17.md` 新增 S7 補齊章節
+    - `docs/baseline/17-test-matrix.md` 新增 `TC-S7-001~004`
+    - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md` 新增 S7 補齊章節
     - `docs/verification/02-design-doc-coverage-matrix.md` 移除 S7 缺口、更新優先序
     - `docs/verification/03-final-verification-report-template.md` 新增 S7 snapshot
 - 驗證結果：
@@ -836,8 +836,8 @@
   - 全量回歸：
     - Unity MCP EditMode job `7077ee7ea9df451887a88308342a0093`：`133/133 passed`
   - 文件回填：
-    - `docs/17-test-matrix.md` 補 `TC-S4-008/009`、`TC-S8-001~003`、`TC-S9-001~003`
-    - `docs/25-gate-model-sweep-report-2026-02-17.md` 補 S4 長週期分佈章節
+    - `docs/baseline/17-test-matrix.md` 補 `TC-S4-008/009`、`TC-S8-001~003`、`TC-S9-001~003`
+    - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md` 補 S4 長週期分佈章節
     - `docs/verification/02-design-doc-coverage-matrix.md` 將 `docs/09`、`docs/24` 更新為 `Covered`
     - `docs/verification/03-final-verification-report-template.md` 補 S8/S9 snapshot
 - 驗證結果：

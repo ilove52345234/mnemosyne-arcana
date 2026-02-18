@@ -56,7 +56,7 @@
 - 若規格有改動，同步更新對應文件（01~18）
 
 3. 任何破壞性改動：
-- 需先更新 `docs/11-risk-register-and-decision-log.md`
+- 需先更新 `docs/baseline/11-risk-register-and-decision-log.md`
 
 ---
 
@@ -101,7 +101,7 @@
 
 - 任務 A-01：Ante 1-8 全流程回歸
 - 任務 A-02：存檔/migration 壓測
-- 任務 A-03：效能與穩定性驗收（參照 `docs/09-nfr-and-quality-gates.md`）
+- 任務 A-03：效能與穩定性驗收（參照 `docs/baseline/09-nfr-and-quality-gates.md`）
 - 任務 A-04：發版決策會議
 
 ---

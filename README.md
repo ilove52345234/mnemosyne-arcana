@@ -19,27 +19,27 @@
 2. `docs/PROGRESS_OVERVIEW.md`（唯一進度總表）
 
 建議閱讀順序：
-1. `docs/06-onboarding-checklist.md`
-2. `docs/00-project-vision.md`
-3. `docs/01-game-design-core.md`
-4. `docs/02-meta-progression.md`
-5. `docs/03-technical-architecture.md`
-6. `docs/04-data-contracts.md`
-7. `docs/05-development-workflow.md`
-8. `docs/07-roadmap-mvp.md`
-9. `docs/09-nfr-and-quality-gates.md`
-10. `docs/10-runtime-state-and-event-contracts.md`
-11. `docs/11-risk-register-and-decision-log.md`
-12. `docs/13-system-context.md`
-13. `docs/14-core-usecase-sequences.md`
-14. `docs/15-balance-source-of-truth.md`
-15. `docs/16-config-governance.md`
-16. `docs/17-test-matrix.md`
+1. `docs/baseline/06-onboarding-checklist.md`
+2. `docs/baseline/00-project-vision.md`
+3. `docs/baseline/01-game-design-core.md`
+4. `docs/baseline/02-meta-progression.md`
+5. `docs/baseline/03-technical-architecture.md`
+6. `docs/baseline/04-data-contracts.md`
+7. `docs/baseline/05-development-workflow.md`
+8. `docs/baseline/07-roadmap-mvp.md`
+9. `docs/baseline/09-nfr-and-quality-gates.md`
+10. `docs/baseline/10-runtime-state-and-event-contracts.md`
+11. `docs/baseline/11-risk-register-and-decision-log.md`
+12. `docs/baseline/13-system-context.md`
+13. `docs/baseline/14-core-usecase-sequences.md`
+14. `docs/baseline/15-balance-source-of-truth.md`
+15. `docs/baseline/16-config-governance.md`
+16. `docs/baseline/17-test-matrix.md`
 17. `docs/PROJECT_EXECUTION_PLAN.md`
 18. `docs/IMPLEMENTATION_STATUS.md`
 19. `docs/SESSION_NOTES.md`
 20. `CLAUDE.md`
-21. `docs/19-system-development-boundaries.md`
+21. `docs/baseline/19-system-development-boundaries.md`
 
 ## Docs 導覽（路徑與用途）
 
@@ -61,35 +61,35 @@
 
 ### 核心文件用途（常用）
 
-- `docs/00-project-vision.md`：產品願景、成功標準與非目標。
-- `docs/01-game-design-core.md`：局內核心玩法規則（Run、牌型、分數、Boss）。
-- `docs/02-meta-progression.md`：局外成長系統（XP/LP、課程樹、契約）。
-- `docs/03-technical-architecture.md`：技術架構與模組邊界。
-- `docs/04-data-contracts.md`：資料模型、版本與 migration 規格。
-- `docs/05-development-workflow.md`：分支、DoD、開發流程。
-- `docs/06-onboarding-checklist.md`：新接手者首日清單與驗收題。
-- `docs/07-roadmap-mvp.md`：M0~M4 + Alpha 的階段路線。
-- `docs/08-design-traceability.md`：設計追溯關係與覆蓋率策略。
-- `docs/09-nfr-and-quality-gates.md`：效能/穩定性/品質門檻。
-- `docs/10-runtime-state-and-event-contracts.md`：執行期狀態與事件契約。
-- `docs/11-risk-register-and-decision-log.md`：風險清單與重要決策。
-- `docs/12-architecture-gap-closure.md`：架構缺口補齊追蹤。
-- `docs/13-system-context.md`：系統邊界與外部依賴。
-- `docs/14-core-usecase-sequences.md`：核心用例序列（文字版）。
-- `docs/15-balance-source-of-truth.md`：數值單一真相表（Balance SoT）。
-- `docs/16-config-governance.md`：設定檔治理與 PR Gate。
-- `docs/17-test-matrix.md`：需求到測試案例 ID 的映射。
-- `docs/18-api-and-domain-types.md`：API/DTO/Enum 契約。
-- `docs/19-system-development-boundaries.md`：不可衝突的系統邊界條款。
+- `docs/baseline/00-project-vision.md`：產品願景、成功標準與非目標。
+- `docs/baseline/01-game-design-core.md`：局內核心玩法規則（Run、牌型、分數、Boss）。
+- `docs/baseline/02-meta-progression.md`：局外成長系統（XP/LP、課程樹、契約）。
+- `docs/baseline/03-technical-architecture.md`：技術架構與模組邊界。
+- `docs/baseline/04-data-contracts.md`：資料模型、版本與 migration 規格。
+- `docs/baseline/05-development-workflow.md`：分支、DoD、開發流程。
+- `docs/baseline/06-onboarding-checklist.md`：新接手者首日清單與驗收題。
+- `docs/baseline/07-roadmap-mvp.md`：M0~M4 + Alpha 的階段路線。
+- `docs/baseline/08-design-traceability.md`：設計追溯關係與覆蓋率策略。
+- `docs/baseline/09-nfr-and-quality-gates.md`：效能/穩定性/品質門檻。
+- `docs/baseline/10-runtime-state-and-event-contracts.md`：執行期狀態與事件契約。
+- `docs/baseline/11-risk-register-and-decision-log.md`：風險清單與重要決策。
+- `docs/baseline/12-architecture-gap-closure.md`：架構缺口補齊追蹤。
+- `docs/baseline/13-system-context.md`：系統邊界與外部依賴。
+- `docs/baseline/14-core-usecase-sequences.md`：核心用例序列（文字版）。
+- `docs/baseline/15-balance-source-of-truth.md`：數值單一真相表（Balance SoT）。
+- `docs/baseline/16-config-governance.md`：設定檔治理與 PR Gate。
+- `docs/baseline/17-test-matrix.md`：需求到測試案例 ID 的映射。
+- `docs/baseline/18-api-and-domain-types.md`：API/DTO/Enum 契約。
+- `docs/baseline/19-system-development-boundaries.md`：不可衝突的系統邊界條款。
 - `docs/PROJECT_EXECUTION_PLAN.md`：PM 主排程與里程碑。
 - `docs/IMPLEMENTATION_STATUS.md`：任務看板（Todo/In Progress/Done/Blocked）。
 - `docs/SESSION_NOTES.md`：每次工作交接記錄（下一步依此銜接）。
-- `docs/20-project-analysis-2026-02-14.md`：專案盤點與下一輪建議。
-- `docs/21-m4-first-balance-report.md`：M4 首輪平衡結論。
-- `docs/22-alpha-a01-regression-checklist.md`：A-01 回歸驗收清單。
-- `docs/23-user-stories-and-use-cases.md`：Alpha 可玩流程故事/用例覆蓋。
-- `docs/24-vocab-growth-curve-and-gating-plan.md`：詞彙成長曲線與卡關機制規格。
-- `docs/25-gate-model-sweep-report-2026-02-17.md`：Gate 模型 sweep 與分佈報告。
+- `docs/baseline/20-project-analysis-2026-02-14.md`：專案盤點與下一輪建議。
+- `docs/baseline/21-m4-first-balance-report.md`：M4 首輪平衡結論。
+- `docs/baseline/22-alpha-a01-regression-checklist.md`：A-01 回歸驗收清單。
+- `docs/baseline/23-user-stories-and-use-cases.md`：Alpha 可玩流程故事/用例覆蓋。
+- `docs/baseline/24-vocab-growth-curve-and-gating-plan.md`：詞彙成長曲線與卡關機制規格。
+- `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`：Gate 模型 sweep 與分佈報告。
 
 ### Verification 文件用途
 

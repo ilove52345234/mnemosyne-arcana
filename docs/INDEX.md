@@ -21,3 +21,10 @@
 
 ## C. 專案進度（唯一總表）
 - docs/PROGRESS_OVERVIEW.md
+
+## D. Baseline 規格（Reference Only）
+- 目錄：`docs/baseline/`
+- 說明：`00~25` 為基線規格與歷史決策依據，供對照查閱，不作日常執行主入口。
+- 日常執行請使用：
+  - 系統文件：`docs/systems/S1~S9/SYSTEM.md`
+  - 進度總表：`docs/PROGRESS_OVERVIEW.md`

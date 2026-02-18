@@ -48,8 +48,8 @@
   - `60e62f78000a4cc9b9b1bb65675e8a74`（EditMode 125/125）
 - Related Docs:
   - `docs/verification/02-design-doc-coverage-matrix.md`
-  - `docs/25-gate-model-sweep-report-2026-02-17.md`
-  - `docs/17-test-matrix.md`
+  - `docs/baseline/25-gate-model-sweep-report-2026-02-17.md`
+  - `docs/baseline/17-test-matrix.md`
 - Related Commits: 本次尚未提交（working tree）
 
 ## 7. Sign-off Checklist

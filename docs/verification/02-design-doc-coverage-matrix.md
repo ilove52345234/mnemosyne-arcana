@@ -8,16 +8,16 @@
 ## 2. 覆蓋矩陣
 | 設計文件 | 對應系統 | 驗測要求 | 目前狀態 | 證據/輸出 |
 |---|---|---|---|---|
-| `docs/01-game-design-core.md` | S1/S2/S3/S5/S7 | 每系統 3+ 模型 | Covered | `RunFlowTests` + `ScoringHandTypeTests` + `LearningManagerTests` + `ShopManagerTests` + `S7FinalGateValidationTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
-| `docs/02-meta-progression.md` | S5/S6/S7 | 每系統 3+ 模型 | Covered | `ShopManagerTests` + `MetaManagerTests` + `S7FinalGateValidationTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
-| `docs/03-technical-architecture.md` | S1~S6 | 模組邊界與流程覆蓋 | Covered | `PlayableLoopUseCaseTests` + `UserStoryAcceptanceTests` + Core manager tests + MCP job `7077ee7ea9df451887a88308342a0093` |
-| `docs/09-nfr-and-quality-gates.md` | S8/S9 | NFR 三模型壓測 | Covered | `S8TelemetryModelCoverageTests` + `S9NfrValidationTests` + MCP EditMode job `7077ee7ea9df451887a88308342a0093` |
-| `docs/14-core-usecase-sequences.md` | S1/S5/S6 | Use case 序列三模型 | Covered | `PlayableLoopUseCaseTests` + `UserStoryAcceptanceTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
-| `docs/15-balance-source-of-truth.md` | S2/S5/S7 | 平衡三模型 + 多 seed | Covered | `docs/25` + `GateModelSweepTests` + `S7FinalGateValidationTests` |
-| `docs/17-test-matrix.md` | S1~S9 | 測試 ID 對齊與補齊 | Covered | `TC-S4/S7/S8/S9` 已回填，EditMode `133/133` 通過（job `7077ee7ea9df451887a88308342a0093`） |
-| `docs/23-user-stories-and-use-cases.md` | S1/S3/S5/S6 | US/UC 覆蓋三模型 | Covered | `UserStoryAcceptanceTests`（US01~US12）+ `PlayableLoopUseCaseTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
-| `docs/24-vocab-growth-curve-and-gating-plan.md` | S4/S7/S8 | 十模型 + 長週期遺忘 | Covered | `docs/25` + `S4PriorityValidationTests` + `S4LongCycleDistributionTests` + `S7FinalGateValidationTests` + `S8TelemetryModelCoverageTests` |
-| `docs/25-gate-model-sweep-report-2026-02-17.md` | S4/S7 | 30 輪分佈 | Covered | M9 12/30(40%) |
+| `docs/baseline/01-game-design-core.md` | S1/S2/S3/S5/S7 | 每系統 3+ 模型 | Covered | `RunFlowTests` + `ScoringHandTypeTests` + `LearningManagerTests` + `ShopManagerTests` + `S7FinalGateValidationTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/02-meta-progression.md` | S5/S6/S7 | 每系統 3+ 模型 | Covered | `ShopManagerTests` + `MetaManagerTests` + `S7FinalGateValidationTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/03-technical-architecture.md` | S1~S6 | 模組邊界與流程覆蓋 | Covered | `PlayableLoopUseCaseTests` + `UserStoryAcceptanceTests` + Core manager tests + MCP job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/09-nfr-and-quality-gates.md` | S8/S9 | NFR 三模型壓測 | Covered | `S8TelemetryModelCoverageTests` + `S9NfrValidationTests` + MCP EditMode job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/14-core-usecase-sequences.md` | S1/S5/S6 | Use case 序列三模型 | Covered | `PlayableLoopUseCaseTests` + `UserStoryAcceptanceTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/15-balance-source-of-truth.md` | S2/S5/S7 | 平衡三模型 + 多 seed | Covered | `docs/25` + `GateModelSweepTests` + `S7FinalGateValidationTests` |
+| `docs/baseline/17-test-matrix.md` | S1~S9 | 測試 ID 對齊與補齊 | Covered | `TC-S4/S7/S8/S9` 已回填，EditMode `133/133` 通過（job `7077ee7ea9df451887a88308342a0093`） |
+| `docs/baseline/23-user-stories-and-use-cases.md` | S1/S3/S5/S6 | US/UC 覆蓋三模型 | Covered | `UserStoryAcceptanceTests`（US01~US12）+ `PlayableLoopUseCaseTests` + MCP job `7077ee7ea9df451887a88308342a0093` |
+| `docs/baseline/24-vocab-growth-curve-and-gating-plan.md` | S4/S7/S8 | 十模型 + 長週期遺忘 | Covered | `docs/25` + `S4PriorityValidationTests` + `S4LongCycleDistributionTests` + `S7FinalGateValidationTests` + `S8TelemetryModelCoverageTests` |
+| `docs/baseline/25-gate-model-sweep-report-2026-02-17.md` | S4/S7 | 30 輪分佈 | Covered | M9 12/30(40%) |
 
 ## 3. 缺口清單（需優先補齊）
 1. 需維持 nightly regression 與新增需求同步回填，避免 `Covered` 漂移。

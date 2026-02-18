@@ -42,7 +42,7 @@
 | M4-01 | 詞庫內容填充 | M4 | Codex | Done | T1/T2 詞庫 100 筆（50/50）與覆蓋檢查已完成 |
 | M4-02 | 商店權重平衡 | M4 | Codex | Done | Ante 分段權重 + Boss 課程卡 2 選 1 + 價格帶測試完成 |
 | M4-03 | 盲注曲線平衡 | M4 | Codex | Done | RunDifficultyProfile 三檔曲線（Relaxed/Standard/Challenging）與測試完成 |
-| M4-04 | 首輪平衡報告 | M4 | Codex | Done | `docs/21-m4-first-balance-report.md` 已完成 |
+| M4-04 | 首輪平衡報告 | M4 | Codex | Done | `docs/baseline/21-m4-first-balance-report.md` 已完成 |
 | A-01 | 全流程回歸 | Alpha | Codex | Done | 可授權 Unity 環境已執行 EditMode 回歸；compile fix（IsExternalInit）已修正並驗證通過 |
 | A-UI-01 | 可操作卡牌 UI 原型 | Alpha | Codex | Done | 已完成真實卡牌 UI、拖曳上桌、商店卡片格、答題區（英文題幹/中文選項）、可收合調參面板 |
 | A-BAL-01 | EffectiveVocab 關卡門檻 | Alpha | Codex | In Progress | GateProgression API + 原型流程卡關已接入；10模型30輪實測 M0~M8 全命中、M9 12/30（40%）已落在目標區間 |

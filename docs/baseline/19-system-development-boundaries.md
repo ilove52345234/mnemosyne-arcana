@@ -16,9 +16,9 @@
 ## 3. 衝突判定規則
 
 若提案符合以下任一條件，判定為衝突：
-- 與 `docs/01-game-design-core.md` 的玩法規則相反
-- 與 `docs/02-meta-progression.md` 的進程規則相反
-- 與 `docs/15-balance-source-of-truth.md` 的數值邏輯矛盾
+- 與 `docs/baseline/01-game-design-core.md` 的玩法規則相反
+- 與 `docs/baseline/02-meta-progression.md` 的進程規則相反
+- 與 `docs/baseline/15-balance-source-of-truth.md` 的數值邏輯矛盾
 - 與 `docs/03`/`docs/04` 的架構與資料契約不相容
 
 ## 4. 衝突處理流程

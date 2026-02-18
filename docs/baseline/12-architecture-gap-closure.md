@@ -4,9 +4,9 @@
 
 本文件對應「架構師檢視後缺口補齊」要求，補齊項目：
 
-1. 非功能需求與品質門檻：`docs/09-nfr-and-quality-gates.md`
-2. 執行期狀態與事件契約：`docs/10-runtime-state-and-event-contracts.md`
-3. 風險與決策紀錄：`docs/11-risk-register-and-decision-log.md`
+1. 非功能需求與品質門檻：`docs/baseline/09-nfr-and-quality-gates.md`
+2. 執行期狀態與事件契約：`docs/baseline/10-runtime-state-and-event-contracts.md`
+3. 風險與決策紀錄：`docs/baseline/11-risk-register-and-decision-log.md`
 
 ## 2. 目前可交接程度評估
 

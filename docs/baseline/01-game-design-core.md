@@ -34,7 +34,7 @@
 
 ## 4. 牌型與基礎數值
 
-> 數值唯一真相來源：`docs/15-balance-source-of-truth.md`。
+> 數值唯一真相來源：`docs/baseline/15-balance-source-of-truth.md`。
 > 本文件保留可讀規格，若與 `15` 衝突，以 `15` 為準。
 
 

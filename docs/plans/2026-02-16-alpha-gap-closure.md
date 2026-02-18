@@ -31,8 +31,8 @@
 **Files:**
 - Create: `Assets/MnemosyneArcana/Tests/EditMode/PerformanceSoakTests.cs`
 - Create: `scripts/run_alpha_soak.sh`
-- Modify: `docs/09-nfr-and-quality-gates.md`
-- Modify: `docs/22-alpha-a01-regression-checklist.md`
+- Modify: `docs/baseline/09-nfr-and-quality-gates.md`
+- Modify: `docs/baseline/22-alpha-a01-regression-checklist.md`
 
 **Steps:**
 1. Add failing test scaffold for deterministic multi-run loops and allocation guardrails.
@@ -59,8 +59,8 @@
 **Files:**
 - Modify: `Assets/MnemosyneArcana/Scripts/Core/Managers/ShopManagerV2.cs`
 - Create: `Assets/MnemosyneArcana/Tests/EditMode/ShopBuildRulesTests.cs`
-- Modify: `docs/01-game-design-core.md`
-- Modify: `docs/15-balance-source-of-truth.md`
+- Modify: `docs/baseline/01-game-design-core.md`
+- Modify: `docs/baseline/15-balance-source-of-truth.md`
 
 **Steps:**
 1. Add failing tests for reroll cost progression, nurture slots, pack slot behavior.

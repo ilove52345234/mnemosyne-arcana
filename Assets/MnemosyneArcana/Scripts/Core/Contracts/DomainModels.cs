@@ -188,6 +188,10 @@ namespace MnemosyneArcana.Core.Contracts
         public int RetryCostDiscount { get; set; }
         public float BossTimeBonusRate { get; set; }
         public float LearningContractLpBonusRate { get; set; }
+        public bool FreeRetryOnFirstWrongOption { get; set; }
+        public int ConsecutiveWrongReliefThresholdDelta { get; set; }
+        public int PerfectRunLpBonus { get; set; }
+        public int StreakBonusDurationExtraTurns { get; set; }
 
         // LEX
         public float DecayedPoolWeightBonusRate { get; set; }
@@ -206,6 +210,10 @@ namespace MnemosyneArcana.Core.Contracts
         public bool ResetNextRerollCostToFiveAfterContract { get; set; }
         public int FirstLv4UpgradeMoneyRefund { get; set; }
         public int CourseLpRebate { get; set; }
+        public int NextRefreshPreviewCategoryCount { get; set; }
+        public int NurtureCandidateExtraCount { get; set; }
+        public int Lv1To2TrainingDiscount { get; set; }
+        public int Lv2To3TrainingDiscount { get; set; }
 
         // MAS
         public int Lv4CardFlatChipBonus { get; set; }

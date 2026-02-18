@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MnemosyneArcana.Core.Contracts;
@@ -29,6 +30,11 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<IReadOnlyList<ShopOffer>> GenerateOffers(int ante, int seed, bool isBossShop = false)
         {
+            return GenerateOffers(ante, seed, isBossShop, null);
+        }
+
+        public ServiceResult<IReadOnlyList<ShopOffer>> GenerateOffers(int ante, int seed, bool isBossShop, CurriculumEffectSnapshot effects)
+        {
             if (ante < 1)
             {
                 return ServiceResult<IReadOnlyList<ShopOffer>>.Fail(ErrorCode.InvalidInput);
@@ -40,6 +46,8 @@ namespace MnemosyneArcana.Core.Managers
                 return ServiceResult<IReadOnlyList<ShopOffer>>.Ok(GenerateBossCourseOffers(random));
             }
 
+            var offerSlots = System.Math.Max(1, OfferSlots + (effects?.NurtureCandidateExtraCount ?? 0));
+
             var weightedPool = Pool
                 .Select(item =>
                 {
@@ -49,9 +57,9 @@ namespace MnemosyneArcana.Core.Managers
                 .Where(x => x.weight > 0)
                 .ToList();
 
-            var result = new List<ShopOffer>(OfferSlots);
+            var result = new List<ShopOffer>(offerSlots);
             var pickedIds = new HashSet<string>();
-            while (result.Count < OfferSlots && weightedPool.Count > 0)
+            while (result.Count < offerSlots && weightedPool.Count > 0)
             {
                 var totalWeight = weightedPool.Sum(x => x.weight);
                 var roll = random.Next(0, totalWeight);
@@ -87,6 +95,45 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             return ServiceResult<IReadOnlyList<ShopOffer>>.Ok(result);
+        }
+
+        public ServiceResult<IReadOnlyList<ShopOfferCategory>> PreviewNextRefreshCategories(int ante, int seed, CurriculumEffectSnapshot effects)
+        {
+            var previewCount = effects?.NextRefreshPreviewCategoryCount ?? 0;
+            if (previewCount <= 0)
+            {
+                return ServiceResult<IReadOnlyList<ShopOfferCategory>>.Ok(Array.Empty<ShopOfferCategory>());
+            }
+
+            var generated = GenerateOffers(ante, seed + 1, false, effects);
+            if (!generated.IsSuccess)
+            {
+                return ServiceResult<IReadOnlyList<ShopOfferCategory>>.Fail(generated.Error);
+            }
+
+            var categories = generated.Value
+                .Take(previewCount)
+                .Select(x => x.Category)
+                .ToArray();
+            return ServiceResult<IReadOnlyList<ShopOfferCategory>>.Ok(categories);
+        }
+
+        public int GetTrainingCost(LearningLevel fromLevel, LearningLevel toLevel, int baseCost, CurriculumEffectSnapshot effects)
+        {
+            var discount = 0;
+            if (effects != null)
+            {
+                if (fromLevel == LearningLevel.Lv1 && toLevel == LearningLevel.Lv2)
+                {
+                    discount = effects.Lv1To2TrainingDiscount;
+                }
+                else if (fromLevel == LearningLevel.Lv2 && toLevel == LearningLevel.Lv3)
+                {
+                    discount = effects.Lv2To3TrainingDiscount;
+                }
+            }
+
+            return System.Math.Max(1, baseCost - discount);
         }
 
         private static int ResolveAnteWeight(ShopOfferCategory category, int baseWeight, int ante)

@@ -216,5 +216,46 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsTrue(result.Value.Success);
             Assert.AreEqual(1, result.Value.LpRebate);
         }
+
+        [Test]
+        public void GenerateOffers_WithBld02_IncreasesOfferSlotsByOne()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot { NurtureCandidateExtraCount = 1 };
+            var result = manager.GenerateOffers(ante: 4, seed: 2026, isBossShop: false, effects);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(6, result.Value.Count);
+        }
+
+        [Test]
+        public void PreviewNextRefreshCategories_WithBld01_ReturnsOneCategory()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot { NextRefreshPreviewCategoryCount = 1 };
+            var preview = manager.PreviewNextRefreshCategories(ante: 3, seed: 100, effects);
+
+            Assert.IsTrue(preview.IsSuccess);
+            Assert.AreEqual(1, preview.Value.Count);
+        }
+
+        [Test]
+        public void GetTrainingCost_WithBld03_DiscountsMatchingTransitions()
+        {
+            var manager = new ShopManagerV2();
+            var effects = new CurriculumEffectSnapshot
+            {
+                Lv1To2TrainingDiscount = 1,
+                Lv2To3TrainingDiscount = 1
+            };
+
+            var lv1To2 = manager.GetTrainingCost(LearningLevel.Lv1, LearningLevel.Lv2, baseCost: 4, effects);
+            var lv2To3 = manager.GetTrainingCost(LearningLevel.Lv2, LearningLevel.Lv3, baseCost: 5, effects);
+            var lv0To1 = manager.GetTrainingCost(LearningLevel.Lv0, LearningLevel.Lv1, baseCost: 3, effects);
+
+            Assert.AreEqual(3, lv1To2);
+            Assert.AreEqual(4, lv2To3);
+            Assert.AreEqual(3, lv0To1);
+        }
     }
 }

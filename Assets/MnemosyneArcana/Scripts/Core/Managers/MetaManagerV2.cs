@@ -272,6 +272,10 @@ namespace MnemosyneArcana.Core.Managers
                     case "FLU_10B": snapshot.WrongPenaltyReductionRate += 0.15f; break;
                     case "FLU_10A": snapshot.BossTimeBonusRate += 0.10f; break;
                     case "FLU_11": snapshot.LearningContractLpBonusRate += 0.10f; break;
+                    case "FLU_04": snapshot.FreeRetryOnFirstWrongOption = true; break;
+                    case "FLU_05": snapshot.ConsecutiveWrongReliefThresholdDelta += 1; break;
+                    case "FLU_07": snapshot.PerfectRunLpBonus += 1; break;
+                    case "FLU_09": snapshot.StreakBonusDurationExtraTurns += 1; break;
 
                     case "LEX_01": snapshot.DecayedPoolWeightBonusRate += 0.10f; break;
                     case "LEX_02": snapshot.StaleWordWeightBonusRate += 0.20f; break;
@@ -288,6 +292,10 @@ namespace MnemosyneArcana.Core.Managers
                     case "BLD_11": snapshot.ResetNextRerollCostToFiveAfterContract = true; break;
                     case "BLD_12": snapshot.FirstLv4UpgradeMoneyRefund += 2; break;
                     case "BLD_09": snapshot.CourseLpRebate += 1; break;
+                    case "BLD_01": snapshot.NextRefreshPreviewCategoryCount += 1; break;
+                    case "BLD_02": snapshot.NurtureCandidateExtraCount += 1; break;
+                    case "BLD_03A": snapshot.Lv1To2TrainingDiscount += 1; break;
+                    case "BLD_03B": snapshot.Lv2To3TrainingDiscount += 1; break;
 
                     case "MAS_01": snapshot.Lv4CardFlatChipBonus += 2; break;
                     case "MAS_02": snapshot.FirstTwoLv4CardsAdditiveMultBonus += 1; break;
@@ -301,6 +309,16 @@ namespace MnemosyneArcana.Core.Managers
             }
 
             return ServiceResult<CurriculumEffectSnapshot>.Ok(snapshot);
+        }
+
+        public int GetPerfectRunLpBonus(bool isAllCorrectInRun, bool alreadyGrantedThisRun, CurriculumEffectSnapshot effects)
+        {
+            if (!isAllCorrectInRun || alreadyGrantedThisRun || effects == null)
+            {
+                return 0;
+            }
+
+            return Math.Max(0, effects.PerfectRunLpBonus);
         }
 
         public ServiceResult<LexiconUnlockRequirement> GetLexiconUnlockRequirement(

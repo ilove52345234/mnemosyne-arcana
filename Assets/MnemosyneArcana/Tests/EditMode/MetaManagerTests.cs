@@ -315,11 +315,11 @@ namespace MnemosyneArcana.Tests.EditMode
         {
             var result = _meta.GetCurriculumEffects(new MetaProgress
             {
-                CurriculumNodes = new[] { "FLU_01", "FLU_08", "BLD_04", "MAS_01", "MAS_03A", "LEX_09", "LEX_03A", "BLD_09", "MAS_08" }
+                CurriculumNodes = new[] { "FLU_01", "FLU_04", "FLU_05", "FLU_07", "FLU_08", "FLU_09", "BLD_01", "BLD_02", "BLD_03A", "BLD_04", "MAS_01", "MAS_03A", "LEX_09", "LEX_03A", "BLD_09", "MAS_08" }
             });
 
             Assert.IsTrue(result.IsSuccess);
-            Assert.AreEqual(9, result.Value.UnlockedNodeCount);
+            Assert.AreEqual(16, result.Value.UnlockedNodeCount);
             Assert.AreEqual(0.2f, result.Value.Lv1Lv2TimeBonusSec, 0.0001f);
             Assert.AreEqual(1, result.Value.RetryCostDiscount);
             Assert.AreEqual(2, result.Value.FirstShopRerollDiscount);
@@ -329,6 +329,13 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(0.08f, result.Value.ShortWordDropBiasRate, 0.0001f);
             Assert.AreEqual(1, result.Value.CourseLpRebate);
             Assert.IsTrue(result.Value.IgnoreFirstLv4WrongHandMultPenalty);
+            Assert.IsTrue(result.Value.FreeRetryOnFirstWrongOption);
+            Assert.AreEqual(1, result.Value.ConsecutiveWrongReliefThresholdDelta);
+            Assert.AreEqual(1, result.Value.PerfectRunLpBonus);
+            Assert.AreEqual(1, result.Value.StreakBonusDurationExtraTurns);
+            Assert.AreEqual(1, result.Value.NextRefreshPreviewCategoryCount);
+            Assert.AreEqual(1, result.Value.NurtureCandidateExtraCount);
+            Assert.AreEqual(1, result.Value.Lv1To2TrainingDiscount);
         }
 
         [Test]
@@ -417,6 +424,18 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.AreEqual(1, reduced.Value);
             Assert.IsTrue(floorOne.IsSuccess);
             Assert.AreEqual(1, floorOne.Value);
+        }
+
+        [Test]
+        public void GetPerfectRunLpBonus_WithFlu07_OnlyGrantsOnce()
+        {
+            var effects = new CurriculumEffectSnapshot { PerfectRunLpBonus = 1 };
+
+            var granted = _meta.GetPerfectRunLpBonus(isAllCorrectInRun: true, alreadyGrantedThisRun: false, effects);
+            var blocked = _meta.GetPerfectRunLpBonus(isAllCorrectInRun: true, alreadyGrantedThisRun: true, effects);
+
+            Assert.AreEqual(1, granted);
+            Assert.AreEqual(0, blocked);
         }
 
         private static IReadOnlyList<CurriculumNodeInfo> GetCurriculumNodeDefs()

@@ -180,5 +180,46 @@ namespace MnemosyneArcana.Tests.EditMode
             Assert.IsTrue(result.IsSuccess);
             Assert.AreEqual(0, result.Value.HandMultDelta);
         }
+
+        [Test]
+        public void ResolveWrongAnswerChoice_WithFlu04_FirstWrongRetryIsFree()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { FreeRetryOnFirstWrongOption = true };
+
+            var result = manager.ResolveWrongAnswerChoice(
+                WrongAnswerChoice.RetryWithCost,
+                currentMoney: 2,
+                retryUsed: false,
+                seed: 1,
+                effects,
+                isFirstWrongInRun: true);
+
+            Assert.IsTrue(result.IsSuccess);
+            Assert.AreEqual(0, result.Value.MoneySpent);
+            Assert.AreEqual(2, result.Value.RemainingMoney);
+        }
+
+        [Test]
+        public void GetConsecutiveWrongReliefThreshold_WithFlu05_ReducesThreshold()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { ConsecutiveWrongReliefThresholdDelta = 1 };
+
+            var threshold = manager.GetConsecutiveWrongReliefThreshold(3, effects);
+
+            Assert.AreEqual(2, threshold);
+        }
+
+        [Test]
+        public void GetStreakBonusDurationTurns_WithFlu09_AddsOneTurn()
+        {
+            var manager = new LearningManagerV2();
+            var effects = new CurriculumEffectSnapshot { StreakBonusDurationExtraTurns = 1 };
+
+            var duration = manager.GetStreakBonusDurationTurns(1, effects);
+
+            Assert.AreEqual(2, duration);
+        }
     }
 }

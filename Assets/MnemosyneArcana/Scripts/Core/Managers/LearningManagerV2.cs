@@ -90,10 +90,21 @@ namespace MnemosyneArcana.Core.Managers
 
         public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed)
         {
-            return ResolveWrongAnswerChoice(choice, currentMoney, retryUsed, seed, null);
+            return ResolveWrongAnswerChoice(choice, currentMoney, retryUsed, seed, null, false);
         }
 
         public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(WrongAnswerChoice choice, int currentMoney, bool retryUsed, int seed, CurriculumEffectSnapshot effects)
+        {
+            return ResolveWrongAnswerChoice(choice, currentMoney, retryUsed, seed, effects, false);
+        }
+
+        public ServiceResult<WrongAnswerChoiceResult> ResolveWrongAnswerChoice(
+            WrongAnswerChoice choice,
+            int currentMoney,
+            bool retryUsed,
+            int seed,
+            CurriculumEffectSnapshot effects,
+            bool isFirstWrongInRun)
         {
             if (currentMoney < 0)
             {
@@ -117,7 +128,13 @@ namespace MnemosyneArcana.Core.Managers
                     });
 
                 case WrongAnswerChoice.RetryWithCost:
-                    if (retryUsed || currentMoney < retryCost)
+                    var useFreeRetry = effects != null &&
+                                       effects.FreeRetryOnFirstWrongOption &&
+                                       isFirstWrongInRun &&
+                                       !retryUsed;
+                    var effectiveRetryCost = useFreeRetry ? 0 : retryCost;
+
+                    if (retryUsed || currentMoney < effectiveRetryCost)
                     {
                         return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.StateConflict);
                     }
@@ -127,8 +144,8 @@ namespace MnemosyneArcana.Core.Managers
                         Choice = choice,
                         Accepted = true,
                         RetryConsumed = true,
-                        MoneySpent = retryCost,
-                        RemainingMoney = currentMoney - retryCost,
+                        MoneySpent = effectiveRetryCost,
+                        RemainingMoney = currentMoney - effectiveRetryCost,
                         FinalAnswerResult = AnswerResult.RetryAccepted,
                         OverrideChipMultiplier = 1.0f
                     });
@@ -150,6 +167,27 @@ namespace MnemosyneArcana.Core.Managers
                 default:
                     return ServiceResult<WrongAnswerChoiceResult>.Fail(ErrorCode.InvalidInput);
             }
+        }
+
+        public int GetConsecutiveWrongReliefThreshold(int baseThreshold, CurriculumEffectSnapshot effects)
+        {
+            var threshold = baseThreshold;
+            if (effects != null)
+            {
+                threshold -= effects.ConsecutiveWrongReliefThresholdDelta;
+            }
+
+            return System.Math.Max(1, threshold);
+        }
+
+        public int GetStreakBonusDurationTurns(int baseDuration, CurriculumEffectSnapshot effects)
+        {
+            if (effects == null)
+            {
+                return System.Math.Max(0, baseDuration);
+            }
+
+            return System.Math.Max(0, baseDuration + effects.StreakBonusDurationExtraTurns);
         }
 
         public BossStreakBonus GetBossStreakBonus(int consecutiveCorrect)

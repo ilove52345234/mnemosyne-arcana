@@ -46,6 +46,13 @@ namespace MnemosyneArcana.Prototype
             RoundPostState = 10
         }
 
+        private enum QuizQuestionMode
+        {
+            McqZh = 0,
+            Spelling = 1,
+            Audio = 2
+        }
+
         private sealed class CardDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
         {
             private PrototypeCardGameUiController _owner;
@@ -190,6 +197,17 @@ namespace MnemosyneArcana.Prototype
         private Text _toggleTuningButtonText;
         private readonly List<Button> _quizOptionButtons = new List<Button>();
         private readonly List<Text> _quizOptionTexts = new List<Text>();
+        private RectTransform _quizFocusCardPanel;
+        private Text _quizFocusCardText;
+        private Text _quizModeText;
+        private RectTransform _quizMcqContainer;
+        private RectTransform _quizSpellingContainer;
+        private RectTransform _quizAudioContainer;
+        private Button _quizSpellCorrectButton;
+        private Button _quizSpellWrongButton;
+        private Button _quizAudioPlayButton;
+        private Button _quizAudioCorrectButton;
+        private Button _quizAudioWrongButton;
 
         private RunDifficultyProfile _difficulty = RunDifficultyProfile.Standard;
         private int _seed = 20260216;
@@ -240,6 +258,7 @@ namespace MnemosyneArcana.Prototype
         private int _quizCursor;
         private int _quizCorrectCount;
         private int _quizCurrentCorrectOptionIndex = -1;
+        private QuizQuestionMode _quizCurrentMode = QuizQuestionMode.McqZh;
         [SerializeField] private bool _playerMode = true;
         private bool _isTuningCollapsed = true;
         [SerializeField] private bool _autoDemoOnStart = true;
@@ -606,6 +625,19 @@ namespace MnemosyneArcana.Prototype
             quizPageLayout.childForceExpandHeight = false;
             _quizPageContainer.gameObject.AddComponent<LayoutElement>().minHeight = 0;
 
+            _quizFocusCardPanel = CreatePanel(_quizPageContainer, new Color(0.09f, 0.12f, 0.2f, 0.98f));
+            var quizFocusLe = _quizFocusCardPanel.gameObject.AddComponent<LayoutElement>();
+            quizFocusLe.minHeight = 148;
+            var quizFocusOutline = _quizFocusCardPanel.gameObject.AddComponent<Outline>();
+            quizFocusOutline.effectColor = new Color(0.65f, 0.76f, 1f, 0.28f);
+            quizFocusOutline.effectDistance = new Vector2(2f, -2f);
+            _quizFocusCardText = CreateText(_quizFocusCardPanel, "待命中", 24, TextAnchor.MiddleCenter, FontStyle.Bold);
+            _quizFocusCardText.rectTransform.anchorMin = Vector2.zero;
+            _quizFocusCardText.rectTransform.anchorMax = Vector2.one;
+            _quizFocusCardText.rectTransform.offsetMin = new Vector2(10, 10);
+            _quizFocusCardText.rectTransform.offsetMax = new Vector2(-10, -10);
+            _quizFocusCardText.color = new Color(0.92f, 0.96f, 1f, 1f);
+
             var quizPanel = CreatePanel(_quizPageContainer, new Color(0.06f, 0.08f, 0.15f, 0.96f));
             var quizPanelElement = quizPanel.gameObject.AddComponent<LayoutElement>();
             quizPanelElement.minHeight = 186;
@@ -617,13 +649,23 @@ namespace MnemosyneArcana.Prototype
             quizLayout.childControlHeight = true;
             quizLayout.childForceExpandWidth = true;
             quizLayout.childForceExpandHeight = false;
-            CreateText(quizPanel, "答題區（英文題幹 / 中文選項）", 14, TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateText(quizPanel, "答題區（中間焦點卡 + 題型容器）", 14, TextAnchor.MiddleLeft, FontStyle.Bold);
+            _quizModeText = CreateText(quizPanel, "題型：待命", 13, TextAnchor.MiddleLeft, FontStyle.Bold);
             _quizStatusText = CreateText(quizPanel, "尚未開始答題。", 13, TextAnchor.MiddleLeft, FontStyle.Normal);
             _quizPromptText = CreateText(quizPanel, "請先把卡牌拖到牌桌區，再按「開始答題並出牌」。", 13, TextAnchor.UpperLeft, FontStyle.Normal);
             _quizPromptText.gameObject.AddComponent<LayoutElement>().minHeight = 42;
+
+            _quizMcqContainer = CreatePanel(quizPanel, new Color(0f, 0f, 0f, 0f));
+            var quizMcqLayout = _quizMcqContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            quizMcqLayout.spacing = 4;
+            quizMcqLayout.padding = new RectOffset(0, 0, 0, 0);
+            quizMcqLayout.childControlWidth = true;
+            quizMcqLayout.childControlHeight = true;
+            quizMcqLayout.childForceExpandWidth = true;
+            quizMcqLayout.childForceExpandHeight = false;
             for (var i = 0; i < 4; i++)
             {
-                var optButton = CreateButtonWithLabel(quizPanel, string.Format("選項{0}", i + 1), 40);
+                var optButton = CreateButtonWithLabel(_quizMcqContainer, string.Format("選項{0}", i + 1), 40);
                 var optText = optButton.GetComponentInChildren<Text>();
                 var idx = i;
                 optButton.onClick.AddListener(delegate { OnQuizOptionSelected(idx); });
@@ -635,6 +677,39 @@ namespace MnemosyneArcana.Prototype
                 _quizOptionButtons.Add(optButton);
                 _quizOptionTexts.Add(optText);
             }
+
+            _quizSpellingContainer = CreatePanel(quizPanel, new Color(0f, 0f, 0f, 0f));
+            _quizSpellingContainer.gameObject.SetActive(false);
+            var spellLayout = _quizSpellingContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            spellLayout.spacing = 6;
+            spellLayout.padding = new RectOffset(0, 0, 0, 0);
+            spellLayout.childControlWidth = true;
+            spellLayout.childControlHeight = true;
+            spellLayout.childForceExpandWidth = true;
+            spellLayout.childForceExpandHeight = false;
+            CreateText(_quizSpellingContainer, "拼字題（示意）：請拼出該單字。", 13, TextAnchor.MiddleLeft, FontStyle.Normal);
+            var spellRow = CreateRow(_quizSpellingContainer, 40);
+            _quizSpellCorrectButton = CreateButtonWithLabel(spellRow, "拼字正確", 34);
+            _quizSpellWrongButton = CreateButtonWithLabel(spellRow, "拼字錯誤", 34);
+            _quizSpellCorrectButton.onClick.AddListener(delegate { SubmitQuizAnswer(true); });
+            _quizSpellWrongButton.onClick.AddListener(delegate { SubmitQuizAnswer(false); });
+
+            _quizAudioContainer = CreatePanel(quizPanel, new Color(0f, 0f, 0f, 0f));
+            _quizAudioContainer.gameObject.SetActive(false);
+            var audioLayout = _quizAudioContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+            audioLayout.spacing = 6;
+            audioLayout.padding = new RectOffset(0, 0, 0, 0);
+            audioLayout.childControlWidth = true;
+            audioLayout.childControlHeight = true;
+            audioLayout.childForceExpandWidth = true;
+            audioLayout.childForceExpandHeight = false;
+            _quizAudioPlayButton = CreateButtonWithLabel(_quizAudioContainer, "播放發音（示意）", 36);
+            _quizAudioPlayButton.onClick.AddListener(delegate { AddLog("播放發音（示意）"); });
+            var audioRow = CreateRow(_quizAudioContainer, 40);
+            _quizAudioCorrectButton = CreateButtonWithLabel(audioRow, "聽辨正確", 34);
+            _quizAudioWrongButton = CreateButtonWithLabel(audioRow, "聽辨錯誤", 34);
+            _quizAudioCorrectButton.onClick.AddListener(delegate { SubmitQuizAnswer(true); });
+            _quizAudioWrongButton.onClick.AddListener(delegate { SubmitQuizAnswer(false); });
 
             var actionRow1 = CreateRow(_playPageContainer, 52);
             CreateButton(actionRow1, "抽新手牌", DrawHand);
@@ -1398,10 +1473,30 @@ namespace MnemosyneArcana.Prototype
                 _quizPromptText.text = "請先把卡牌拖到牌桌區，再按「開始答題並出牌」。";
             }
 
+            if (_quizModeText != null)
+            {
+                _quizModeText.text = "題型：待命";
+            }
+
+            if (_quizFocusCardText != null)
+            {
+                _quizFocusCardText.text = "待命中";
+            }
+
             for (var i = 0; i < _quizOptionButtons.Count; i++)
             {
                 _quizOptionButtons[i].interactable = false;
             }
+
+            if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = false;
+            if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = false;
+            if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = false;
+            if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = false;
+            if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = false;
+
+            if (_quizMcqContainer != null) _quizMcqContainer.gameObject.SetActive(true);
+            if (_quizSpellingContainer != null) _quizSpellingContainer.gameObject.SetActive(false);
+            if (_quizAudioContainer != null) _quizAudioContainer.gameObject.SetActive(false);
         }
 
         private void UpdateDrawAnimations()
@@ -2378,58 +2473,120 @@ namespace MnemosyneArcana.Prototype
             }
 
             var word = _hand[cardIndex];
-            var pool = _deck
-                .Select(x => x.MeaningZh)
-                .Where(x => !string.Equals(x, word.MeaningZh, StringComparison.Ordinal))
-                .Distinct()
-                .ToList();
-            var rng = new System.Random(_seed + _quizCursor * 101 + _runManager.CurrentState.Ante * 17);
-            var options = new List<string> { word.MeaningZh };
-            while (options.Count < 4 && pool.Count > 0)
-            {
-                var idx = rng.Next(0, pool.Count);
-                var candidate = pool[idx];
-                pool.RemoveAt(idx);
-                if (!options.Contains(candidate))
-                {
-                    options.Add(candidate);
-                }
-            }
-
-            while (options.Count < 4)
-            {
-                options.Add(word.MeaningZh);
-            }
-
-            for (var i = options.Count - 1; i > 0; i--)
-            {
-                var j = rng.Next(0, i + 1);
-                var t = options[i];
-                options[i] = options[j];
-                options[j] = t;
-            }
-
-            _quizCurrentCorrectOptionIndex = options.FindIndex(x => string.Equals(x, word.MeaningZh, StringComparison.Ordinal));
+            _quizCurrentMode = (QuizQuestionMode)((_quizCursor + _runManager.CurrentState.Ante) % 3);
             SetCardQuizCastPhase(CardQuizCastPhase.QuizQuestionActive);
             _quizStatusText.text = string.Format("第 {0}/{1} 題", _quizCursor + 1, _quizCardIndexes.Count);
-            _quizPromptText.text = string.Format("請選出英文「{0}」對應的中文詞義：", word.Text);
-            for (var i = 0; i < _quizOptionButtons.Count; i++)
+
+            if (_quizFocusCardText != null)
             {
-                if (i < options.Count)
+                _quizFocusCardText.text = string.Format(
+                    "{0}\n元素 {1} / 詞性 {2} / 等級 {3}",
+                    word.Text,
+                    ElementZh(word.Element),
+                    PosZh(word.Pos),
+                    word.Level);
+            }
+
+            if (_quizModeText != null)
+            {
+                _quizModeText.text = _quizCurrentMode switch
                 {
-                    _quizOptionButtons[i].interactable = true;
-                    _quizOptionButtons[i].gameObject.SetActive(true);
-                    if (i < _quizOptionTexts.Count && _quizOptionTexts[i] != null)
+                    QuizQuestionMode.Spelling => "題型：拼字",
+                    QuizQuestionMode.Audio => "題型：發音辨識（示意）",
+                    _ => "題型：中文選項"
+                };
+            }
+
+            var useMcq = _quizCurrentMode == QuizQuestionMode.McqZh;
+            var useSpelling = _quizCurrentMode == QuizQuestionMode.Spelling;
+            var useAudio = _quizCurrentMode == QuizQuestionMode.Audio;
+            if (_quizMcqContainer != null) _quizMcqContainer.gameObject.SetActive(useMcq);
+            if (_quizSpellingContainer != null) _quizSpellingContainer.gameObject.SetActive(useSpelling);
+            if (_quizAudioContainer != null) _quizAudioContainer.gameObject.SetActive(useAudio);
+
+            if (useMcq)
+            {
+                var pool = _deck
+                    .Select(x => x.MeaningZh)
+                    .Where(x => !string.Equals(x, word.MeaningZh, StringComparison.Ordinal))
+                    .Distinct()
+                    .ToList();
+                var rng = new System.Random(_seed + _quizCursor * 101 + _runManager.CurrentState.Ante * 17);
+                var options = new List<string> { word.MeaningZh };
+                while (options.Count < 4 && pool.Count > 0)
+                {
+                    var idx = rng.Next(0, pool.Count);
+                    var candidate = pool[idx];
+                    pool.RemoveAt(idx);
+                    if (!options.Contains(candidate))
                     {
-                        _quizOptionTexts[i].text = options[i];
+                        options.Add(candidate);
                     }
                 }
-                else
+
+                while (options.Count < 4)
                 {
-                    _quizOptionButtons[i].interactable = false;
-                    _quizOptionButtons[i].gameObject.SetActive(false);
+                    options.Add(word.MeaningZh);
                 }
+
+                for (var i = options.Count - 1; i > 0; i--)
+                {
+                    var j = rng.Next(0, i + 1);
+                    var t = options[i];
+                    options[i] = options[j];
+                    options[j] = t;
+                }
+
+                _quizCurrentCorrectOptionIndex = options.FindIndex(x => string.Equals(x, word.MeaningZh, StringComparison.Ordinal));
+                _quizPromptText.text = string.Format("請選出英文「{0}」對應的中文詞義：", word.Text);
+                for (var i = 0; i < _quizOptionButtons.Count; i++)
+                {
+                    if (i < options.Count)
+                    {
+                        _quizOptionButtons[i].interactable = true;
+                        _quizOptionButtons[i].gameObject.SetActive(true);
+                        if (i < _quizOptionTexts.Count && _quizOptionTexts[i] != null)
+                        {
+                            _quizOptionTexts[i].text = options[i];
+                        }
+                    }
+                    else
+                    {
+                        _quizOptionButtons[i].interactable = false;
+                        _quizOptionButtons[i].gameObject.SetActive(false);
+                    }
+                }
+
+                if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = false;
+                if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = false;
+                if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = false;
+                if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = false;
+                if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = false;
+                return;
             }
+
+            for (var i = 0; i < _quizOptionButtons.Count; i++)
+            {
+                _quizOptionButtons[i].interactable = false;
+            }
+
+            if (useSpelling)
+            {
+                _quizPromptText.text = string.Format("請拼出單字「{0}」（示意先以正確/錯誤按鈕代替）。", word.Text);
+                if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = true;
+                if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = true;
+                if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = false;
+                if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = false;
+                if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = false;
+                return;
+            }
+
+            _quizPromptText.text = string.Format("請聽辨單字「{0}」發音（示意）。", word.Text);
+            if (_quizSpellCorrectButton != null) _quizSpellCorrectButton.interactable = false;
+            if (_quizSpellWrongButton != null) _quizSpellWrongButton.interactable = false;
+            if (_quizAudioPlayButton != null) _quizAudioPlayButton.interactable = true;
+            if (_quizAudioCorrectButton != null) _quizAudioCorrectButton.interactable = true;
+            if (_quizAudioWrongButton != null) _quizAudioWrongButton.interactable = true;
         }
 
         private void OnQuizOptionSelected(int optionIndex)
@@ -2444,9 +2601,18 @@ namespace MnemosyneArcana.Prototype
                 return;
             }
 
+            SubmitQuizAnswer(optionIndex == _quizCurrentCorrectOptionIndex);
+        }
+
+        private void SubmitQuizAnswer(bool correct)
+        {
+            if (!_isQuizRunning || _quizCursor >= _quizCardIndexes.Count)
+            {
+                return;
+            }
+
             var cardIdx = _quizCardIndexes[_quizCursor];
             var word = (cardIdx >= 0 && cardIdx < _hand.Count) ? _hand[cardIdx] : null;
-            var correct = optionIndex == _quizCurrentCorrectOptionIndex;
             SetCardQuizCastPhase(CardQuizCastPhase.QuizAnswerFeedback);
             _quizCardCorrectness.Add(correct);
             if (correct)
@@ -2456,10 +2622,7 @@ namespace MnemosyneArcana.Prototype
             }
             else
             {
-                var correctWord = (_quizCurrentCorrectOptionIndex >= 0 && _quizCurrentCorrectOptionIndex < _quizOptionTexts.Count)
-                    ? _quizOptionTexts[_quizCurrentCorrectOptionIndex].text
-                    : "-";
-                AddLog(string.Format("答錯：{0}，正解是 {1}", word != null ? word.Text : "unknown", correctWord));
+                AddLog(string.Format("答錯：{0}", word != null ? word.Text : "unknown"));
             }
 
             _quizCursor++;

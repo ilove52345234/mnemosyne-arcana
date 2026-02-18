@@ -17,6 +17,29 @@
 
 ---
 
+## 交接記錄（2026-02-19）- S10-P0 M2 題目舞台改版
+
+- 目標：完成中央單卡放大答題舞台與多題型容器
+- 完成內容：
+  - 新增中央焦點卡（顯示當前答題單字與元素/詞性/等級）
+  - 新增三種題型容器：中文選項、拼字（示意）、發音（示意）
+  - 新增 `SubmitQuizAnswer(bool)` 統一提交流程
+  - `PresentNextQuizQuestion` 可依題序切換題型容器
+- 變更檔案：
+  - `Assets/MnemosyneArcana/Scripts/Prototype/PrototypeCardGameUiController.cs`
+  - `docs/systems/S10-ui-ux/ALIGNMENT_TRACKER.md`
+  - `docs/systems/S10-ui-ux/SYSTEM.md`
+  - `docs/SESSION_NOTES.md`
+- 驗證結果：
+  - Unity 編譯無 error
+  - PlayMode 截圖：`Assets/Screenshots/S10-auto-loop-r10-m2-1.png`
+- 風險/阻塞：
+  - 拼字/發音仍為示意，尚未接真實輸入與音訊資源
+- 下一步：
+  - M3：雙面卡翻轉與答案揭露視覺層
+
+---
+
 ## 交接記錄（2026-02-19）- S10-P0 M1 狀態機骨架實作
 
 - 目標：開始落地 P0「選牌答題後出卡」流程的第一階段（M1）

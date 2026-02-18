@@ -22,6 +22,26 @@
 
 ## 迭代紀錄
 
+### Round R11（2026-02-19）
+- Screenshots:
+  - `Assets/Screenshots/S10-auto-loop-r10-m2-1.png`
+- Score:
+  - Layout: 25/30
+  - Readability: 21/25
+  - Interaction: 22/25
+  - Polish: 12/20
+  - Total: 80/100
+- 本輪修改:
+  - 完成 M2：中央焦點卡（放大單卡資訊）上線。
+  - 題型容器切換上線：`中文選項 / 拼字(示意) / 發音(示意)`。
+  - 答題提交流程抽象為 `SubmitQuizAnswer(bool)`，多題型可共用。
+  - `ResetQuizState` 同步重置新題型容器與按鈕狀態。
+- 未解決問題:
+  - 發音與拼字仍為示意互動，尚未接真實輸入/音訊。
+  - 卡片翻面揭露（答案 + 美術佔位）仍未完成視覺層。
+- 下一輪優先:
+  - M3：雙面卡翻轉、答案揭露欄位與美術佔位卡背。
+
 ### Round R10（2026-02-19）
 - Screenshots:
   - `Assets/Screenshots/S10-auto-loop-r10-m1-1.png`
